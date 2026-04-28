@@ -1,11 +1,16 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSession, signIn } from 'next-auth/react';
 import dynamic from 'next/dynamic';
 import { Search, MessageSquare, Loader2, Send } from 'lucide-react';
+import { useInView } from 'react-intersection-observer';
 import type { CommentType } from './CommentItem';
 import type { PreviewData } from './PreviewCard';
+import YouTubePlayer, { YouTubePlayerRef } from './YouTubePlayer';
+import InstagramFeedCard from './InstagramFeedCard';
+import TwitterEmbedCard from './TwitterEmbedCard';
+import TrendingBoard from './TrendingBoard';
 
 // 동적 로딩 적용 (필요할 때만 모듈 로드)
 const PreviewCard = dynamic(() => import('./PreviewCard'), {
@@ -24,6 +29,22 @@ const CommentItem = dynamic(() => import('./CommentItem'), {
   ),
 });
 
+function getYouTubeVideoId(url: string): string | null {
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[2].length === 11) ? match[2] : null;
+}
+
+function isInstagramUrl(url: string): boolean {
+  return /instagram\.com\/(p|reel|tv)\/([A-Za-z0-9_-]+)/.test(url);
+}
+
+function getTwitterStatusId(url: string): string | null {
+  const regExp = /(?:twitter\.com|x\.com)\/\w+\/status\/(\d+)/;
+  const match = url.match(regExp);
+  return match ? match[1] : null;
+}
+
 export default function ThreadUI() {
   const { data: session } = useSession();
   const [url, setUrl] = useState('');
@@ -32,48 +53,121 @@ export default function ThreadUI() {
   const [showComments, setShowComments] = useState(false);
   const [comments, setComments] = useState<CommentType[]>([]);
   const [fetchError, setFetchError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [hasNextPage, setHasNextPage] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   
   const [previewData, setPreviewData] = useState<PreviewData | null>(null);
   const [isPreviewLoading, setIsPreviewLoading] = useState(false);
   
   const [newContent, setNewContent] = useState('');
+  const [newImageUrls, setNewImageUrls] = useState('');
   const [isSubmittingNew, setIsSubmittingNew] = useState(false);
+  const [includeTimestamp, setIncludeTimestamp] = useState(false);
+  
+  const { ref: loadMoreRef, inView } = useInView({
+    threshold: 0.1,
+  });
 
-  const fetchComments = React.useCallback(async (targetUrl: string) => {
-    setFetchError(null);
+  useEffect(() => {
+    if (inView && hasNextPage && !isLoadingMore) {
+      handleLoadMore();
+    }
+  }, [inView, hasNextPage, isLoadingMore]);
+
+  // SSE (Server-Sent Events) 로 실시간 스트림 연결
+  useEffect(() => {
+    if (!currentUrl || !showComments) return;
+    
+    const eventSource = new EventSource(`/api/comments/stream?url=${encodeURIComponent(currentUrl)}`);
+    
+    eventSource.onmessage = (event) => {
+      try {
+        const newComments = JSON.parse(event.data);
+        if (newComments && newComments.length > 0) {
+          // 기존 댓글 목록 상단에 새 댓글 병합 (중복 방지 로직 포함)
+          setComments(prev => {
+            const existingIds = new Set(prev.map(c => c.id));
+            const uniqueNew = newComments.filter((c: any) => !existingIds.has(c.id));
+            return [...uniqueNew, ...prev];
+          });
+        }
+      } catch (err) {
+        console.error("SSE Parse Error:", err);
+      }
+    };
+
+    return () => {
+      eventSource.close();
+    };
+  }, [currentUrl, showComments]);
+
+  const searchIdRef = React.useRef(0);
+  const playerRef = React.useRef<YouTubePlayerRef>(null);
+
+  const handleTimestampClick = React.useCallback((seconds: number) => {
+    if (playerRef.current) {
+      playerRef.current.seekTo(seconds);
+    }
+  }, []);
+
+  const fetchComments = React.useCallback(async (targetUrl: string, searchId?: number, pageNumber: number = 1) => {
+    if (pageNumber === 1) setFetchError(null);
     try {
-      const res = await fetch(`/api/comments?url=${encodeURIComponent(targetUrl)}`);
+      const res = await fetch(`/api/comments?url=${encodeURIComponent(targetUrl)}&page=${pageNumber}&limit=10`);
+      if (searchId !== undefined && searchId !== searchIdRef.current) return;
+      
       if (!res.ok) {
         throw new Error('서버 에러가 발생했습니다.');
       }
       const data = await res.json();
+      if (searchId !== undefined && searchId !== searchIdRef.current) return;
+      
       if (data.success) {
-        setComments(data.comments || []);
+        if (pageNumber === 1) {
+          setComments(data.comments || []);
+        } else {
+          setComments(prev => [...prev, ...(data.comments || [])]);
+        }
+        setPage(data.pagination?.page || 1);
+        setHasNextPage(data.pagination?.hasNextPage || false);
       } else {
-        setFetchError(data.error || '데이터를 불러오는 중 오류가 발생했습니다.');
+        if (pageNumber === 1) setFetchError(data.error || '데이터를 불러오는 중 오류가 발생했습니다.');
       }
     } catch (err) {
-      setFetchError('네트워크 에러가 발생하여 댓글을 불러올 수 없습니다.');
+      if (searchId !== undefined && searchId !== searchIdRef.current) return;
+      if (pageNumber === 1) setFetchError('네트워크 에러가 발생하여 댓글을 불러올 수 없습니다.');
     }
   }, []);
 
+  const handleLoadMore = async () => {
+    if (isLoadingMore || !hasNextPage || !currentUrl) return;
+    setIsLoadingMore(true);
+    await fetchComments(currentUrl, searchIdRef.current, page + 1);
+    setIsLoadingMore(false);
+  };
+
   const handleReplySuccess = React.useCallback(() => {
     if (currentUrl) {
-      fetchComments(currentUrl);
+      fetchComments(currentUrl, searchIdRef.current, 1);
     }
   }, [currentUrl, fetchComments]);
 
-  const fetchPreview = async (targetUrl: string) => {
+  const fetchPreview = async (targetUrl: string, searchId: number) => {
     setIsPreviewLoading(true);
     setPreviewData(null);
     try {
       const res = await fetch(`/api/preview?url=${encodeURIComponent(targetUrl)}`);
       const data = await res.json();
+      if (searchId !== searchIdRef.current) return;
       setPreviewData(data);
     } catch (err) {
+      if (searchId !== searchIdRef.current) return;
       setPreviewData({ url: targetUrl, error: 'Failed' });
     } finally {
-      setIsPreviewLoading(false);
+      if (searchId === searchIdRef.current) {
+        setIsPreviewLoading(false);
+      }
     }
   };
 
@@ -81,17 +175,21 @@ export default function ThreadUI() {
     e.preventDefault();
     if (!url.trim()) return;
     
+    const currentSearchId = ++searchIdRef.current;
+    
     setIsLoading(true);
     setShowComments(false);
     setCurrentUrl(url);
     
     await Promise.all([
-      fetchComments(url),
-      fetchPreview(url)
+      fetchComments(url, currentSearchId, 1),
+      fetchPreview(url, currentSearchId)
     ]);
     
-    setIsLoading(false);
-    setShowComments(true);
+    if (currentSearchId === searchIdRef.current) {
+      setIsLoading(false);
+      setShowComments(true);
+    }
   };
 
   const handleNewCommentSubmit = async (e: React.FormEvent) => {
@@ -107,15 +205,34 @@ export default function ThreadUI() {
     }
 
     setIsSubmittingNew(true);
+    
+    let timestampToSave: number | null = null;
+    if (includeTimestamp && playerRef.current) {
+      timestampToSave = Math.floor(playerRef.current.getCurrentTime());
+    }
+    
     try {
+      const imageUrlsArray = newImageUrls
+        .split(',')
+        .map(url => url.trim())
+        .filter(url => url.length > 0);
+
       const res = await fetch('/api/comments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: currentUrl, author: session.user.name || 'Anonymous', content: newContent }),
+        body: JSON.stringify({ 
+          url: currentUrl, 
+          author: session.user.name || 'Anonymous', 
+          content: newContent, 
+          timestamp: timestampToSave,
+          imageUrls: imageUrlsArray
+        }),
       });
       if (res.ok) {
         setNewContent('');
-        await fetchComments(currentUrl);
+        setNewImageUrls('');
+        setIncludeTimestamp(false);
+        await fetchComments(currentUrl, searchIdRef.current, 1);
       } else {
         alert('새 댓글 작성 중 서버 에러가 발생했습니다.');
       }
@@ -126,9 +243,31 @@ export default function ThreadUI() {
     }
   };
 
+  const handleSelectTrendingUrl = React.useCallback((selectedUrl: string) => {
+    setUrl(selectedUrl);
+    // Trigger search after state updates
+    setTimeout(() => {
+      const form = document.getElementById('search-form') as HTMLFormElement;
+      if (form) form.requestSubmit();
+    }, 50);
+  }, []);
+
+  const renderedComments = React.useMemo(() => {
+    return comments.map((comment) => (
+      <div key={comment.id} role="listitem">
+        <CommentItem 
+          comment={comment} 
+          url={currentUrl} 
+          onReplySuccess={handleReplySuccess}
+          onTimestampClick={handleTimestampClick}
+        />
+      </div>
+    ));
+  }, [comments, currentUrl, handleReplySuccess, handleTimestampClick]);
+
   return (
     <section className="w-full flex flex-col items-center">
-      <form onSubmit={handleSearch} aria-label="URL 검색 폼" className="w-full relative max-w-2xl mb-8 group">
+      <form id="search-form" onSubmit={handleSearch} aria-label="URL 검색 폼" className="w-full relative max-w-2xl mb-8 group">
         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
           <Search className="h-5 w-5 text-zinc-400 group-focus-within:text-blue-500 transition-colors" aria-hidden="true" />
         </div>
@@ -152,6 +291,10 @@ export default function ThreadUI() {
         </button>
       </form>
 
+      {!showComments && !isLoading && (
+        <TrendingBoard onSelectUrl={handleSelectTrendingUrl} />
+      )}
+
       <div className="w-full transition-all duration-500 ease-in-out relative">
         {isLoading && (
           <div className="flex flex-col items-center justify-center py-12 text-zinc-500 animate-pulse transition-opacity duration-300">
@@ -168,7 +311,32 @@ export default function ThreadUI() {
               </div>
             )}
             
-            <PreviewCard preview={previewData} isLoading={isPreviewLoading} />
+            {(() => {
+              const ytVideoId = getYouTubeVideoId(currentUrl);
+              if (ytVideoId) {
+                return (
+                  <YouTubePlayer ref={playerRef} videoId={ytVideoId} />
+                );
+              }
+              
+              const tweetId = getTwitterStatusId(currentUrl);
+              if (tweetId) {
+                return <TwitterEmbedCard tweetId={tweetId} />;
+              }
+              
+              if (isInstagramUrl(currentUrl)) {
+                return (
+                  <InstagramFeedCard 
+                    author={previewData?.siteName || 'Instagram User'} 
+                    authorAvatar={previewData?.favicon || ''}
+                    mediaUrls={previewData?.images?.length ? previewData.images : [previewData?.image || '']}
+                    caption={previewData?.description || ''}
+                  />
+                );
+              }
+
+              return <PreviewCard preview={previewData} isLoading={isPreviewLoading} />;
+            })()}
 
             <div className="p-6 border-b border-zinc-100 bg-zinc-50 flex items-center gap-3">
               <MessageSquare className="h-5 w-5 text-blue-600" />
@@ -188,7 +356,7 @@ export default function ThreadUI() {
                     onClick={() => signIn()}
                     className="px-6 py-2.5 bg-zinc-900 hover:bg-zinc-800 text-white font-medium rounded-lg transition-colors flex items-center gap-2"
                   >
-                    이메일 / 패스키로 로그인하기
+                    이메일 / 소셜 / 패스키로 로그인하기
                   </button>
                 </div>
               ) : (
@@ -205,7 +373,30 @@ export default function ThreadUI() {
                       className="w-full p-3 border border-zinc-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-shadow"
                     />
                   </div>
-                  <div className="flex justify-end">
+                  <div className="mb-3">
+                    <input
+                      type="text"
+                      aria-label="이미지 URL (쉼표로 구분)"
+                      placeholder="Image URLs (comma separated)"
+                      value={newImageUrls}
+                      onChange={(e) => setNewImageUrls(e.target.value)}
+                      className="w-full p-3 border border-zinc-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-shadow"
+                    />
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <div>
+                      {getYouTubeVideoId(currentUrl) && (
+                        <label className="flex items-center gap-2 text-sm text-zinc-600 cursor-pointer">
+                          <input 
+                            type="checkbox" 
+                            checked={includeTimestamp} 
+                            onChange={(e) => setIncludeTimestamp(e.target.checked)} 
+                            className="rounded border-zinc-300 text-blue-600 focus:ring-blue-500"
+                          />
+                          현재 영상 시간 포함하기
+                        </label>
+                      )}
+                    </div>
                     <button
                       type="submit"
                       disabled={isSubmittingNew}
@@ -232,15 +423,21 @@ export default function ThreadUI() {
                   </p>
                 </div>
               ) : (
-                comments.map((comment) => (
-                  <div key={comment.id} role="listitem">
-                    <CommentItem 
-                      comment={comment} 
-                      url={currentUrl} 
-                      onReplySuccess={handleReplySuccess} 
-                    />
-                  </div>
-                ))
+                <>
+                  {renderedComments}
+                  {hasNextPage && (
+                    <div ref={loadMoreRef} className="p-6 flex justify-center border-t border-zinc-100">
+                      {isLoadingMore ? (
+                        <div className="flex items-center gap-2 text-zinc-500">
+                          <Loader2 className="h-5 w-5 animate-spin" />
+                          <span className="text-sm font-medium">Loading more comments...</span>
+                        </div>
+                      ) : (
+                        <div className="h-10" />
+                      )}
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>

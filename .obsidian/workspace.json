@@ -1,0 +1,217 @@
+{
+  "main": {
+    "id": "048293a275972aca",
+    "type": "split",
+    "children": [
+      {
+        "id": "b90ac2b16f59b1bf",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "1561f09e09bd5c59",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "새 탭"
+            }
+          },
+          {
+            "id": "e2ad6179daf0bf82",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "그래프 뷰"
+            }
+          }
+        ],
+        "currentTab": 1
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "73aecf6edeb169de",
+    "type": "split",
+    "children": [
+      {
+        "id": "7cb22051f2724b84",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "1bc02ac565ef4e91",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "파일 탐색기"
+            }
+          },
+          {
+            "id": "64ff93db5b6b792b",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "tag:#rrggbbaa",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "검색"
+            }
+          },
+          {
+            "id": "d7d5540a016b9973",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "북마크"
+            }
+          }
+        ],
+        "currentTab": 1
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "98cd726174a519ad",
+    "type": "split",
+    "children": [
+      {
+        "id": "15a36846e7966d46",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "b092901d54a69f5f",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "node_modules/next/dist/docs/01-app/01-getting-started/02-project-structure.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "02-project-structure 의 백링크"
+            }
+          },
+          {
+            "id": "c75b6df37453dbaa",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "node_modules/next/dist/docs/01-app/01-getting-started/02-project-structure.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "02-project-structure 의 나가는 링크"
+            }
+          },
+          {
+            "id": "7b5fc8ecbc5d8720",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "태그"
+            }
+          },
+          {
+            "id": "1fd659b61bdd4b2e",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "모든 속성"
+            }
+          },
+          {
+            "id": "34d81aa73b83e29b",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "개요"
+            }
+          }
+        ],
+        "currentTab": 4
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:빠른 전환기 열기": false,
+      "graph:그래프 뷰 열기": false,
+      "canvas:새 캔버스 만들기": false,
+      "daily-notes:오늘의 일일 노트 열기": false,
+      "templates:템플릿 삽입": false,
+      "command-palette:명령어 팔레트 열기": false,
+      "bases:새 베이스 생성하기": false
+    }
+  },
+  "active": "64ff93db5b6b792b",
+  "lastOpenFiles": [
+    "node_modules/next/dist/docs/01-app/01-getting-started/02-project-structure.md",
+    "node_modules/next/dist/docs/01-app/02-guides/backend-for-frontend.md",
+    "docs/stabilization-day3.md",
+    "lib/logger.ts",
+    "node_modules/next/dist/docs/02-pages/02-guides/multi-zones.md",
+    "docs/app/api-reference/file-conventions/route-groups.md",
+    "docs/app/api-reference/file-conventions",
+    "node_modules/next/dist/docs/01-app/04-glossary.md",
+    "docs/app/api-reference/functions/revalidateTag.md",
+    "docs/app/api-reference/functions",
+    "docs/app/api-reference",
+    "docs/pages/api-reference/functions/get-static-paths.md",
+    "docs/pages/api-reference/functions",
+    "docs/pages/api-reference",
+    "docs/pages",
+    "node_modules/next/dist/docs/01-app/02-guides/migrating/app-router-migration.md",
+    "docs/app/getting-started/server-and-client-components.md",
+    "docs/app/getting-started",
+    "docs/app",
+    "docs",
+    "node_modules/next/dist/docs/01-app/02-guides/upgrading/version-16.md"
+  ]
+}

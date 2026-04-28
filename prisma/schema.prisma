@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
@@ -37,6 +38,8 @@ model Session {
 model User {
   id            String    @id @default(cuid())
   name          String?
+  username      String?   @unique
+  bio           String?
   email         String?   @unique
   emailVerified DateTime?
   image         String?
@@ -44,6 +47,8 @@ model User {
   sessions      Session[]
   comments      Comment[]
   authenticators Authenticator[]
+  reactions     Reaction[]
+  notifications Notification[]
 }
 
 model Authenticator {
@@ -76,9 +81,49 @@ model Comment {
   parentId  String?
   author    String
   content   String
+  timestamp Int?
+  imageUrls String?
+  tags      String?
   upvotes   Int      @default(0)
   createdAt DateTime @default(now())
+  isToxic   Boolean  @default(false)
   
   userId    String?
   user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  reactions Reaction[]
+
+  parent    Comment?  @relation("CommentToComment", fields: [parentId], references: [id], onDelete: SetNull)
+  children  Comment[] @relation("CommentToComment")
+
+  @@index([threadId])
+  @@index([threadId, createdAt])
+  @@index([userId])
+}
+
+model Reaction {
+  id        String   @id @default(uuid())
+  emoji     String
+  commentId String
+  userId    String
+  createdAt DateTime @default(now())
+
+  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([commentId, userId, emoji])
+  @@index([commentId])
+  @@index([userId])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  type      String
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
 }

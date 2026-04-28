@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Clock, MessageSquare, Link as LinkIcon, User } from "lucide-react";
 import prisma from "../../lib/prisma";
+import ProfileEditForm from "@/components/ProfileEditForm";
 
 export default async function ProfilePage() {
   const session = await auth();
@@ -14,30 +15,41 @@ export default async function ProfilePage() {
 
   const userId = (session.user as any).id;
 
+  const dbUser = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (!dbUser) {
+    redirect("/");
+  }
+
   const comments = await prisma.comment.findMany({
     where: { userId },
     orderBy: { createdAt: "desc" },
   });
 
+  const displayImage = dbUser.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${dbUser.id}`;
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
-      <div className="bg-white rounded-2xl shadow-sm border border-zinc-100 p-8 mb-8 text-center sm:text-left flex flex-col sm:flex-row items-center gap-6">
-        {session.user.image ? (
-          <img
-            src={session.user.image}
-            alt={session.user.name || "User Avatar"}
-            width={96}
-            height={96}
-            className="rounded-full border-4 border-white shadow-md"
-          />
-        ) : (
-          <div className="h-24 w-24 rounded-full bg-gradient-to-tr from-blue-100 to-blue-50 flex items-center justify-center border-4 border-white shadow-md">
-            <User className="h-10 w-10 text-blue-600" />
-          </div>
-        )}
-        <div>
-          <h1 className="text-2xl font-bold text-zinc-900 mb-1">{session.user.name || "Anonymous User"}</h1>
-          <p className="text-zinc-500">{session.user.email}</p>
+      <div className="bg-white rounded-2xl shadow-sm border border-zinc-100 p-8 mb-8 text-center sm:text-left flex flex-col sm:flex-row items-center sm:items-start gap-6">
+        <img
+          src={displayImage}
+          alt={dbUser.name || "User Avatar"}
+          width={96}
+          height={96}
+          className="rounded-full border-4 border-white shadow-md shrink-0 w-24 h-24 object-cover"
+        />
+        <div className="flex-1 w-full">
+          <h1 className="text-2xl font-bold text-zinc-900 mb-1">{dbUser.name || "Anonymous User"}</h1>
+          <p className="text-zinc-500 mb-2">
+            {dbUser.username ? `@${dbUser.username}` : dbUser.email}
+          </p>
+          {dbUser.bio && (
+            <p className="text-zinc-700 mt-2 max-w-xl">{dbUser.bio}</p>
+          )}
+          
+          <ProfileEditForm user={dbUser} />
         </div>
       </div>
 

@@ -79,6 +79,7 @@ export async function POST(req: NextRequest) {
 
     const threadId = getThreadId(url);
 
+
     const newComment = await prisma.comment.create({
       data: {
         threadId,
@@ -89,7 +90,41 @@ export async function POST(req: NextRequest) {
       }
     });
 
+    // Handle Reply Notification
+    if (parentId) {
+      const parentComment = await prisma.comment.findUnique({ where: { id: parentId } });
+      if (parentComment && parentComment.userId && parentComment.userId !== userId) {
+        await prisma.notification.create({
+          data: {
+            userId: parentComment.userId,
+            type: 'reply',
+            message: `${author}님이 회원님의 댓글에 답글을 남겼습니다: "${content.substring(0, 30)}..."`
+          }
+        });
+      }
+    }
+
+    // Handle Mention Notifications
+    const mentionRegex = /@([a-zA-Z0-9_]+)/g;
+    const mentions = Array.from(new Set(Array.from(content.matchAll(mentionRegex), (m: any) => m[1])));
+    if (mentions.length > 0) {
+      const mentionedUsers = await prisma.user.findMany({
+        where: { username: { in: mentions } }
+      });
+      const notificationsData = mentionedUsers
+        .filter(u => u.id !== userId)
+        .map(u => ({
+          userId: u.id,
+          type: 'mention',
+          message: `${author}님이 댓글에서 회원님을 멘션했습니다: "${content.substring(0, 30)}..."`
+        }));
+      if (notificationsData.length > 0) {
+        await prisma.notification.createMany({ data: notificationsData });
+      }
+    }
+
     return NextResponse.json({ success: true, data: { ...newComment, children: [] } }, { status: 201 });
+
   } catch (error) {
     return NextResponse.json({ error: '잘못된 요청입니다.' }, { status: 400 });
   }
@@ -109,6 +144,7 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: '댓글 ID가 필요합니다.' }, { status: 400 });
     }
 
+
     const existingComment = await prisma.comment.findUnique({ where: { id } });
     if (!existingComment) {
       return NextResponse.json({ error: '존재하지 않는 댓글입니다.' }, { status: 404 });
@@ -119,7 +155,19 @@ export async function PATCH(req: NextRequest) {
       data: { upvotes: { increment: 1 } },
     });
 
+    // Create Upvote Notification
+    if (existingComment.userId && existingComment.userId !== (session.user as any).id) {
+      await prisma.notification.create({
+        data: {
+          userId: existingComment.userId,
+          type: 'like',
+          message: `누군가 회원님의 댓글을 좋아합니다: "${existingComment.content.substring(0, 30)}..."`
+        }
+      });
+    }
+
     return NextResponse.json({ success: true, data: updatedComment }, { status: 200 });
+
   } catch (error) {
     return NextResponse.json({ error: '잘못된 요청입니다.' }, { status: 400 });
   }

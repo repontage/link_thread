@@ -1,10 +1,14 @@
 import React from 'react';
 import { Loader2, Link as LinkIcon } from 'lucide-react';
+import Image from 'next/image';
 
-interface PreviewData {
+export interface PreviewData {
   title?: string;
   description?: string;
   image?: string;
+  images?: string[];
+  siteName?: string;
+  favicon?: string;
   url: string;
   error?: string;
 }
@@ -30,10 +34,12 @@ const PreviewCard = React.memo(({ preview, isLoading }: { preview: PreviewData |
       >
         {preview.image && !preview.error ? (
           <div className="sm:w-48 h-48 sm:h-auto bg-zinc-100 shrink-0 border-b sm:border-b-0 sm:border-r border-zinc-200 overflow-hidden relative">
-            <img 
+            <Image 
               src={preview.image} 
               alt={preview.title || 'Preview image'} 
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              fill
+              unoptimized
+              className="object-cover group-hover:scale-105 transition-transform duration-300"
               onError={(e) => {
                 (e.target as HTMLImageElement).style.display = 'none';
               }}
@@ -64,4 +70,3 @@ const PreviewCard = React.memo(({ preview, isLoading }: { preview: PreviewData |
 
 PreviewCard.displayName = 'PreviewCard';
 export default PreviewCard;
-export type { PreviewData };
