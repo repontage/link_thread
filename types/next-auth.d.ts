@@ -6,6 +6,8 @@ declare module "next-auth" {
       id: string
       username?: string
       bio?: string
+      role?: string
+      isBanned?: boolean
     } & DefaultSession["user"]
   }
 }

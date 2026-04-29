@@ -10,10 +10,10 @@ Vercel과 같은 Serverless 호스팅 환경에서는 파일 시스템이 휘발
 3. **Turso (Free)**: SQLite 호환 (LibSQL). 코드 변경 없이 URL만 바꾸면 되어 가장 추천.
 
 ## 3. Deployment Steps
-1. **Turso DB 생성**: `turso db create link-thread-db`
+1. **Turso DB 생성**: `turso db create voidsay-db`
 2. **`.env` 업데이트**: 
    ```env
-   DATABASE_URL="libsql://link-thread-db-your-id.turso.io?authToken=YOUR_TOKEN"
+   DATABASE_URL="libsql://voidsay-db-your-id.turso.io?authToken=YOUR_TOKEN"
    ```
 3. **Prisma Provider 변경** (`schema.prisma`):
    ```prisma

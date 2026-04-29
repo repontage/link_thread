@@ -13,7 +13,7 @@ export async function GET(request: Request) {
     const validUrl = new URL(url); // URL 파싱 테스트
     const response = await fetch(validUrl.toString(), {
       headers: {
-        'User-Agent': 'LinkThreadBot/1.0',
+        'User-Agent': 'VoidSayBot/1.0',
       },
       // Some sites might be slow, so add a reasonable timeout or just let fetch handle it.
     });

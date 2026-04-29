@@ -9,18 +9,18 @@ datasource db {
 }
 
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?  
-  access_token       String?  
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?  
-  session_state      String?
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -36,19 +36,22 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  username      String?   @unique
-  bio           String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-  comments      Comment[]
+  id             String          @id @default(cuid())
+  name           String?
+  username       String?         @unique
+  bio            String?
+  email          String?         @unique
+  emailVerified  DateTime?
+  image          String?
+  role           String          @default("USER")
+  isBanned       Boolean         @default(false)
+  accounts       Account[]
+  sessions       Session[]
+  comments       Comment[]
   authenticators Authenticator[]
-  reactions     Reaction[]
-  notifications Notification[]
+  reactions      Reaction[]
+  notifications  Notification[]
+  Report         Report[]
 }
 
 model Authenticator {
@@ -87,13 +90,14 @@ model Comment {
   upvotes   Int      @default(0)
   createdAt DateTime @default(now())
   isToxic   Boolean  @default(false)
-  
+
   userId    String?
-  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user      User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
   reactions Reaction[]
 
-  parent    Comment?  @relation("CommentToComment", fields: [parentId], references: [id], onDelete: SetNull)
-  children  Comment[] @relation("CommentToComment")
+  parent   Comment?  @relation("CommentToComment", fields: [parentId], references: [id], onDelete: SetNull)
+  children Comment[] @relation("CommentToComment")
+  Report   Report[]
 
   @@index([threadId])
   @@index([threadId, createdAt])
@@ -107,8 +111,8 @@ model Reaction {
   userId    String
   createdAt DateTime @default(now())
 
-  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([commentId, userId, emoji])
   @@index([commentId])
@@ -123,7 +127,23 @@ model Notification {
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
 
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, isRead])
+}
+
+model Report {
+  id         String   @id @default(uuid())
+  commentId  String
+  reporterId String
+  reason     String
+  status     String   @default("PENDING") // PENDING, RESOLVED, DISMISSED
+  createdAt  DateTime @default(now())
+
+  comment  Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  reporter User    @relation(fields: [reporterId], references: [id], onDelete: Cascade)
+
+  @@index([commentId])
+  @@index([reporterId])
+  @@index([status])
 }

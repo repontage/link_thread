@@ -1,4 +1,4 @@
-## LinkThread 집중 안정화 3일차 작업 완료 보고
+## VoidSay 집중 안정화 3일차 작업 완료 보고
 
 1. **DB 인덱싱 최적화**
    - `Comment` 모델에 대해 `threadId`, `createdAt`, `userId` 기반의 다중/단일 인덱스를 추가 (`schema.prisma`).

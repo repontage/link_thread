@@ -84,7 +84,7 @@ Before considering a task complete, an agent should:
 3. **Set up environment variables**
    Create a `.env` file in the root directory and add your configuration:
    ```env
-   DATABASE_URL="postgresql://johndoe:randompassword@localhost:5432/linkthread?schema=public"
+   DATABASE_URL="postgresql://johndoe:randompassword@localhost:5432/voidsay?schema=public"
    NEXTAUTH_SECRET="your-secret-key"
    NEXTAUTH_URL="http://localhost:3000"
    ```

@@ -1,4 +1,4 @@
-# LinkThread - Universal Link Commenting Platform
+# VoidSay - Universal Link Commenting Platform
 
 ## Phase 1: Core Platform (Completed / Stabilized)
 - Basic link submission and metadata extraction.

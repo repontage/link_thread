@@ -23,6 +23,28 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   session: {
     strategy: "jwt",
   },
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id
+        // user object from db
+        const dbUser = await prisma.user.findUnique({ where: { id: user.id } })
+        if (dbUser) {
+          token.role = dbUser.role
+          token.isBanned = dbUser.isBanned
+        }
+      }
+      return token
+    },
+    async session({ session, token }) {
+      if (token && session.user) {
+        session.user.id = token.id as string
+        session.user.role = token.role as string
+        session.user.isBanned = token.isBanned as boolean
+      }
+      return session
+    }
+  },
   experimental: {
     enableWebAuthn: true,
   },

@@ -1,10 +1,10 @@
-# LinkThread Handover Summary (2026-04-27)
+# VoidSay Handover Summary (2026-04-27)
 
 이 문서는 기존 오케스트레이터 세션의 컨텍스트 용량이 85%를 초과함에 따라, 세션 초기화(`/reset`) 후 새로운 세션이 기존의 흐름을 잃지 않고 바로 이어받을 수 있도록 작성된 인수인계(Handover) 문서입니다. 새로운 세션은 시작 시 이 문서를 우선적으로 읽으세요.
 
 ## 1. 프로젝트 개요
-- **이름**: Universal Link Commenting Platform (LinkThread)
-- **작업 디렉토리**: `/Users/seonghoonjung/workspace/link-thread-project`
+- **이름**: Universal Link Commenting Platform (VoidSay)
+- **작업 디렉토리**: `/Users/seonghoonjung/workspace/voidsay-project`
 - **기술 스택**: Next.js 16 (App Router, Turbopack), TypeScript, Prisma (SQLite), NextAuth v5 beta, Tailwind CSS, Vitest.
 - **인프라 원칙**: 100% 무료 (Vercel Free Tier, Local/LibSQL SQLite).
 
