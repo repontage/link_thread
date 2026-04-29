@@ -15,6 +15,10 @@ export default async function ProfilePage() {
 
   const userId = (session.user as any).id;
 
+  if (!userId) {
+    redirect("/");
+  }
+
   const dbUser = await prisma.user.findUnique({
     where: { id: userId },
   });

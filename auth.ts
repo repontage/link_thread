@@ -3,9 +3,9 @@ import Passkey from "next-auth/providers/passkey"
 import Google from "next-auth/providers/google"
 import GitHub from "next-auth/providers/github"
 import { PrismaAdapter } from "@auth/prisma-adapter"
-import { PrismaClient } from "@prisma/client"
+import prisma from "./lib/prisma"
 
-const prisma = new PrismaClient()
+
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
