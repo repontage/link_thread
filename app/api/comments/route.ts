@@ -87,6 +87,22 @@ export async function POST(req: NextRequest) {
     const threadId = getThreadId(url);
 
 
+    let validImageUrls: string[] = [];
+    if (body.imageUrls && Array.isArray(body.imageUrls)) {
+      validImageUrls = body.imageUrls.filter((imgUrl: string) => {
+        try {
+          const parsedUrl = new URL(imgUrl);
+          // Allow only http and https schemas to prevent XSS
+          if (parsedUrl.protocol === 'http:' || parsedUrl.protocol === 'https:') {
+            return true;
+          }
+          return false;
+        } catch (e) {
+          return false;
+        }
+      });
+    }
+
     const newComment = await prisma.comment.create({
       data: {
         threadId,
@@ -95,7 +111,7 @@ export async function POST(req: NextRequest) {
         content,
         userId: userId,
         timestamp: body.timestamp || null,
-        imageUrls: body.imageUrls && Array.isArray(body.imageUrls) ? body.imageUrls.join(',') : null,
+        imageUrls: validImageUrls.length > 0 ? validImageUrls.join(',') : null,
       }
     });
 
