@@ -1,7 +1,13 @@
 import { NextResponse } from 'next/server';
 import * as cheerio from 'cheerio';
+import { rateLimit } from '@/lib/rate-limit';
 
 export async function GET(request: Request) {
+  const ip = request.headers.get('x-forwarded-for') || '127.0.0.1';
+  if (!rateLimit(ip, 20, 60000)) { // 20 requests per minute
+    return NextResponse.json({ error: 'Too Many Requests' }, { status: 429 });
+  }
+
   const { searchParams } = new URL(request.url);
   const url = searchParams.get('url');
 

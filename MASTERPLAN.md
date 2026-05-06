@@ -50,7 +50,7 @@
 **🟠 Day 3-4: High Vulnerability Fixes (SSRF, XSS, Abuse)**
 - [x] **Block SSRF in Preview API**: `app/api/preview/route.ts` - Implement a strict URL parser to block private/internal IP ranges (127.0.0.1, 169.254.169.254, 10.x, 192.168.x).
 - [x] **Validate Image URLs**: `app/api/comments/route.ts` - Validate `imageUrls` array. Block `data:` and `javascript:` schemas to prevent XSS and malicious payloads.
-- [ ] **Implement Rate Limiting**: Apply API rate limiting (using an in-memory Map or Vercel KV) to `/api/preview`, `/api/comments` (POST), and auth endpoints to prevent DDoS and spam.
+- [x] **Implement Rate Limiting**: Apply API rate limiting (using an in-memory Map or Vercel KV) to `/api/preview`, `/api/comments` (POST), and auth endpoints to prevent DDoS and spam.
 
 **🟡 Day 5-6: Medium Vulnerability & Architecture Refactoring**
 - [ ] **Optimize NextAuth DB Strategy**: `auth.ts` - Fix the `jwt` callback. Stop making a DB call on every session validation. Cache `role` and `isBanned` properly in the JWT token upon initial login.
@@ -73,7 +73,7 @@
 **🟠 Day 3-4: High Vulnerability Fixes (SSRF, XSS, Abuse)**
 - [x] **Block SSRF in Preview API**: `app/api/preview/route.ts` - Implement a strict URL parser to block private/internal IP ranges (127.0.0.1, 169.254.169.254, 10.x, 192.168.x).
 - [x] **Validate Image URLs**: `app/api/comments/route.ts` - Validate `imageUrls` array. Block `data:` and `javascript:` schemas to prevent XSS and malicious payloads.
-- [ ] **Implement Rate Limiting**: Apply API rate limiting (using an in-memory Map or Vercel KV) to `/api/preview`, `/api/comments` (POST), and auth endpoints to prevent DDoS and spam.
+- [x] **Implement Rate Limiting**: Apply API rate limiting (using an in-memory Map or Vercel KV) to `/api/preview`, `/api/comments` (POST), and auth endpoints to prevent DDoS and spam.
 
 **🟡 Day 5-6: Medium Vulnerability & Architecture Refactoring**
 - [ ] **Optimize NextAuth DB Strategy**: `auth.ts` - Fix the `jwt` callback. Stop making a DB call on every session validation. Cache `role` and `isBanned` properly in the JWT token upon initial login.

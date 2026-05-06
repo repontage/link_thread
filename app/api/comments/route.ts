@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getThreadId, normalizeUrl } from '../../../lib/url-parser';
 import prisma from '../../../lib/prisma';
 import { auth } from '@/auth';
+import { rateLimit } from '@/lib/rate-limit';
 
 // 트리를 구성하는 헬퍼 함수
 const buildCommentTree = (comments: any[]): any[] => {
@@ -69,6 +70,11 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const ip = req.headers.get('x-forwarded-for') || '127.0.0.1';
+  if (!rateLimit(ip, 10, 60000)) { // 10 comments per minute
+    return NextResponse.json({ error: 'Too Many Requests' }, { status: 429 });
+  }
+
   try {
     const session = await auth();
     if (!session || !session.user) {
@@ -172,6 +178,11 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
+  const ip = req.headers.get('x-forwarded-for') || '127.0.0.1';
+  if (!rateLimit(ip, 30, 60000)) { // 30 reactions/upvotes per minute
+    return NextResponse.json({ error: 'Too Many Requests' }, { status: 429 });
+  }
+
   try {
     const session = await auth();
     if (!session || !session.user) {
