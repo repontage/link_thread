@@ -47,6 +47,12 @@ export async function GET(req: NextRequest) {
     const rawComments = await prisma.comment.findMany({
       where: { threadId },
       orderBy: { createdAt: 'asc' },
+      include: { 
+        reactions: true,
+        user: {
+          include: { badges: true }
+        }
+      }
     });
 
     const comments = buildCommentTree(rawComments);
@@ -69,12 +75,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: '인증되지 않은 사용자입니다.' }, { status: 401 });
     }
     const userId = (session.user as any).id;
+    const authorName = session.user.name || 'Anonymous';
 
     const body = await req.json();
-    const { url, parentId, author, content } = body;
+    const { url, parentId, content } = body;
 
-    if (!url || !author || !content) {
-      return NextResponse.json({ error: '필수 항목(url, author, content)이 누락되었습니다.' }, { status: 400 });
+    if (!url || !content) {
+      return NextResponse.json({ error: '필수 항목(url, content)이 누락되었습니다.' }, { status: 400 });
     }
 
     const threadId = getThreadId(url);
@@ -84,11 +91,29 @@ export async function POST(req: NextRequest) {
       data: {
         threadId,
         parentId: parentId || null,
-        author,
+        author: authorName,
         content,
         userId: userId,
+        timestamp: body.timestamp || null,
+        imageUrls: body.imageUrls && Array.isArray(body.imageUrls) ? body.imageUrls.join(',') : null,
       }
     });
+
+    // Handle Badges
+    const userCommentsCount = await prisma.comment.count({ where: { userId } });
+    if (userCommentsCount === 1) {
+      await prisma.userBadge.upsert({
+        where: { userId_badgeType: { userId, badgeType: 'First Comment' } },
+        update: {},
+        create: { userId, badgeType: 'First Comment' }
+      });
+    } else if (userCommentsCount === 10) {
+      await prisma.userBadge.upsert({
+        where: { userId_badgeType: { userId, badgeType: '10 Comments' } },
+        update: {},
+        create: { userId, badgeType: '10 Comments' }
+      });
+    }
 
     // Handle Reply Notification
     if (parentId) {
@@ -98,7 +123,7 @@ export async function POST(req: NextRequest) {
           data: {
             userId: parentComment.userId,
             type: 'reply',
-            message: `${author}님이 회원님의 댓글에 답글을 남겼습니다: "${content.substring(0, 30)}..."`
+            message: `${authorName}님이 회원님의 댓글에 답글을 남겼습니다: "${content.substring(0, 30)}..."`
           }
         });
       }
@@ -116,7 +141,7 @@ export async function POST(req: NextRequest) {
         .map(u => ({
           userId: u.id,
           type: 'mention',
-          message: `${author}님이 댓글에서 회원님을 멘션했습니다: "${content.substring(0, 30)}..."`
+          message: `${authorName}님이 댓글에서 회원님을 멘션했습니다: "${content.substring(0, 30)}..."`
         }));
       if (notificationsData.length > 0) {
         await prisma.notification.createMany({ data: notificationsData });
@@ -138,30 +163,64 @@ export async function PATCH(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { id } = body;
+    const { id, emoji } = body;
 
     if (!id) {
       return NextResponse.json({ error: '댓글 ID가 필요합니다.' }, { status: 400 });
     }
-
+    
+    const userId = (session.user as any).id;
+    const authorName = session.user.name || 'Anonymous';
 
     const existingComment = await prisma.comment.findUnique({ where: { id } });
     if (!existingComment) {
       return NextResponse.json({ error: '존재하지 않는 댓글입니다.' }, { status: 404 });
     }
 
+    if (emoji) {
+      // Handle Emoji Reaction
+      const existingReaction = await prisma.reaction.findUnique({
+        where: { commentId_userId_emoji: { commentId: id, userId, emoji } }
+      });
+
+      if (existingReaction) {
+        // Toggle off
+        await prisma.reaction.delete({
+          where: { id: existingReaction.id }
+        });
+      } else {
+        await prisma.reaction.create({
+          data: { commentId: id, userId, emoji }
+        });
+        
+        // Notify
+        if (existingComment.userId && existingComment.userId !== userId) {
+          await prisma.notification.create({
+            data: {
+              userId: existingComment.userId,
+              type: 'reaction',
+              message: `${authorName}님이 회원님의 댓글에 ${emoji} 반응을 남겼습니다.`
+            }
+          });
+        }
+      }
+
+      const updatedReactions = await prisma.reaction.findMany({ where: { commentId: id } });
+      return NextResponse.json({ success: true, data: { ...existingComment, reactions: updatedReactions } }, { status: 200 });
+    }
+
+    // Legacy upvote fallback
     const updatedComment = await prisma.comment.update({
       where: { id },
       data: { upvotes: { increment: 1 } },
     });
 
-    // Create Upvote Notification
-    if (existingComment.userId && existingComment.userId !== (session.user as any).id) {
+    if (existingComment.userId && existingComment.userId !== userId) {
       await prisma.notification.create({
         data: {
           userId: existingComment.userId,
           type: 'like',
-          message: `누군가 회원님의 댓글을 좋아합니다: "${existingComment.content.substring(0, 30)}..."`
+          message: `누군가 회원님의 댓글을 좋아합니다.`
         }
       });
     }

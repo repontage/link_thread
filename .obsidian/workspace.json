@@ -4,31 +4,24 @@
     "type": "split",
     "children": [
       {
-        "id": "b90ac2b16f59b1bf",
+        "id": "f6bdf44f7fef2fcb",
         "type": "tabs",
         "children": [
-          {
-            "id": "1561f09e09bd5c59",
-            "type": "leaf",
-            "state": {
-              "type": "empty",
-              "state": {},
-              "icon": "lucide-file",
-              "title": "새 탭"
-            }
-          },
           {
             "id": "e2ad6179daf0bf82",
             "type": "leaf",
             "state": {
-              "type": "graph",
-              "state": {},
-              "icon": "lucide-git-fork",
-              "title": "그래프 뷰"
+              "type": "markdown",
+              "state": {
+                "file": "node_modules/next/dist/docs/01-app/03-api-reference/02-components/image.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "image"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -164,12 +157,13 @@
             "state": {
               "type": "outline",
               "state": {
+                "file": "node_modules/next/dist/docs/01-app/03-api-reference/02-components/image.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "개요"
+              "title": "image 의 개요"
             }
           }
         ],
@@ -190,8 +184,11 @@
       "bases:새 베이스 생성하기": false
     }
   },
-  "active": "64ff93db5b6b792b",
+  "active": "e2ad6179daf0bf82",
   "lastOpenFiles": [
+    "examples/private_key_jwt.diff.md",
+    "examples",
+    "docs/app/getting-started/caching.md",
     "node_modules/next/dist/docs/01-app/01-getting-started/02-project-structure.md",
     "node_modules/next/dist/docs/01-app/02-guides/backend-for-frontend.md",
     "docs/stabilization-day3.md",
@@ -211,7 +208,6 @@
     "docs/app/getting-started/server-and-client-components.md",
     "docs/app/getting-started",
     "docs/app",
-    "docs",
     "node_modules/next/dist/docs/01-app/02-guides/upgrading/version-16.md"
   ]
 }

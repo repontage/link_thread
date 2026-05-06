@@ -10,6 +10,9 @@ export default async function UserProfilePage({ params }: { params: { id: string
   // Fetch user data
   const user = await prisma.user.findUnique({
     where: { id },
+    include: {
+      badges: true,
+    },
   });
 
   if (!user) {
@@ -39,6 +42,17 @@ export default async function UserProfilePage({ params }: { params: { id: string
         <div>
           <h1 className="text-2xl font-bold text-zinc-900">{user.name || 'Anonymous User'}</h1>
           <p className="text-zinc-500 mt-1">{user.email}</p>
+          
+          {user.badges && user.badges.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-3">
+              {user.badges.map(badge => (
+                <span key={badge.id} className="px-2.5 py-1 bg-yellow-100 text-yellow-800 text-xs font-bold rounded-full border border-yellow-200">
+                  {badge.badgeType}
+                </span>
+              ))}
+            </div>
+          )}
+
           <div className="flex gap-4 mt-3 text-sm text-zinc-600">
             <div className="flex flex-col">
               <span className="font-semibold text-zinc-900">{comments.length}</span>

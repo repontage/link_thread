@@ -11,6 +11,7 @@ import YouTubePlayer, { YouTubePlayerRef } from './YouTubePlayer';
 import InstagramFeedCard from './InstagramFeedCard';
 import TwitterEmbedCard from './TwitterEmbedCard';
 import TrendingBoard from './TrendingBoard';
+import SponsorUI from './SponsorUI';
 
 // 동적 로딩 적용 (필요할 때만 모듈 로드)
 const PreviewCard = dynamic(() => import('./PreviewCard'), {
@@ -338,6 +339,10 @@ export default function ThreadUI() {
               return <PreviewCard preview={previewData} isLoading={isPreviewLoading} />;
             })()}
 
+            <div className="p-6">
+              <SponsorUI />
+            </div>
+
             <div className="p-6 border-b border-zinc-100 bg-zinc-50 flex items-center gap-3">
               <MessageSquare className="h-5 w-5 text-blue-600" />
               <h2 className="text-lg font-semibold text-zinc-800">Discussions</h2>
@@ -362,7 +367,7 @@ export default function ThreadUI() {
               ) : (
                 <form onSubmit={handleNewCommentSubmit} aria-label="새 댓글 작성 폼">
                   <h3 className="text-sm font-semibold text-zinc-800 mb-3">Leave a comment as {session.user?.name || 'User'}</h3>
-                  <div className="mb-3">
+                  <div className="mb-3 relative">
                     <textarea
                       aria-label="새 댓글 내용"
                       placeholder="What are your thoughts?"
@@ -370,8 +375,11 @@ export default function ThreadUI() {
                       onChange={(e) => setNewContent(e.target.value)}
                       required
                       rows={3}
-                      className="w-full p-3 border border-zinc-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-shadow"
+                      className="w-full p-3 pb-8 border border-zinc-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-shadow"
                     />
+                    <div className="absolute bottom-2 right-3 text-[10px] text-zinc-400 font-medium">
+                      Markdown Supported (**bold**, *italic*, `code`, &gt; quote)
+                    </div>
                   </div>
                   <div className="mb-3">
                     <input

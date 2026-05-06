@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import { useSession, signIn } from 'next-auth/react';
 import { Reply, Clock, User, ThumbsUp, Trash, Heart } from 'lucide-react';
 import ImageCarousel from './ImageCarousel';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import Link from 'next/link';
 
 export interface ReactionType {
@@ -127,63 +129,12 @@ const CommentItem = React.memo(({ comment, url, onReplySuccess, onTimestampClick
     }
   };
 
-  const renderContent = (content: string) => {
-    // 멘션 파싱 정규식
-    const mentionRegex = /@([a-zA-Z0-9_]+)/g;
-    const timestampRegex = /\b(?:(\d{1,2}):)?(\d{1,2}):(\d{2})\b/g;
-    
-    // 단순화를 위해 먼저 멘션부터 처리, 그 다음 타임스탬프 처리하는 방식으로 개선
-    const parts = [];
-    let lastIndex = 0;
-    
-    // 타임스탬프와 멘션을 한 번에 처리하기 위한 조합된 정규식
-    const combinedRegex = /(@[a-zA-Z0-9_]+)|\b(?:(\d{1,2}):)?(\d{1,2}):(\d{2})\b/g;
-    
-    let match;
-    while ((match = combinedRegex.exec(content)) !== null) {
-      if (match.index > lastIndex) {
-        parts.push(content.substring(lastIndex, match.index));
-      }
-      
-      if (match[1]) {
-        // Mention match (@username)
-        const username = match[1].substring(1);
-        parts.push(
-          <Link key={`mention-${match.index}`} href={`/users?username=${username}`} className="text-blue-500 font-medium hover:underline">
-            {match[1]}
-          </Link>
-        );
-      } else {
-        // Timestamp match
-        const timestamp = match[0];
-        const hrs = match[2] ? parseInt(match[2], 10) : 0;
-        const mins = parseInt(match[3], 10);
-        const secs = parseInt(match[4], 10);
-        const totalSeconds = hrs * 3600 + mins * 60 + secs;
-
-        parts.push(
-          <span
-            key={`time-${match.index}`}
-            className="text-blue-500 hover:underline cursor-pointer font-medium"
-            onClick={(e) => {
-              e.stopPropagation();
-              onTimestampClick?.(totalSeconds);
-            }}
-          >
-            {timestamp}
-          </span>
-        );
-      }
-      lastIndex = combinedRegex.lastIndex;
-    }
-    
-    if (lastIndex < content.length) {
-      parts.push(content.substring(lastIndex));
-    }
-
-    return parts.length > 0 ? parts : content;
+  const processContentForMarkdown = (content: string) => {
+    // 멘션과 타임스탬프를 마크다운 링크로 변환
+    let processed = content.replace(/@([a-zA-Z0-9_]+)/g, '[@$1](/users?username=$1)');
+    processed = processed.replace(/\b(?:(\d{1,2}):)?(\d{1,2}):(\d{2})\b/g, (match) => `[${match}](#timestamp-${match})`);
+    return processed;
   };
-
 
   const formatTimestamp = (seconds: number) => {
     const m = Math.floor(seconds / 60);
@@ -214,13 +165,25 @@ const CommentItem = React.memo(({ comment, url, onReplySuccess, onTimestampClick
           </div>
         )}
         <div>
-          {comment.userId ? (
-            <Link href={`/users/${comment.userId}`}>
-              <h4 className="text-sm font-semibold text-zinc-900 hover:text-blue-600 hover:underline">{comment.author}</h4>
-            </Link>
-          ) : (
-            <h4 className="text-sm font-semibold text-zinc-900">{comment.author}</h4>
-          )}
+          <div className="flex items-center gap-2">
+            {comment.userId ? (
+              <Link href={`/users/${comment.userId}`}>
+                <h4 className="text-sm font-semibold text-zinc-900 hover:text-blue-600 hover:underline">{comment.author}</h4>
+              </Link>
+            ) : (
+              <h4 className="text-sm font-semibold text-zinc-900">{comment.author}</h4>
+            )}
+            {/* 배지 표시 */}
+            {(comment as any).user?.badges?.length > 0 && (
+              <div className="flex gap-1">
+                {(comment as any).user.badges.slice(0, 2).map((badge: any) => (
+                  <span key={badge.id} className="px-1.5 py-0.5 bg-yellow-100 text-yellow-800 text-[10px] font-bold rounded-full border border-yellow-200">
+                    {badge.badgeType}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
           <div className="flex items-center gap-1 text-xs text-zinc-500 mt-0.5">
             <Clock className="h-3 w-3" />
             <span>{new Date(comment.createdAt).toLocaleString()}</span>
@@ -245,9 +208,47 @@ const CommentItem = React.memo(({ comment, url, onReplySuccess, onTimestampClick
         </div>
       ) : (
         <>
-          <p className="text-zinc-700 leading-relaxed text-sm mb-4 whitespace-pre-wrap">
-            {renderContent(comment.content)}
-          </p>
+          <div className="text-zinc-700 leading-relaxed text-sm mb-4 prose prose-sm max-w-none break-words">
+            <ReactMarkdown 
+              remarkPlugins={[remarkGfm]}
+              components={{
+                a: ({ node, href, children, ...props }: any) => {
+                  if (href?.startsWith('#timestamp-')) {
+                    const timestamp = href.replace('#timestamp-', '');
+                    const match = /\b(?:(\d{1,2}):)?(\d{1,2}):(\d{2})\b/.exec(timestamp);
+                    if (match) {
+                      const hrs = match[1] ? parseInt(match[1], 10) : 0;
+                      const mins = parseInt(match[2], 10);
+                      const secs = parseInt(match[3], 10);
+                      const totalSeconds = hrs * 3600 + mins * 60 + secs;
+                      return (
+                        <span
+                          className="text-blue-500 hover:underline cursor-pointer font-medium"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onTimestampClick?.(totalSeconds);
+                          }}
+                        >
+                          {children}
+                        </span>
+                      );
+                    }
+                  }
+                  if (href?.startsWith('/users?username=')) {
+                    return (
+                      <Link href={href} className="text-blue-500 font-medium hover:underline" onClick={(e) => e.stopPropagation()}>
+                        {children}
+                      </Link>
+                    );
+                  }
+                  return <a href={href} className="text-blue-500 hover:underline" target="_blank" rel="noopener noreferrer" {...props}>{children}</a>;
+                },
+                p: ({node, ...props}: any) => <p className="mb-2 last:mb-0" {...props} />
+              }}
+            >
+              {processContentForMarkdown(comment.content)}
+            </ReactMarkdown>
+          </div>
           {comment.imageUrls && comment.imageUrls.length > 0 && (
             <div className="mb-4 relative">
               <ImageCarousel 
@@ -328,7 +329,7 @@ const CommentItem = React.memo(({ comment, url, onReplySuccess, onTimestampClick
             </div>
           ) : (
             <>
-              <div className="mb-3">
+              <div className="mb-3 relative">
                 <textarea
                   aria-label="답글 내용"
                   placeholder="Your reply..."
@@ -336,8 +337,11 @@ const CommentItem = React.memo(({ comment, url, onReplySuccess, onTimestampClick
                   onChange={(e) => setReplyContent(e.target.value)}
                   required
                   rows={2}
-                  className="w-full p-2 border border-zinc-200 rounded-md text-sm outline-none focus:border-blue-500"
+                  className="w-full p-2 pb-6 border border-zinc-200 rounded-md text-sm outline-none focus:border-blue-500"
                 />
+                <div className="absolute bottom-1 right-2 text-[10px] text-zinc-400 font-medium pointer-events-none">
+                  Markdown Supported
+                </div>
               </div>
               <div className="flex justify-end gap-2">
                 <button type="button" onClick={() => setIsReplying(false)} aria-label="취소" className="px-3 py-1.5 text-sm text-zinc-500 hover:text-zinc-700">Cancel</button>

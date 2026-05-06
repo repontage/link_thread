@@ -27,8 +27,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script 
+          async 
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8285887641787672" 
+          crossOrigin="anonymous"
+        ></script>
+      </head>
+      <body suppressHydrationWarning>
         <AuthProvider>
           <nav className="border-b bg-surface sticky top-0 z-50">
             <div className="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">

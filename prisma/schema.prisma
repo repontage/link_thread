@@ -52,6 +52,7 @@ model User {
   reactions      Reaction[]
   notifications  Notification[]
   Report         Report[]
+  badges         UserBadge[]
 }
 
 model Authenticator {
@@ -146,4 +147,14 @@ model Report {
   @@index([commentId])
   @@index([reporterId])
   @@index([status])
+}
+
+model UserBadge {
+  id        String   @id @default(uuid())
+  userId    String
+  badgeType String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([userId, badgeType])
+  @@index([userId])
 }

@@ -43,9 +43,32 @@
 *Based on the comprehensive security audit. This is the absolute priority for the next 7 days.*
 
 **🔴 Day 1-2: Critical Vulnerability Fixes (IDOR & Impersonation)**
-- [ ] **Fix Notification IDOR**: `app/api/notifications/route.ts` - Verify `session.user.id` matches the requested/patched user.
-- [ ] **Secure User Profile API**: `app/api/users/[id]/route.ts` - Add authentication checks. Prevent leakage of private data (email) to unauthorized users.
-- [ ] **Prevent Comment Impersonation**: `app/api/comments/route.ts` - Discard `author` from request body. Inject `author` strictly from the authenticated `session.user.name`.
+- [x] **Fix Notification IDOR**: `app/api/notifications/route.ts` - Verify `session.user.id` matches the requested/patched user.
+- [x] **Secure User Profile API**: `app/api/users/[id]/route.ts` - Add authentication checks. Prevent leakage of private data (email) to unauthorized users.
+- [x] **Prevent Comment Impersonation**: `app/api/comments/route.ts` - Discard `author` from request body. Inject `author` strictly from the authenticated `session.user.name`.
+
+**🟠 Day 3-4: High Vulnerability Fixes (SSRF, XSS, Abuse)**
+- [ ] **Block SSRF in Preview API**: `app/api/preview/route.ts` - Implement a strict URL parser to block private/internal IP ranges (127.0.0.1, 169.254.169.254, 10.x, 192.168.x).
+- [ ] **Validate Image URLs**: `app/api/comments/route.ts` - Validate `imageUrls` array. Block `data:` and `javascript:` schemas to prevent XSS and malicious payloads.
+- [ ] **Implement Rate Limiting**: Apply API rate limiting (using an in-memory Map or Vercel KV) to `/api/preview`, `/api/comments` (POST), and auth endpoints to prevent DDoS and spam.
+
+**🟡 Day 5-6: Medium Vulnerability & Architecture Refactoring**
+- [ ] **Optimize NextAuth DB Strategy**: `auth.ts` - Fix the `jwt` callback. Stop making a DB call on every session validation. Cache `role` and `isBanned` properly in the JWT token upon initial login.
+- [ ] **Enforce Type Safety**: `types/next-auth.d.ts` - Declare module augmentation for NextAuth Session to safely include `id`, `role`, and `isBanned`. Remove all `(session.user as any).id` type casts.
+- [ ] **Setup `.env.example`**: Create an example environment file documenting `AUTH_SECRET` and DB variables for safe deployments.
+
+**🟢 Day 7: Final Audit & Production Deployment**
+- [ ] **Regression Testing**: Verify all core features (commenting, OAuth, previews, notifications) still function correctly after security patches.
+- [ ] **Vercel Deployment**: Deploy to production and run a final live-environment sanity check.
+
+
+## Phase 11: Security Hardening & Zero-Trust Architecture (1-Week Sprint 🚨)
+*Based on the comprehensive security audit. This is the absolute priority for the next 7 days.*
+
+**🔴 Day 1-2: Critical Vulnerability Fixes (IDOR & Impersonation)**
+- [x] **Fix Notification IDOR**: `app/api/notifications/route.ts` - Verify `session.user.id` matches the requested/patched user.
+- [x] **Secure User Profile API**: `app/api/users/[id]/route.ts` - Add authentication checks. Prevent leakage of private data (email) to unauthorized users.
+- [x] **Prevent Comment Impersonation**: `app/api/comments/route.ts` - Discard `author` from request body. Inject `author` strictly from the authenticated `session.user.name`.
 
 **🟠 Day 3-4: High Vulnerability Fixes (SSRF, XSS, Abuse)**
 - [ ] **Block SSRF in Preview API**: `app/api/preview/route.ts` - Implement a strict URL parser to block private/internal IP ranges (127.0.0.1, 169.254.169.254, 10.x, 192.168.x).
@@ -73,7 +96,7 @@
 - [x] **Report System**: 유저들이 유해한 댓글이나 스팸을 신고할 수 있는 기능 및 관리자 페이지 연동.
 - [x] **SEO & Metadata Optimization**: Dynamic OpenGraph tags, sitemap.xml, robots.txt 추가를 통한 검색 최적화.
 
-## Phase 10: Gamification & Advanced Features (Next)
-- [ ] **User Badges & Achievements**: 활동 기반 배지(예: '첫 댓글', '좋아요 100개', '인기 작성자') 부여 및 프로필 표시.
-- [ ] **Rich Content Formatting**: 댓글 내 Markdown(굵게, 기울임꼴, 코드 블록, 인용구) 지원.
-- [ ] **Thread Sponsors (Monetization Prep)**: 실제 결제 연동 전 'Sponsor this thread' 형태의 후원 UI 플레이스홀더 및 UI 구조 확보.
+## Phase 10: Gamification & Advanced Features (Completed)
+- [x] **User Badges & Achievements**: 활동 기반 배지(예: 'First Comment', '10 Comments') 자동 부여 로직 구현 (`POST /api/comments`) 및 프로필, 댓글 UI 표시.
+- [x] **Rich Content Formatting**: 댓글 내 Markdown(굵게, 기울임꼴, 코드 블록, 인용구) 렌더링 지원 및 입력 폼 힌트 추가.
+- [x] **Thread Sponsors (Monetization Prep)**: 실제 결제 연동 전 'Sponsor this thread' 형태의 후원 UI 플레이스홀더(`SponsorUI`) 구성 완료.
