@@ -64,8 +64,9 @@ export async function GET(req: NextRequest) {
       normalizedUrl: normalized, 
       comments 
     });
-  } catch (error) {
-    return NextResponse.json({ error: 'URL 처리 중 오류가 발생했습니다.' }, { status: 400 });
+  } catch (error: any) {
+    console.error(error);
+    return NextResponse.json({ error: 'URL 처리 중 오류가 발생했습니다.', details: error.message }, { status: 400 });
   }
 }
 
