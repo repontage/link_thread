@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import AuthProvider from "@/components/AuthProvider";
+import UserNav from "@/components/UserNav";
 import Link from "next/link";
-import { auth, signOut } from "@/auth";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -31,13 +31,11 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const session = await auth();
-
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -54,32 +52,7 @@ export default async function RootLayout({
               <Link href="/" className="font-bold text-xl tracking-tight text-primary">
                 VoidSay
               </Link>
-              <div className="flex items-center gap-4 text-sm font-medium">
-                <Link href="/" className="text-zinc-600 hover:text-zinc-900 transition-colors">
-                  Home
-                </Link>
-                {session ? (
-                  <>
-                    <Link href="/profile" className="text-zinc-600 hover:text-zinc-900 transition-colors">
-                      Profile
-                    </Link>
-                    <form
-                      action={async () => {
-                        "use server";
-                        await signOut();
-                      }}
-                    >
-                      <button className="text-zinc-600 hover:text-zinc-900 transition-colors">
-                        Logout
-                      </button>
-                    </form>
-                  </>
-                ) : (
-                  <Link href="/api/auth/signin" className="text-zinc-600 hover:text-zinc-900 transition-colors">
-                    Profile
-                  </Link>
-                )}
-              </div>
+              <UserNav />
             </div>
           </nav>
           {children}
