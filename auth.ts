@@ -5,18 +5,18 @@ import GitHub from "next-auth/providers/github"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import prisma from "./lib/prisma"
 
-
-
-export const { handlers, auth, signIn, signOut } = NextAuth({
+export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
   adapter: PrismaAdapter(prisma),
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      allowDangerousEmailAccountLinking: true,
     }),
     GitHub({
       clientId: process.env.GITHUB_ID,
       clientSecret: process.env.GITHUB_SECRET,
+      allowDangerousEmailAccountLinking: true,
     }),
     Passkey,
   ],
@@ -24,23 +24,25 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     strategy: "jwt",
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
-        token.id = user.id
-        // user object from db
-        const dbUser = await prisma.user.findUnique({ where: { id: user.id } })
-        if (dbUser) {
-          token.role = dbUser.role
-          token.isBanned = dbUser.isBanned
-        }
+        const u = user as any
+        token.id = u.id
+        token.role = u.role
+        token.isBanned = u.isBanned
+      }
+      if (trigger === "update" && session) {
+        token.role = session.role ?? token.role
+        token.isBanned = session.isBanned ?? token.isBanned
+        // Allow updating other fields as needed
       }
       return token
     },
     async session({ session, token }) {
       if (token && session.user) {
-        session.user.id = token.id as string
-        session.user.role = token.role as string
-        session.user.isBanned = token.isBanned as boolean
+        ;(session.user as any).id = token.id
+        ;(session.user as any).role = token.role
+        ;(session.user as any).isBanned = token.isBanned
       }
       return session
     }
