@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import AuthProvider from "@/components/AuthProvider";
 import Link from "next/link";
+import { auth, signOut } from "@/auth";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -19,13 +20,24 @@ export const metadata: Metadata = {
     title: "VoidSay",
     description: "Comment on any URL on the internet.",
   },
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "VoidSay",
+  },
+  formatDetection: {
+    telephone: false,
+  },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await auth();
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -46,9 +58,27 @@ export default function RootLayout({
                 <Link href="/" className="text-zinc-600 hover:text-zinc-900 transition-colors">
                   Home
                 </Link>
-                <Link href="/profile" className="text-zinc-600 hover:text-zinc-900 transition-colors">
-                  Profile
-                </Link>
+                {session ? (
+                  <>
+                    <Link href="/profile" className="text-zinc-600 hover:text-zinc-900 transition-colors">
+                      Profile
+                    </Link>
+                    <form
+                      action={async () => {
+                        "use server";
+                        await signOut();
+                      }}
+                    >
+                      <button className="text-zinc-600 hover:text-zinc-900 transition-colors">
+                        Logout
+                      </button>
+                    </form>
+                  </>
+                ) : (
+                  <Link href="/api/auth/signin" className="text-zinc-600 hover:text-zinc-900 transition-colors">
+                    Profile
+                  </Link>
+                )}
               </div>
             </div>
           </nav>
