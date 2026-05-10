@@ -3,6 +3,8 @@ import { getThreadId, normalizeUrl } from '../../../lib/url-parser';
 import prisma from '../../../lib/prisma';
 import { auth } from '@/auth';
 import { rateLimit } from '@/lib/rate-limit';
+import { logToTelegram } from '@/lib/telegram-logger';
+import { summarizeContent } from '@/lib/ai/summary-service';
 
 // 트리를 구성하는 헬퍼 함수
 const buildCommentTree = (comments: any[]): any[] => {
@@ -76,16 +78,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Too Many Requests' }, { status: 429 });
   }
 
-  try {
-    const session = await auth();
-    if (!session || !session.user) {
-      return NextResponse.json({ error: '인증되지 않은 사용자입니다.' }, { status: 401 });
-    }
-    const userId = (session.user as any).id;
-    const authorName = session.user.name || 'Anonymous';
+    try {
+      const session = await auth();
+      if (!session || !session.user) {
+        return NextResponse.json({ error: '인증되지 않은 사용자입니다.' }, { status: 401 });
+      }
+      const userId = (session.user as any).id;
+      const authorName = session.user.name || 'Anonymous';
 
-    const body = await req.json();
-    const { url, parentId, content } = body;
+      const body = await req.json();
+      const { url, parentId, content } = body;
 
     if (!url || !content) {
       return NextResponse.json({ error: '필수 항목(url, content)이 누락되었습니다.' }, { status: 400 });
@@ -171,9 +173,45 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // ── AI 자동 요약 댓글 추가 (비용 최적화 적용) ────────────────────────
+    const aiAuthorName = "AI Summarizer ✨";
+    const existingAiComment = await prisma.comment.findFirst({
+      where: { threadId, author: aiAuthorName }
+    });
+
+    if (!existingAiComment && !parentId) {
+      // 비동기로 실행하여 사용자 응답 속도에 영향을 주지 않음
+      (async () => {
+        try {
+          const summary = await summarizeContent(url, content);
+          await prisma.comment.create({
+            data: {
+              threadId,
+              parentId: null,
+              author: aiAuthorName,
+              content: summary,
+              userId: null, // 시스템 계정
+            }
+          });
+          console.log(`[AI] Summary created for thread: ${threadId}`);
+        } catch (aiError) {
+          console.error("[AI] 자동 요약 생성 실패:", aiError);
+        }
+      })();
+    }
+
     return NextResponse.json({ success: true, data: { ...newComment, children: [] } }, { status: 201 });
 
-  } catch (error) {
+  } catch (error: any) {
+    console.error("[POST /api/comments] Error:", error);
+    try {
+      const currentSession = await auth();
+      const currentBody = await req.json().catch(() => ({}));
+      const currentContent = currentBody.content || "No content";
+      await logToTelegram(`🚨 *댓글 생성 에러*\n사용자: ${currentSession?.user?.name || 'Unknown'}\n내용: ${currentContent.substring(0, 50)}\n에러: \`\`\`${error.message}\`\`\``);
+    } catch (logError) {
+      console.error("Failed to log error to Telegram:", logError);
+    }
     return NextResponse.json({ error: '잘못된 요청입니다.' }, { status: 400 });
   }
 }
