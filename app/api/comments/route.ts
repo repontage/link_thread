@@ -173,7 +173,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // ── AI 자동 요약 댓글 추가 (비용 최적화 적용) ────────────────────────
+    /* AI 자동 요약 기능 비활성화 (보안 및 API 키 보호를 위해 제거)
     const aiAuthorName = "AI Summarizer ✨";
     const existingAiComment = await prisma.comment.findFirst({
       where: { threadId, author: aiAuthorName }
@@ -199,6 +199,7 @@ export async function POST(req: NextRequest) {
         }
       })();
     }
+    */
 
     return NextResponse.json({ success: true, data: { ...newComment, children: [] } }, { status: 201 });
 
