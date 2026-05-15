@@ -50,12 +50,12 @@ const CommentItem = React.memo(({ comment, url, onReplySuccess, onTimestampClick
 
   const handleReport = () => {
     if (!session?.user) {
-      alert('로그인이 필요합니다.');
+      alert('Login required.');
       return;
     }
     setIsReportModalOpen(true);
-    const reason = prompt('Please enter the reason for reporting (e.g., spam, abuse, inappropriate content):');
-    if (!reason) return;
+  };
+
   const submitReport = async (reason: string) => {
     try {
       const res = await fetch('/api/reports', {
