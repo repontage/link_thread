@@ -15,7 +15,7 @@ export async function GET() {
       }
     });
     return NextResponse.json({ message: `Admin access granted to ${user.email}. Please logout and login again.` });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Admin setup error:', error);
     return NextResponse.json({ error: 'Internal Server Error', details: error.message }, { status: 500 });
   }
