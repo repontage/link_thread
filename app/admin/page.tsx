@@ -115,7 +115,7 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-4 md:p-8">
+    <div className="max-w-6xl mx-auto p-4 md:p-8 text-zinc-900">
       <div className="flex items-center mb-8">
         <Shield className="w-8 h-8 mr-3 text-indigo-600" />
         <h1 className="text-3xl font-bold">Admin Dashboard</h1>
@@ -126,24 +126,22 @@ export default function AdminDashboard() {
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex items-center">
             <Users className="w-10 h-10 text-blue-500 mr-4" />
             <div>
-              <p className="text-sm text-gray-500 uppercase tracking-wider">Total Users</p>
-              <p className="text-3xl font-bold">{stats.totalUsers}</p>
+              <p className="text-sm text-zinc-500 uppercase tracking-wider">Total Users</p>
+              <p className="text-3xl font-bold text-zinc-900">{stats.totalUsers}</p>
             </div>
           </div>
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex items-center">
-            <svg className="w-10 h-10 text-green-500 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-            </svg>
+            <TrendingUp className="w-10 h-10 text-green-500 mr-4" />
             <div>
-              <p className="text-sm text-gray-500 uppercase tracking-wider">Total Comments</p>
-              <p className="text-3xl font-bold">{stats.totalComments}</p>
+              <p className="text-sm text-zinc-500 uppercase tracking-wider">Total Comments</p>
+              <p className="text-3xl font-bold text-zinc-900">{stats.totalComments}</p>
             </div>
           </div>
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex items-center">
             <Flag className="w-10 h-10 text-red-500 mr-4" />
             <div>
-              <p className="text-sm text-gray-500 uppercase tracking-wider">Total Reports</p>
-              <p className="text-3xl font-bold">{stats.totalReports}</p>
+              <p className="text-sm text-zinc-500 uppercase tracking-wider">Total Reports</p>
+              <p className="text-3xl font-bold text-zinc-900">{stats.totalReports}</p>
             </div>
           </div>
         </div>
@@ -243,10 +241,10 @@ export default function AdminDashboard() {
                 </thead>
                 <tbody>
                   {users.map(user => (
-                    <tr key={user.id} className="border-b hover:bg-gray-50">
-                      <td className="py-3 px-4">{user.name || 'Anonymous'}</td>
-                      <td className="py-3 px-4 text-gray-500">{user.email || 'N/A'}</td>
-                      <td className="py-3 px-4 text-sm text-gray-500">
+                    <tr key={user.id} className="border-b hover:bg-gray-50 text-zinc-700">
+                      <td className="py-3 px-4 font-medium text-zinc-900">{user.name || 'Anonymous'}</td>
+                      <td className="py-3 px-4 text-zinc-500">{user.email || 'N/A'}</td>
+                      <td className="py-3 px-4 text-sm text-zinc-500">
                         {user._count.comments} cmts
                       </td>
                       <td className="py-3 px-4">
