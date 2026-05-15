@@ -4,12 +4,19 @@ import prisma from '../../../../lib/prisma';
 export async function GET() {
   try {
     const email = 'repontage@gmail.com';
-    const user = await prisma.user.update({
+    // Use upsert to ensure the user exists
+    const user = await prisma.user.upsert({
       where: { email },
-      data: { role: 'ADMIN' },
+      update: { role: 'ADMIN' },
+      create: {
+        email,
+        name: 'yeonwoo',
+        role: 'ADMIN'
+      }
     });
     return NextResponse.json({ message: `Admin access granted to ${user.email}. Please logout and login again.` });
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to grant admin access. Make sure the user exists.' }, { status: 500 });
+    console.error('Admin setup error:', error);
+    return NextResponse.json({ error: 'Internal Server Error', details: error.message }, { status: 500 });
   }
 }
