@@ -5,6 +5,8 @@ import { useSession, signIn } from 'next-auth/react';
 import dynamic from 'next/dynamic';
 import { Search, MessageSquare, Loader2, Send } from 'lucide-react';
 import { useInView } from 'react-intersection-observer';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import type { CommentType } from './CommentItem';
 import type { PreviewData } from './PreviewCard';
 import YouTubePlayer, { YouTubePlayerRef } from './YouTubePlayer';
@@ -60,11 +62,24 @@ export default function ThreadUI() {
   
   const [previewData, setPreviewData] = useState<PreviewData | null>(null);
   const [isPreviewLoading, setIsPreviewLoading] = useState(false);
+  const [sortBy, setSortBy] = useState('oldest'); // newest, oldest, popular
   
   const [newContent, setNewContent] = useState('');
+  const [showPreview, setShowPreview] = useState(false);
   const [newImageUrls, setNewImageUrls] = useState('');
+  const [category, setCategory] = useState('');
   const [isSubmittingNew, setIsSubmittingNew] = useState(false);
   const [includeTimestamp, setIncludeTimestamp] = useState(false);
+
+  const categories = [
+    { value: '', label: 'No Category' },
+    { value: 'News', label: 'News' },
+    { value: 'Tech', label: 'Tech' },
+    { value: 'Entertainment', label: 'Entertainment' },
+    { value: 'Social', label: 'Social' },
+    { value: 'Music', label: 'Music' },
+    { value: 'Other', label: 'Other' },
+  ];
   
   const { ref: loadMoreRef, inView } = useInView({
     threshold: 0.1,
@@ -93,156 +108,168 @@ export default function ThreadUI() {
             return [...uniqueNew, ...prev];
           });
         }
-      } catch (err) {
-        console.error("SSE Parse Error:", err);
-      }
-    };
-
-    return () => {
-      eventSource.close();
-    };
-  }, [currentUrl, showComments]);
-
-  const searchIdRef = React.useRef(0);
-  const playerRef = React.useRef<YouTubePlayerRef>(null);
-
-  const handleTimestampClick = React.useCallback((seconds: number) => {
-    if (playerRef.current) {
-      playerRef.current.seekTo(seconds);
-    }
-  }, []);
-
-  const fetchComments = React.useCallback(async (targetUrl: string, searchId?: number, pageNumber: number = 1) => {
-    if (pageNumber === 1) setFetchError(null);
-    try {
-      const res = await fetch(`/api/comments?url=${encodeURIComponent(targetUrl)}&page=${pageNumber}&limit=10`);
-      if (searchId !== undefined && searchId !== searchIdRef.current) return;
-      
-      if (!res.ok) {
-        throw new Error('서버 에러가 발생했습니다.');
-      }
-      const data = await res.json();
-      if (searchId !== undefined && searchId !== searchIdRef.current) return;
-      
-      if (data.success) {
-        if (pageNumber === 1) {
-          setComments(data.comments || []);
-        } else {
-          setComments(prev => [...prev, ...(data.comments || [])]);
+        } catch (_err) {
+          console.error("SSE Parse Error:", _err);
         }
-        setPage(data.pagination?.page || 1);
-        setHasNextPage(data.pagination?.hasNextPage || false);
-      } else {
-        if (pageNumber === 1) setFetchError(data.error || '데이터를 불러오는 중 오류가 발생했습니다.');
+      };
+
+      return () => {
+        eventSource.close();
+      };
+    }, [currentUrl, showComments]);
+
+    const searchIdRef = React.useRef(0);
+    const playerRef = React.useRef<YouTubePlayerRef>(null);
+
+    const handleTimestampClick = React.useCallback((seconds: number) => {
+      if (playerRef.current) {
+        playerRef.current.seekTo(seconds);
       }
-    } catch (err) {
-      if (searchId !== undefined && searchId !== searchIdRef.current) return;
-      if (pageNumber === 1) setFetchError('네트워크 에러가 발생하여 댓글을 불러올 수 없습니다.');
-    }
-  }, []);
+    }, []);
 
-  const handleLoadMore = async () => {
-    if (isLoadingMore || !hasNextPage || !currentUrl) return;
-    setIsLoadingMore(true);
-    await fetchComments(currentUrl, searchIdRef.current, page + 1);
-    setIsLoadingMore(false);
-  };
-
-  const handleReplySuccess = React.useCallback(() => {
-    if (currentUrl) {
-      fetchComments(currentUrl, searchIdRef.current, 1);
-    }
-  }, [currentUrl, fetchComments]);
-
-  const fetchPreview = async (targetUrl: string, searchId: number) => {
-    setIsPreviewLoading(true);
-    setPreviewData(null);
-    try {
-      const res = await fetch(`/api/preview?url=${encodeURIComponent(targetUrl)}`);
-      const data = await res.json();
-      if (searchId !== searchIdRef.current) return;
-      setPreviewData(data);
-    } catch (err) {
-      if (searchId !== searchIdRef.current) return;
-      setPreviewData({ url: targetUrl, error: 'Failed' });
-    } finally {
-      if (searchId === searchIdRef.current) {
-        setIsPreviewLoading(false);
+    const fetchComments = React.useCallback(async (targetUrl: string, searchId?: number, pageNumber: number = 1, currentSort?: string) => {
+      if (pageNumber === 1) setFetchError(null);
+      const sort = currentSort || sortBy;
+      try {
+        const res = await fetch(`/api/comments?url=${encodeURIComponent(targetUrl)}&page=${pageNumber}&limit=10&sortBy=${sort}`);
+        if (searchId !== undefined && searchId !== searchIdRef.current) return;
+        
+        if (!res.ok) {
+          throw new Error('서버 에러가 발생했습니다.');
+        }
+        const data = await res.json();
+        if (searchId !== undefined && searchId !== searchIdRef.current) return;
+        
+        if (data.success) {
+          if (pageNumber === 1) {
+            setComments(data.comments || []);
+          } else {
+            setComments(prev => [...prev, ...(data.comments || [])]);
+          }
+          setPage(data.pagination?.page || 1);
+          setHasNextPage(data.pagination?.hasNextPage || false);
+        } else {
+          if (pageNumber === 1) setFetchError(data.error || '데이터를 불러오는 중 오류가 발생했습니다.');
+        }
+      } catch (_err) {
+        if (searchId !== undefined && searchId !== searchIdRef.current) return;
+        if (pageNumber === 1) setFetchError('네트워크 에러가 발생하여 댓글을 불러올 수 없습니다.');
       }
-    }
-  };
+    }, []);
 
-  const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!url.trim()) return;
-    
-    const currentSearchId = ++searchIdRef.current;
-    
-    setIsLoading(true);
-    setShowComments(false);
-    setCurrentUrl(url);
-    
-    await Promise.all([
-      fetchComments(url, currentSearchId, 1),
-      fetchPreview(url, currentSearchId)
-    ]);
-    
-    if (currentSearchId === searchIdRef.current) {
-      setIsLoading(false);
-      setShowComments(true);
-    }
-  };
+    const handleLoadMore = async () => {
+      if (isLoadingMore || !hasNextPage || !currentUrl) return;
+      setIsLoadingMore(true);
+      await fetchComments(currentUrl, searchIdRef.current, page + 1);
+      setIsLoadingMore(false);
+    };
 
-  const handleNewCommentSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newContent.trim()) {
-      alert('내용을 입력해주세요.');
-      return;
-    }
-    
-    if (!session?.user) {
-      alert('로그인이 필요합니다.');
-      return;
-    }
-
-    setIsSubmittingNew(true);
-    
-    let timestampToSave: number | null = null;
-    if (includeTimestamp && playerRef.current) {
-      timestampToSave = Math.floor(playerRef.current.getCurrentTime());
-    }
-    
-    try {
-      const imageUrlsArray = newImageUrls
-        .split(',')
-        .map(url => url.trim())
-        .filter(url => url.length > 0);
-
-      const res = await fetch('/api/comments', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          url: currentUrl, 
-          author: session.user.name || 'Anonymous', 
-          content: newContent, 
-          timestamp: timestampToSave,
-          imageUrls: imageUrlsArray
-        }),
-      });
-      if (res.ok) {
-        setNewContent('');
-        setNewImageUrls('');
-        setIncludeTimestamp(false);
-        await fetchComments(currentUrl, searchIdRef.current, 1);
-      } else {
-        alert('새 댓글 작성 중 서버 에러가 발생했습니다.');
+    const handleReplySuccess = React.useCallback(() => {
+      if (currentUrl) {
+        fetchComments(currentUrl, searchIdRef.current, 1);
       }
-    } catch (err) {
-      alert('새 댓글 작성 중 네트워크 에러가 발생했습니다.');
-    } finally {
-      setIsSubmittingNew(false);
-    }
-  };
+    }, [currentUrl, fetchComments]);
+
+    const handleSortChange = async (newSort: string) => {
+      setSortBy(newSort);
+      if (currentUrl) {
+        setIsLoading(true);
+        await fetchComments(currentUrl, searchIdRef.current, 1, newSort);
+        setIsLoading(false);
+      }
+    };
+
+    const fetchPreview = async (targetUrl: string, searchId: number) => {
+      setIsPreviewLoading(true);
+      setPreviewData(null);
+      try {
+        const res = await fetch(`/api/preview?url=${encodeURIComponent(targetUrl)}`);
+        const data = await res.json();
+        if (searchId !== searchIdRef.current) return;
+        setPreviewData(data);
+      } catch (_err) {
+        if (searchId !== searchIdRef.current) return;
+        setPreviewData({ url: targetUrl, error: 'Failed' });
+      } finally {
+        if (searchId === searchIdRef.current) {
+          setIsPreviewLoading(false);
+        }
+      }
+    };
+
+    const handleSearch = async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!url.trim()) return;
+      
+      const currentSearchId = ++searchIdRef.current;
+      
+      setIsLoading(true);
+      setShowComments(false);
+      setCurrentUrl(url);
+      
+      await Promise.all([
+        fetchComments(url, currentSearchId, 1),
+        fetchPreview(url, currentSearchId)
+      ]);
+      
+      if (currentSearchId === searchIdRef.current) {
+        setIsLoading(false);
+        setShowComments(true);
+      }
+    };
+
+    const handleNewCommentSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!newContent.trim()) {
+        alert('내용을 입력해주세요.');
+        return;
+      }
+      
+      if (!session?.user) {
+        alert('로그인이 필요합니다.');
+        return;
+      }
+
+      setIsSubmittingNew(true);
+      
+      let timestampToSave: number | null = null;
+      if (includeTimestamp && playerRef.current) {
+        timestampToSave = Math.floor(playerRef.current.getCurrentTime());
+      }
+      
+      try {
+        const imageUrlsArray = newImageUrls
+          .split(',')
+          .map(url => url.trim())
+          .filter(url => url.length > 0);
+
+        const res = await fetch('/api/comments', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            url: currentUrl, 
+            author: session.user.name || 'Anonymous', 
+            content: newContent, 
+            timestamp: timestampToSave,
+            category: category || null,
+            imageUrls: imageUrlsArray
+          }),
+        });
+        if (res.ok) {
+          setNewContent('');
+          setNewImageUrls('');
+          setCategory('');
+          setIncludeTimestamp(false);
+          await fetchComments(currentUrl, searchIdRef.current, 1);
+        } else {
+          alert('새 댓글 작성 중 서버 에러가 발생했습니다.');
+        }
+      } catch (_err) {
+        alert('새 댓글 작성 중 네트워크 에러가 발생했습니다.');
+      } finally {
+        setIsSubmittingNew(false);
+      }
+    };
 
   const handleSelectTrendingUrl = React.useCallback((selectedUrl: string) => {
     setUrl(selectedUrl);
@@ -343,12 +370,25 @@ export default function ThreadUI() {
               <SponsorUI />
             </div>
 
-            <div className="p-6 border-b border-zinc-100 bg-zinc-50 flex items-center gap-3">
-              <MessageSquare className="h-5 w-5 text-blue-600" />
-              <h2 className="text-lg font-semibold text-zinc-800">Discussions</h2>
-              <span className="bg-blue-100 text-blue-700 text-xs font-bold px-2.5 py-0.5 rounded-full ml-auto">
-                {comments.length}
-              </span>
+            <div className="p-6 border-b border-zinc-100 bg-zinc-50 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <MessageSquare className="h-5 w-5 text-blue-600" />
+                <h2 className="text-lg font-semibold text-zinc-800">Discussions</h2>
+                <span className="bg-blue-100 text-blue-700 text-xs font-bold px-2.5 py-0.5 rounded-full ml-auto">
+                  {comments.length}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <select
+                  value={sortBy}
+                  onChange={(e) => handleSortChange(e.target.value)}
+                  className="bg-transparent text-sm font-medium text-zinc-600 outline-none cursor-pointer hover:text-blue-600 transition-colors"
+                >
+                  <option value="oldest">Oldest First</option>
+                  <option value="newest">Newest First</option>
+                  <option value="popular">Most Popular</option>
+                </select>
+              </div>
             </div>
             
             <div className="p-6 bg-white border-b border-zinc-100">
@@ -366,22 +406,52 @@ export default function ThreadUI() {
                 </div>
               ) : (
                 <form onSubmit={handleNewCommentSubmit} aria-label="새 댓글 작성 폼">
-                  <h3 className="text-sm font-semibold text-zinc-800 mb-3">Leave a comment as {session.user?.name || 'User'}</h3>
-                  <div className="mb-3 relative">
-                    <textarea
-                      aria-label="새 댓글 내용"
-                      placeholder="What are your thoughts?"
-                      value={newContent}
-                      onChange={(e) => setNewContent(e.target.value)}
-                      required
-                      rows={3}
-                      className="w-full p-3 pb-8 border border-zinc-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-shadow"
-                    />
-                    <div className="absolute bottom-2 right-3 text-[10px] text-zinc-400 font-medium">
-                      Markdown Supported (**bold**, *italic*, `code`, &gt; quote)
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-sm font-semibold text-zinc-800">Leave a comment as {session.user?.name || 'User'}</h3>
+                    <div className="flex bg-zinc-100 p-0.5 rounded-lg">
+                      <button
+                        type="button"
+                        onClick={() => setShowPreview(false)}
+                        className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${!showPreview ? 'bg-white shadow-sm text-zinc-900' : 'text-zinc-500 hover:text-zinc-700'}`}
+                      >
+                        Write
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowPreview(true)}
+                        className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${showPreview ? 'bg-white shadow-sm text-zinc-900' : 'text-zinc-500 hover:text-zinc-700'}`}
+                      >
+                        Preview
+                      </button>
                     </div>
                   </div>
-                  <div className="mb-3">
+                  <div className="mb-3 relative">
+                    {!showPreview ? (
+                      <textarea
+                        aria-label="새 댓글 내용"
+                        placeholder="What are your thoughts?"
+                        value={newContent}
+                        onChange={(e) => setNewContent(e.target.value)}
+                        required
+                        rows={3}
+                        className="w-full p-3 pb-8 border border-zinc-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-shadow"
+                      />
+                    ) : (
+                      <div className="w-full p-3 min-h-[80px] border border-zinc-200 rounded-lg text-sm bg-zinc-50 prose prose-sm max-w-none">
+                        {newContent ? (
+                          <ReactMarkdown remarkPlugins={[remarkGfm]}>{newContent}</ReactMarkdown>
+                        ) : (
+                          <span className="text-zinc-400 italic">Nothing to preview</span>
+                        )}
+                      </div>
+                    )}
+                    {!showPreview && (
+                      <div className="absolute bottom-2 right-3 text-[10px] text-zinc-400 font-medium">
+                        Markdown Supported (**bold**, *italic*, `code`, &gt; quote)
+                      </div>
+                    )}
+                  </div>
+                  <div className="mb-3 grid grid-cols-1 md:grid-cols-2 gap-3">
                     <input
                       type="text"
                       aria-label="이미지 URL (쉼표로 구분)"
@@ -390,6 +460,18 @@ export default function ThreadUI() {
                       onChange={(e) => setNewImageUrls(e.target.value)}
                       className="w-full p-3 border border-zinc-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-shadow"
                     />
+                    <select
+                      aria-label="카테고리 선택"
+                      value={category}
+                      onChange={(e) => setCategory(e.target.value)}
+                      className="w-full p-3 border border-zinc-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none bg-white transition-shadow"
+                    >
+                      {categories.map((cat) => (
+                        <option key={cat.value} value={cat.value}>
+                          {cat.label}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                   <div className="flex justify-between items-center">
                     <div>

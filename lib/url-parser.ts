@@ -17,6 +17,21 @@ export function normalizeUrl(urlStr: string): string {
     }
 
     let pathname = url.pathname;
+    const params = new URLSearchParams();
+
+    if (host === 'youtube.com' || host === 'youtu.be') {
+      let v = url.searchParams.get('v');
+      if (host === 'youtu.be' && !v) {
+        v = pathname.slice(1); // /ID -> ID
+      }
+      
+      if (v) {
+        host = 'youtube.com';
+        pathname = '/watch';
+        params.set('v', v);
+      }
+    }
+
     if (pathname.endsWith('/') && pathname !== '/') {
       pathname = pathname.slice(0, -1);
     }
@@ -24,16 +39,10 @@ export function normalizeUrl(urlStr: string): string {
       pathname = '';
     }
 
-    const params = new URLSearchParams();
-    if (host === 'youtube.com' || host === 'youtu.be') {
-      const v = url.searchParams.get('v');
-      if (v) params.set('v', v);
-    }
-
     const search = params.toString() ? `?${params.toString()}` : '';
 
     return `${host}${pathname}${search}`;
-  } catch (error) {
+  } catch (_error) {
     // 파싱 실패 시 기본적인 문자열 처리로 대체
     return urlStr.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '');
   }

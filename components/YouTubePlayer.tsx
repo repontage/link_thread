@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
 
 export interface YouTubePlayerRef {
-  seekTo: (seconds: number) => void;
+  seekTo: (_seconds: number) => void;
   getCurrentTime: () => number;
 }
 
@@ -12,6 +12,7 @@ interface YouTubePlayerProps {
 }
 
 declare global {
+  // eslint-disable-next-line no-unused-vars
   interface Window {
     YT: any;
     onYouTubeIframeAPIReady: () => void;

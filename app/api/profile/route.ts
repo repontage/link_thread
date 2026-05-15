@@ -13,7 +13,7 @@ export async function PATCH(req: Request) {
     }
 
     const body = await req.json();
-    const { name, username, bio, image } = body;
+    const { name, username, bio, image, profileBackground } = body;
 
     // Validate username uniqueness if provided
     if (username) {
@@ -36,6 +36,7 @@ export async function PATCH(req: Request) {
         ...(username !== undefined && { username }),
         ...(bio !== undefined && { bio }),
         ...(image !== undefined && { image }),
+        ...(profileBackground !== undefined && { profileBackground }),
       },
     });
 

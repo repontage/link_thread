@@ -40,11 +40,13 @@ model User {
   name           String?
   username       String?         @unique
   bio            String?
+  profileBackground String?
   email          String?         @unique
   emailVerified  DateTime?
   image          String?
   role           String          @default("USER")
   isBanned       Boolean         @default(false)
+  isShadowBanned Boolean         @default(false)
   accounts       Account[]
   sessions       Session[]
   comments       Comment[]
@@ -88,6 +90,7 @@ model Comment {
   timestamp Int?
   imageUrls String?
   tags      String?
+  category  String?
   upvotes   Int      @default(0)
   createdAt DateTime @default(now())
   isToxic   Boolean  @default(false)

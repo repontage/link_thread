@@ -73,7 +73,7 @@ export async function GET(request: Request) {
       image,
       url,
     });
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json({ title: url, url, error: 'Failed to generate preview' }, { status: 400 });
   }
 }

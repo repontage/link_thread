@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useSession, signIn } from 'next-auth/react';
-import { Reply, Clock, User, ThumbsUp, Trash, Heart } from 'lucide-react';
+import { Reply, Clock, User, Trash, Heart, Flag } from 'lucide-react';
 import ImageCarousel from './ImageCarousel';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -30,7 +30,7 @@ export interface CommentType {
   tags?: string | null;
 }
 
-const CommentItem = React.memo(({ comment, url, onReplySuccess, onTimestampClick }: { comment: CommentType, url: string, onReplySuccess: () => void, onTimestampClick?: (seconds: number) => void }) => {
+const CommentItem = React.memo(({ comment, url, onReplySuccess, onTimestampClick }: { comment: CommentType, url: string, onReplySuccess: () => void, onTimestampClick?: (_seconds: number) => void }) => {
   const { data: session } = useSession();
   const [isReplying, setIsReplying] = useState(false);
   const [replyContent, setReplyContent] = useState('');
@@ -41,9 +41,34 @@ const CommentItem = React.memo(({ comment, url, onReplySuccess, onTimestampClick
   const [isReacting, setIsReacting] = useState(false);
   const [showHeartEffect, setShowHeartEffect] = useState(false);
 
+
   React.useEffect(() => {
     setReactions(comment.reactions || []);
   }, [comment.reactions]);
+
+  const handleReport = async () => {
+    if (!session?.user) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
+    const reason = prompt('신고 사유를 입력해주세요 (예: 스팸, 욕설, 부적절한 콘텐츠):');
+    if (!reason) return;
+
+    try {
+      const res = await fetch('/api/reports', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ commentId: comment.id, reason }),
+      });
+      if (res.ok) {
+        alert('신고가 접수되었습니다.');
+      } else {
+        alert('신고 제출에 실패했습니다.');
+      }
+    } catch (_err) {
+      alert('오류가 발생했습니다.');
+    }
+  };
 
   const handleReaction = async (emoji: string) => {
     if (!session?.user) {
@@ -64,7 +89,7 @@ const CommentItem = React.memo(({ comment, url, onReplySuccess, onTimestampClick
       if (data.success && data.data.reactions) {
         setReactions(data.data.reactions);
       }
-    } catch (err) {
+    } catch (_err) {
       alert('반응을 남기는 중 오류가 발생했습니다.');
     } finally {
       setIsReacting(false);
@@ -91,7 +116,7 @@ const CommentItem = React.memo(({ comment, url, onReplySuccess, onTimestampClick
         const data = await res.json();
         alert(data.error || '삭제 중 오류가 발생했습니다.');
       }
-    } catch (err) {
+    } catch (_err) {
       alert('삭제 중 네트워크 에러가 발생했습니다.');
     }
   };
@@ -122,7 +147,7 @@ const CommentItem = React.memo(({ comment, url, onReplySuccess, onTimestampClick
       } else {
         alert('댓글 작성 중 서버 에러가 발생했습니다.');
       }
-    } catch (err) {
+    } catch (_err) {
       alert('댓글 작성 중 네트워크 에러가 발생했습니다.');
     } finally {
       setIsSubmitting(false);
@@ -212,7 +237,7 @@ const CommentItem = React.memo(({ comment, url, onReplySuccess, onTimestampClick
             <ReactMarkdown 
               remarkPlugins={[remarkGfm]}
               components={{
-                a: ({ node, href, children, ...props }: any) => {
+                a: ({ node: _node, href, children, ...props }: any) => {
                   if (href?.startsWith('#timestamp-')) {
                     const timestamp = href.replace('#timestamp-', '');
                     const match = /\b(?:(\d{1,2}):)?(\d{1,2}):(\d{2})\b/.exec(timestamp);
@@ -243,7 +268,7 @@ const CommentItem = React.memo(({ comment, url, onReplySuccess, onTimestampClick
                   }
                   return <a href={href} className="text-blue-500 hover:underline" target="_blank" rel="noopener noreferrer" {...props}>{children}</a>;
                 },
-                p: ({node, ...props}: any) => <p className="mb-2 last:mb-0" {...props} />
+                p: ({node: _node, ...props}: any) => <p className="mb-2 last:mb-0" {...props} />
               }}
             >
               {processContentForMarkdown(comment.content)}
@@ -310,6 +335,16 @@ const CommentItem = React.memo(({ comment, url, onReplySuccess, onTimestampClick
           >
             <Trash className="h-4 w-4" aria-hidden="true" />
             Delete
+          </button>
+        )}
+        {session?.user && session.user.id !== comment.userId && (
+          <button 
+            onClick={(e) => { e.stopPropagation(); handleReport(); }}
+            aria-label="댓글 신고"
+            className="flex items-center gap-1.5 text-sm font-medium text-zinc-400 hover:text-orange-500 transition-colors ml-auto"
+          >
+            <Flag className="h-4 w-4" aria-hidden="true" />
+            Report
           </button>
         )}
       </div>

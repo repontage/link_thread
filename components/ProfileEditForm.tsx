@@ -8,6 +8,7 @@ interface UserProfile {
   username?: string | null;
   bio?: string | null;
   image?: string | null;
+  profileBackground?: string | null;
 }
 
 export default function ProfileEditForm({ user }: { user: UserProfile }) {
@@ -18,6 +19,7 @@ export default function ProfileEditForm({ user }: { user: UserProfile }) {
     username: user.username || "",
     bio: user.bio || "",
     image: user.image || "",
+    profileBackground: user.profileBackground || "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -110,7 +112,19 @@ export default function ProfileEditForm({ user }: { user: UserProfile }) {
             name="image"
             value={formData.image}
             onChange={handleChange}
-            placeholder="https://api.dicebear.com/7.x/avataaars/svg?seed=..."
+            placeholder="https://api.dicebear.com/..."
+            className="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-zinc-900"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-zinc-700 mb-1">Profile Background URL</label>
+          <input
+            type="text"
+            name="profileBackground"
+            value={formData.profileBackground}
+            onChange={handleChange}
+            placeholder="https://images.unsplash.com/..."
             className="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-zinc-900"
           />
         </div>

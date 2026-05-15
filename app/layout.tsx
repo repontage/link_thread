@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import AuthProvider from "@/components/AuthProvider";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import UserNav from "@/components/UserNav";
+import SearchBar from "@/components/SearchBar";
 import Link from "next/link";
 import "./globals.css";
 
@@ -46,17 +48,20 @@ export default function RootLayout({
         ></script>
       </head>
       <body suppressHydrationWarning>
-        <AuthProvider>
-          <nav className="border-b bg-surface sticky top-0 z-50">
-            <div className="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
-              <Link href="/" className="font-bold text-xl tracking-tight text-primary">
-                VoidSay
-              </Link>
-              <UserNav />
-            </div>
-          </nav>
-          {children}
-        </AuthProvider>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <AuthProvider>
+            <nav className="border-b bg-surface sticky top-0 z-50">
+              <div className="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
+                <Link href="/" className="font-bold text-xl tracking-tight text-primary flex-shrink-0">
+                  VoidSay
+                </Link>
+                <SearchBar />
+                <UserNav />
+              </div>
+            </nav>
+            {children}
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

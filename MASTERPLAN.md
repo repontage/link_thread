@@ -52,15 +52,15 @@
 - [x] Enhanced URL Normalization: Unified YouTube and youtu.be links to prevent thread duplication.
 - [x] Expand Unit Test Coverage: Added vitest coverage for URL parsing logic.
 
-## Phase 12: 검색 및 필터링 시스템 고도화 (Advanced Search & Filtering)
-- [ ] **Full-text Search**: 제목, 댓글 내용에 대한 전체 텍스트 검색 기능 도입 (SQLite FTS5 활용).
-- [ ] **Category & Tagging**: 링크 카테고리 분류 및 사용자 정의 태그 시스템 구축.
-- [ ] **Advanced Filters**: 댓글 많은 순, 최신순, 좋아요 순 등 정밀 필터링 제공.
+## Phase 12: 검색 및 필터링 시스템 고도화 (Advanced Search & Filtering) (Completed)
+- [x] **Full-text Search**: 제목, 댓글 내용에 대한 전체 텍스트 검색 기능 도입 (SQLite FTS5 활용).
+- [x] **Category & Tagging**: 링크 카테고리 분류 및 사용자 정의 태그 시스템 구축.
+- [x] **Advanced Filters**: 댓글 많은 순, 최신순, 좋아요 순 등 정밀 필터링 제공.
 
-## Phase 13: 사용자 커스터마이징 및 UX 강화 (User Personalization & UX)
-- [ ] **Theming**: 다크 모드/라이트 모드 자동 전환 및 사용자 선택 테마 기능.
-- [ ] **Custom Profile Cards**: 사용자 프로필에 배경 이미지 및 소셜 링크 연동 기능 추가.
-- [ ] **Rich Text Editor**: 댓글 작성 시 Markdown 또는 WYSIWYG 에디터 지원.
+## Phase 13: 사용자 커스터마이징 및 UX 강화 (User Personalization & UX) (Completed)
+- [x] **Theming**: 다크 모드/라이트 모드 자동 전환 및 사용자 선택 테마 기능.
+- [x] **Custom Profile Cards**: 사용자 프로필에 배경 이미지 및 소셜 링크 연동 기능 추가.
+- [x] **Rich Text Editor**: 댓글 작성 시 Markdown 또는 WYSIWYG 에디터 지원 (Write/Preview 모드).
 
 ## Phase 14: 커뮤니티 거버넌스 및 중재 시스템 (Community Governance & Moderation)
 - [ ] **User Reporting System**: 부적절한 링크나 댓글에 대한 사용자 신고 시스템 구축.
@@ -123,3 +123,4 @@
 - **2026-05-11**: Verified Next.js 16 build pipeline and fixed lint script in package.json to adapt to Next 16 CLI changes. Cron reliability confirmed.
 - **2026-05-11**: (Cron Run) Codebase state reviewed. Next.js `turbopack` root config updated in `next.config.js` to fix multiple lockfiles warning. Linter and build successfully verified.
 - **2026-05-11**: (Cron Run) Removed legacy script files (patch_comments.js, patch_render.js, update_masterplan.js) to resolve ESLint errors. Verified `npm run build` successfully.
+- **2026-05-15**: (Scheduled Cron) Phase 11 안정성 작업. `npm run lint`의 unused variables 경고 해결 및 `npm run build`(Turbopack)에서 발생한 `ThemeProvider` 모듈 부재, `prisma` 임포트 경로 오류를 모두 수정하여 무결성 확보.

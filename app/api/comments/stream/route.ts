@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import prisma from '@/lib/prisma';
 import { getThreadId } from '@/lib/url-parser';
 
@@ -44,7 +44,7 @@ export async function GET(req: NextRequest) {
             const data = JSON.stringify(newComments);
             controller.enqueue(encoder.encode(`data: ${data}\n\n`));
           }
-        } catch (e) {
+        } catch (_e) {
           // Ignore
         }
       }, 10000);

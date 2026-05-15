@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Shield, Users, Flag, Ban, CheckCircle, XCircle } from 'lucide-react';
+import { Shield, Users, Flag, Ban, CheckCircle } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 
 type Stats = {

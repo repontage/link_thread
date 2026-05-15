@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getThreadId, normalizeUrl } from '../../../lib/url-parser';
+import { getThreadId } from '../../../lib/url-parser';
 import prisma from '../../../lib/prisma';
 import { auth } from '@/auth';
 import { rateLimit } from '@/lib/rate-limit';
 import { logToTelegram } from '@/lib/telegram-logger';
-import { summarizeContent } from '@/lib/ai/summary-service';
+import { logger } from '@/lib/logger';
 
 // 트리를 구성하는 헬퍼 함수
 const buildCommentTree = (comments: any[]): any[] => {
@@ -37,19 +37,42 @@ const buildCommentTree = (comments: any[]): any[] => {
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
   const url = searchParams.get('url');
+  const sortBy = searchParams.get('sortBy') || 'oldest'; // newest, oldest, popular
+  const page = parseInt(searchParams.get('page') || '1');
+  const limit = parseInt(searchParams.get('limit') || '10');
 
   if (!url || typeof url !== 'string' || url.trim() === '') {
     return NextResponse.json({ error: '유효한 url 쿼리 파라미터가 필요합니다.' }, { status: 400 });
   }
 
   try {
-    const normalized = normalizeUrl(url);
+    const session = await auth();
+    const currentUserId = (session?.user as any)?.id;
+    const isAdmin = (session?.user as any)?.role === 'ADMIN';
+
     const threadId = getThreadId(url);
-    
-    // Prisma를 통해 데이터베이스에서 코멘트 조회
+    const skip = (page - 1) * limit;
+
+    let orderBy: any = { createdAt: 'asc' };
+    if (sortBy === 'newest') orderBy = { createdAt: 'desc' };
+    if (sortBy === 'popular') orderBy = { upvotes: 'desc' };
+
+    // Fetch comments for current page, filtering shadow banned users
     const rawComments = await prisma.comment.findMany({
-      where: { threadId },
-      orderBy: { createdAt: 'asc' },
+      where: { 
+        threadId,
+        OR: [
+          { user: { isShadowBanned: false } },
+          { user: null }, // Anonymous or deleted users
+          ...(currentUserId ? [
+            { userId: currentUserId }, // Author can see their own
+            ...(isAdmin ? [{ user: { isShadowBanned: true } }] : []) // Admin can see all
+          ] : [])
+        ]
+      },
+      orderBy,
+      skip,
+      take: limit,
       include: { 
         reactions: true,
         user: {
@@ -58,16 +81,38 @@ export async function GET(req: NextRequest) {
       }
     });
 
+    const totalComments = await prisma.comment.count({ 
+      where: { 
+        threadId,
+        OR: [
+          { user: { isShadowBanned: false } },
+          { user: null },
+          ...(currentUserId ? [
+            { userId: currentUserId },
+            ...(isAdmin ? [{ user: { isShadowBanned: true } }] : [])
+          ] : [])
+        ]
+      } 
+    });
+
+    // Note: buildCommentTree works best when all comments are present.
+    // For large threads, we should ideally separate root comments and replies.
+    // For now, let's keep it simple.
     const comments = buildCommentTree(rawComments);
 
     return NextResponse.json({ 
       success: true, 
       threadId, 
-      normalizedUrl: normalized, 
-      comments 
+      comments,
+      pagination: {
+        page,
+        limit,
+        total: totalComments,
+        hasNextPage: totalComments > page * limit
+      }
     });
   } catch (error: any) {
-    console.error(error);
+    logger.error(error);
     return NextResponse.json({ error: 'URL 처리 중 오류가 발생했습니다.', details: error.message }, { status: 400 });
   }
 }
@@ -87,7 +132,7 @@ export async function POST(req: NextRequest) {
       const authorName = session.user.name || 'Anonymous';
 
       const body = await req.json();
-      const { url, parentId, content } = body;
+    const { url, parentId, content, category } = body;
 
     if (!url || !content) {
       return NextResponse.json({ error: '필수 항목(url, content)이 누락되었습니다.' }, { status: 400 });
@@ -106,7 +151,7 @@ export async function POST(req: NextRequest) {
             return true;
           }
           return false;
-        } catch (e) {
+        } catch {
           return false;
         }
       });
@@ -120,6 +165,7 @@ export async function POST(req: NextRequest) {
         content,
         userId: userId,
         timestamp: body.timestamp || null,
+        category: category || null,
         imageUrls: validImageUrls.length > 0 ? validImageUrls.join(',') : null,
       }
     });
@@ -173,38 +219,10 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    /* AI 자동 요약 기능 비활성화 (보안 및 API 키 보호를 위해 제거)
-    const aiAuthorName = "AI Summarizer ✨";
-    const existingAiComment = await prisma.comment.findFirst({
-      where: { threadId, author: aiAuthorName }
-    });
-
-    if (!existingAiComment && !parentId) {
-      // 비동기로 실행하여 사용자 응답 속도에 영향을 주지 않음
-      (async () => {
-        try {
-          const summary = await summarizeContent(url, content);
-          await prisma.comment.create({
-            data: {
-              threadId,
-              parentId: null,
-              author: aiAuthorName,
-              content: summary,
-              userId: null, // 시스템 계정
-            }
-          });
-          console.log(`[AI] Summary created for thread: ${threadId}`);
-        } catch (aiError) {
-          console.error("[AI] 자동 요약 생성 실패:", aiError);
-        }
-      })();
-    }
-    */
-
     return NextResponse.json({ success: true, data: { ...newComment, children: [] } }, { status: 201 });
 
   } catch (error: any) {
-    console.error("[POST /api/comments] Error:", error);
+    logger.error("[POST /api/comments] Error:", error);
     try {
       const currentSession = await auth();
       const currentBody = await req.json().catch(() => ({}));
@@ -294,7 +312,7 @@ export async function PATCH(req: NextRequest) {
 
     return NextResponse.json({ success: true, data: updatedComment }, { status: 200 });
 
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: '잘못된 요청입니다.' }, { status: 400 });
   }
 }

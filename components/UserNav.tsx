@@ -2,6 +2,7 @@
 
 import { useSession, signOut, signIn } from "next-auth/react";
 import Link from "next/link";
+import ThemeToggle from "./ThemeToggle";
 
 export default function UserNav() {
   const { data: session, status } = useSession();
@@ -12,6 +13,7 @@ export default function UserNav() {
 
   return (
     <div className="flex items-center gap-4 text-sm font-medium">
+      <ThemeToggle />
       <Link href="/" className="text-zinc-600 hover:text-zinc-900 transition-colors">
         Home
       </Link>

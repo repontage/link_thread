@@ -34,7 +34,7 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
     }
 
     return NextResponse.json({ success: true, user: returnedUser });
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json({ error: 'Failed to fetch user data' }, { status: 500 });
   }
 }

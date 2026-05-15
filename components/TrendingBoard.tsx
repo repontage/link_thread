@@ -8,7 +8,7 @@ interface TrendingItem {
   _count: { url: number };
 }
 
-export default function TrendingBoard({ onSelectUrl }: { onSelectUrl: (url: string) => void }) {
+export default function TrendingBoard({ onSelectUrl }: { onSelectUrl: (_url: string) => void }) {
   const [period, setPeriod] = useState('today');
   const [links, setLinks] = useState<TrendingItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
