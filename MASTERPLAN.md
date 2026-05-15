@@ -73,7 +73,7 @@
 - [ ] **Trend Prediction**: 활동 데이터를 기반으로 한 급상승 링크 예측 알고리즘 개발.
 
 ## Phase 16: 플랫폼 접근성 확장 (Accessibility & Expansion)
-- [ ] **Browser Extension**: 브라우저 어디서나 현재 페이지의 댓글을 볼 수 있는 공식 확장 프로그램 개발.
+- [x] **Browser Extension**: 브라우저 어디서나 현재 페이지의 댓글을 볼 수 있는 공식 확장 프로그램 개발.
 - [ ] **Mobile App (PWA/Hybrid)**: 네이티브 앱 수준의 사용자 경험을 위한 PWA 최적화 및 모바일 알림 강화.
 - [ ] **Embeddable Widget**: 타 사이트에 VoidSay 댓글창을 삽입할 수 있는 위젯 기능.
 
@@ -97,14 +97,16 @@
 - [ ] **Self-healing Infrastructure**: 에러 발생 시 자동 복구 및 로그 분석을 통한 선제적 대응 시스템.
 - [ ] **Automated Content Curations**: 양질의 콘텐츠를 자동으로 선별하여 메인에 노출하는 스마트 큐레이션.
 
-## Infra / Tech Stack
+## Tech Stack
 - Frontend: Next.js (App Router), Tailwind CSS
 - Backend: Next.js API Routes
 - DB: SQLite (Local) via Prisma
 - Hosting: Vercel
+- Security: Cloudflare (Proxied)
 
 ## Recent Updates
-- **2026-05-14**: (Scheduled Cron) 시스템 무결성 점검 완료. `npm run lint` (0 경고) 및 `npm run build` (Turbopack) 성공 확인. `vitest` 테스트 모두 패스.
+- **2026-05-15**: **Infrastructure Security Upgrade**. Migrated domain DNS to **Cloudflare**. Enabled DDoS protection, WAF, and Bot Fight Mode. Configured SSL to 'Full (Strict)' for secure communication between Cloudflare and Vercel.
+- **2026-05-15**: **Localization**. Converted all Korean UI strings to English to prepare for global expansion (i18n ready).
 - **2026-05-14**: (Scheduled Cron) 점검 수행 및 코드베이스 개선. `npm run lint` 및 `npm run build` 결과 린트 경고나 빌드 오류 없음을 재확인. 기존 코드베이스 내 원시 `console.error` 호출 일부를 전역 로거(`lib/logger.ts`)로 교체하여 Phase 11 안정성 향상 및 로깅 체계 강화(Stability & Maintenance).
 - **2026-05-14**: (Scheduled Cron) Codebase sanity check. Verified system stability with `npm run lint` and `npm run build` using Next.js 16 Turbopack. All checks passed with zero warnings. No new dependencies or issues found.
 - **2026-05-13**: (Scheduled Cron) Executed routine system check. Verified build pipeline with `npm run build` (Turbopack) and `npm run lint`. Also executed `npm run test` (Vitest) validating 7 tests across 2 suites successfully. The Next.js 16 codebase remains solid.
@@ -124,3 +126,5 @@
 - **2026-05-11**: (Cron Run) Codebase state reviewed. Next.js `turbopack` root config updated in `next.config.js` to fix multiple lockfiles warning. Linter and build successfully verified.
 - **2026-05-11**: (Cron Run) Removed legacy script files (patch_comments.js, patch_render.js, update_masterplan.js) to resolve ESLint errors. Verified `npm run build` successfully.
 - **2026-05-15**: (Scheduled Cron) Phase 11 안정성 작업. `npm run lint`의 unused variables 경고 해결 및 `npm run build`(Turbopack)에서 발생한 `ThemeProvider` 모듈 부재, `prisma` 임포트 경로 오류를 모두 수정하여 무결성 확보.
+- **2026-05-15**: (Scheduled Cron) Phase 16 시작. 브라우저 확장 프로그램(Browser Extension) 기본 구조(manifest.json) 생성 및 MASTERPLAN 업데이트 완료.
+- **2026-05-15**: (Scheduled Cron) 브라우저 확장 프로그램(Browser Extension) 팝업 UI(`popup.html`, `popup.js`) 구현 및 `manifest.json` 업데이트. 빌드 검증 완료.

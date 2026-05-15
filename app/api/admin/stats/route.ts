@@ -11,16 +11,31 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
-    const [totalUsers, totalComments, totalReports] = await Promise.all([
+    const [totalUsers, totalComments, totalReports, topLinks, topCommenters] = await Promise.all([
       prisma.user.count(),
       prisma.comment.count(),
       prisma.report.count(),
+      prisma.linkStats.findMany({
+        orderBy: { views: 'desc' },
+        take: 5,
+      }),
+      prisma.user.findMany({
+        select: {
+          id: true,
+          name: true,
+          _count: { select: { comments: true } },
+        },
+        orderBy: { comments: { _count: 'desc' } },
+        take: 5,
+      }),
     ]);
 
     return NextResponse.json({
       totalUsers,
       totalComments,
       totalReports,
+      topLinks,
+      topCommenters,
     });
   } catch (error) {
     console.error('Failed to fetch admin stats:', error);

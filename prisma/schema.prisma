@@ -21,8 +21,7 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -36,25 +35,25 @@ model Session {
 }
 
 model User {
-  id             String          @id @default(cuid())
-  name           String?
-  username       String?         @unique
-  bio            String?
+  id                String          @id @default(cuid())
+  name              String?
+  username          String?         @unique
+  bio               String?
   profileBackground String?
-  email          String?         @unique
-  emailVerified  DateTime?
-  image          String?
-  role           String          @default("USER")
-  isBanned       Boolean         @default(false)
-  isShadowBanned Boolean         @default(false)
-  accounts       Account[]
-  sessions       Session[]
-  comments       Comment[]
-  authenticators Authenticator[]
-  reactions      Reaction[]
-  notifications  Notification[]
-  Report         Report[]
-  badges         UserBadge[]
+  email             String?         @unique
+  emailVerified     DateTime?
+  image             String?
+  role              String          @default("USER")
+  isBanned          Boolean         @default(false)
+  isShadowBanned    Boolean         @default(false)
+  accounts          Account[]
+  authenticators    Authenticator[]
+  comments          Comment[]
+  notifications     Notification[]
+  reactions         Reaction[]
+  Report            Report[]
+  sessions          Session[]
+  badges            UserBadge[]
 }
 
 model Authenticator {
@@ -66,8 +65,7 @@ model Authenticator {
   credentialDeviceType String
   credentialBackedUp   Boolean
   transports           String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user                 User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, credentialID])
 }
@@ -81,7 +79,7 @@ model VerificationToken {
 }
 
 model Comment {
-  id        String   @id @default(uuid())
+  id        String     @id @default(uuid())
   threadId  String
   url       String?
   parentId  String?
@@ -90,18 +88,16 @@ model Comment {
   timestamp Int?
   imageUrls String?
   tags      String?
-  category  String?
-  upvotes   Int      @default(0)
-  createdAt DateTime @default(now())
-  isToxic   Boolean  @default(false)
-
+  upvotes   Int        @default(0)
+  createdAt DateTime   @default(now())
+  isToxic   Boolean    @default(false)
   userId    String?
-  user      User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
+  category  String?
+  parent    Comment?   @relation("CommentToComment", fields: [parentId], references: [id])
+  children  Comment[]  @relation("CommentToComment")
+  user      User?      @relation(fields: [userId], references: [id])
   reactions Reaction[]
-
-  parent   Comment?  @relation("CommentToComment", fields: [parentId], references: [id], onDelete: SetNull)
-  children Comment[] @relation("CommentToComment")
-  Report   Report[]
+  Report    Report[]
 
   @@index([threadId])
   @@index([threadId, createdAt])
@@ -114,9 +110,8 @@ model Reaction {
   commentId String
   userId    String
   createdAt DateTime @default(now())
-
-  comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
 
   @@unique([commentId, userId, emoji])
   @@index([commentId])
@@ -130,8 +125,7 @@ model Notification {
   message   String
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, isRead])
 }
@@ -141,11 +135,10 @@ model Report {
   commentId  String
   reporterId String
   reason     String
-  status     String   @default("PENDING") // PENDING, RESOLVED, DISMISSED
+  status     String   @default("PENDING")
   createdAt  DateTime @default(now())
-
-  comment  Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
-  reporter User    @relation(fields: [reporterId], references: [id], onDelete: Cascade)
+  reporter   User     @relation(fields: [reporterId], references: [id], onDelete: Cascade)
+  comment    Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
 
   @@index([commentId])
   @@index([reporterId])
@@ -158,6 +151,53 @@ model UserBadge {
   badgeType String
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@unique([userId, badgeType])
   @@index([userId])
+}
+
+model LinkStats {
+  id        String   @id @default(uuid())
+  url       String   @unique
+  threadId  String   @unique
+  views     Int      @default(0)
+  updatedAt DateTime @updatedAt
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model Comment_FTS {
+  id       Unsupported("")?
+  content  Unsupported("")?
+  url      Unsupported("")?
+  category Unsupported("")?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model Comment_FTS_config {
+  k Unsupported("")  @id
+  v Unsupported("")?
+
+  @@ignore
+}
+
+model Comment_FTS_data {
+  id    Int    @id @default(autoincrement())
+  block Bytes?
+}
+
+model Comment_FTS_docsize {
+  id Int    @id @default(autoincrement())
+  sz Bytes?
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model Comment_FTS_idx {
+  segid Unsupported("")
+  term  Unsupported("")
+  pgno  Unsupported("")?
+
+  @@id([segid, term])
+  @@ignore
 }

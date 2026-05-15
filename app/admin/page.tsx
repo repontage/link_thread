@@ -1,13 +1,15 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Shield, Users, Flag, Ban, CheckCircle } from 'lucide-react';
+import { Shield, Users, Flag, Ban, CheckCircle, EyeOff, Eye, TrendingUp } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 
 type Stats = {
   totalUsers: number;
   totalComments: number;
   totalReports: number;
+  topLinks: { url: string; views: number }[];
+  topCommenters: { id: string; name: string | null; _count: { comments: number } }[];
 };
 
 type User = {
@@ -16,6 +18,7 @@ type User = {
   email: string | null;
   role: string;
   isBanned: boolean;
+  isShadowBanned: boolean;
   _count: {
     comments: number;
     Report: number;
@@ -67,7 +70,7 @@ export default function AdminDashboard() {
     }
   };
 
-  const updateUser = async (userId: string, data: { isBanned?: boolean; role?: string }) => {
+  const updateUser = async (userId: string, data: { isBanned?: boolean; role?: string; isShadowBanned?: boolean }) => {
     try {
       const res = await fetch('/api/admin/users', {
         method: 'PATCH',
@@ -146,6 +149,63 @@ export default function AdminDashboard() {
         </div>
       )}
 
+      {stats && stats.topLinks && stats.topLinks.length > 0 && (
+        <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 mb-8">
+          <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
+            <TrendingUp className="w-5 h-5 text-indigo-500" />
+            Top Viewed Links
+          </h2>
+          <div className="space-y-3">
+            {stats.topLinks.map((link, idx) => (
+              <div key={idx} className="flex items-center justify-between p-3 bg-gray-50 rounded-md border border-gray-100">
+                <div className="flex-1 mr-4">
+                  <p className="text-sm font-medium text-gray-800 truncate">{link.url}</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold bg-indigo-100 text-indigo-700 px-2 py-1 rounded">
+                    {link.views} views
+                  </span>
+                  <a 
+                    href={link.url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="p-1 text-gray-400 hover:text-indigo-600 transition-colors"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {stats && stats.topCommenters && stats.topCommenters.length > 0 && (
+        <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 mb-8">
+          <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
+            <Users className="w-5 h-5 text-green-500" />
+            Active Commenters
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {stats.topCommenters.map((user, idx) => (
+              <div key={idx} className="flex items-center justify-between p-3 bg-gray-50 rounded-md border border-gray-100">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-700 text-xs font-bold">
+                    {idx + 1}
+                  </div>
+                  <span className="text-sm font-medium text-gray-800">{user.name || 'Anonymous'}</span>
+                </div>
+                <span className="text-xs font-bold text-gray-500">
+                  {user._count.comments} comments
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
         <div className="flex border-b">
           <button
@@ -154,7 +214,7 @@ export default function AdminDashboard() {
               activeTab === 'users' ? 'bg-indigo-50 text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500 hover:bg-gray-50'
             }`}
           >
-            Manage Users
+            Users
           </button>
           <button
             onClick={() => setActiveTab('reports')}
@@ -162,7 +222,7 @@ export default function AdminDashboard() {
               activeTab === 'reports' ? 'bg-indigo-50 text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500 hover:bg-gray-50'
             }`}
           >
-            Review Reports
+            Reports
           </button>
         </div>
 
@@ -177,6 +237,7 @@ export default function AdminDashboard() {
                     <th className="py-3 px-4 font-semibold text-gray-600">Stats</th>
                     <th className="py-3 px-4 font-semibold text-gray-600">Role</th>
                     <th className="py-3 px-4 font-semibold text-gray-600">Status</th>
+                    <th className="py-3 px-4 font-semibold text-gray-600">Shadow</th>
                     <th className="py-3 px-4 font-semibold text-gray-600 text-right">Actions</th>
                   </tr>
                 </thead>
@@ -209,7 +270,27 @@ export default function AdminDashboard() {
                           </span>
                         )}
                       </td>
-                      <td className="py-3 px-4 text-right">
+                      <td className="py-3 px-4">
+                        {user.isShadowBanned ? (
+                          <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-200 text-gray-700">
+                            Shadowed
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-50 text-blue-700">
+                            Visible
+                          </span>
+                        )}
+                      </td>
+                      <td className="py-3 px-4 text-right flex justify-end gap-1">
+                        <button
+                          onClick={() => updateUser(user.id, { isShadowBanned: !user.isShadowBanned })}
+                          className={`inline-flex items-center p-2 rounded ${
+                            user.isShadowBanned ? 'text-blue-600 hover:bg-blue-50' : 'text-gray-400 hover:bg-gray-100'
+                          }`}
+                          title={user.isShadowBanned ? 'Unshadow User' : 'Shadow Ban User'}
+                        >
+                          {user.isShadowBanned ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
+                        </button>
                         <button
                           onClick={() => updateUser(user.id, { isBanned: !user.isBanned })}
                           className={`inline-flex items-center p-2 rounded ${

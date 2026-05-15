@@ -72,7 +72,7 @@ export default function ThreadUI() {
   const [includeTimestamp, setIncludeTimestamp] = useState(false);
 
   const categories = [
-    { value: '', label: 'No Category' },
+    { value: '', label: 'None' },
     { value: 'News', label: 'News' },
     { value: 'Tech', label: 'Tech' },
     { value: 'Entertainment', label: 'Entertainment' },
@@ -207,6 +207,13 @@ export default function ThreadUI() {
       setShowComments(false);
       setCurrentUrl(url);
       
+      // Track view asynchronously
+      fetch('/api/links/view', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url }),
+      }).catch(err => console.error('Failed to track view', err));
+
       await Promise.all([
         fetchComments(url, currentSearchId, 1),
         fetchPreview(url, currentSearchId)
@@ -262,10 +269,10 @@ export default function ThreadUI() {
           setIncludeTimestamp(false);
           await fetchComments(currentUrl, searchIdRef.current, 1);
         } else {
-          alert('새 댓글 작성 중 서버 에러가 발생했습니다.');
+          alert('Server error occurred while posting comment.');
         }
       } catch (_err) {
-        alert('새 댓글 작성 중 네트워크 에러가 발생했습니다.');
+        alert('Network error occurred while posting comment.');
       } finally {
         setIsSubmittingNew(false);
       }
@@ -327,7 +334,7 @@ export default function ThreadUI() {
         {isLoading && (
           <div className="flex flex-col items-center justify-center py-12 text-zinc-500 animate-pulse transition-opacity duration-300">
             <Loader2 className="h-8 w-8 animate-spin text-blue-500 mb-4" aria-hidden="true" />
-            <p>Fetching threads for this URL...</p>
+            <p>Fetching threads...</p>
           </div>
         )}
 
@@ -395,13 +402,13 @@ export default function ThreadUI() {
               {!session ? (
                 <div className="flex flex-col items-center justify-center py-8">
                   <MessageSquare className="h-10 w-10 text-zinc-300 mb-4" />
-                  <h3 className="text-lg font-medium text-zinc-900 mb-2">대화에 참여하세요</h3>
-                  <p className="text-zinc-500 mb-6 text-center max-w-sm">로그인하면 자유롭게 댓글을 남기고 다른 사람들과 의견을 나눌 수 있습니다.</p>
+                  <h3 className="text-lg font-medium text-zinc-900 mb-2">Join the Conversation</h3>
+                  <p className="text-zinc-500 mb-6 text-center max-w-sm">Login to freely leave comments and share opinions with others.</p>
                   <button
                     onClick={() => signIn()}
                     className="px-6 py-2.5 bg-zinc-900 hover:bg-zinc-800 text-white font-medium rounded-lg transition-colors flex items-center gap-2"
                   >
-                    이메일 / 소셜 / 패스키로 로그인하기
+                    Login with Email / Social / Passkey
                   </button>
                 </div>
               ) : (
@@ -483,7 +490,7 @@ export default function ThreadUI() {
                             onChange={(e) => setIncludeTimestamp(e.target.checked)} 
                             className="rounded border-zinc-300 text-blue-600 focus:ring-blue-500"
                           />
-                          현재 영상 시간 포함하기
+                          Include timestamp
                         </label>
                       )}
                     </div>

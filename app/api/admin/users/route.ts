@@ -18,6 +18,7 @@ export async function GET() {
         email: true,
         role: true,
         isBanned: true,
+        isShadowBanned: true,
         _count: {
           select: { comments: true, Report: true },
         },
@@ -39,7 +40,7 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
-    const { userId, isBanned, role } = await req.json();
+    const { userId, isBanned, isShadowBanned, role } = await req.json();
 
     if (!userId) {
       return NextResponse.json({ error: 'Missing userId' }, { status: 400 });
@@ -47,6 +48,7 @@ export async function PATCH(req: NextRequest) {
 
     const updateData: any = {};
     if (typeof isBanned === 'boolean') updateData.isBanned = isBanned;
+    if (typeof isShadowBanned === 'boolean') updateData.isShadowBanned = isShadowBanned;
     if (role && ['USER', 'ADMIN'].includes(role)) updateData.role = role;
 
     const updatedUser = await prisma.user.update({

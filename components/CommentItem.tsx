@@ -7,6 +7,7 @@ import ImageCarousel from './ImageCarousel';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Link from 'next/link';
+import ReportModal from './ReportModal';
 
 export interface ReactionType {
   id?: string;
@@ -36,6 +37,7 @@ const CommentItem = React.memo(({ comment, url, onReplySuccess, onTimestampClick
   const [replyContent, setReplyContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isRevealed, setIsRevealed] = useState(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   
   const [reactions, setReactions] = useState<ReactionType[]>(comment.reactions || []);
   const [isReacting, setIsReacting] = useState(false);
@@ -46,14 +48,15 @@ const CommentItem = React.memo(({ comment, url, onReplySuccess, onTimestampClick
     setReactions(comment.reactions || []);
   }, [comment.reactions]);
 
-  const handleReport = async () => {
+  const handleReport = () => {
     if (!session?.user) {
       alert('로그인이 필요합니다.');
       return;
     }
-    const reason = prompt('신고 사유를 입력해주세요 (예: 스팸, 욕설, 부적절한 콘텐츠):');
+    setIsReportModalOpen(true);
+    const reason = prompt('Please enter the reason for reporting (e.g., spam, abuse, inappropriate content):');
     if (!reason) return;
-
+  const submitReport = async (reason: string) => {
     try {
       const res = await fetch('/api/reports', {
         method: 'POST',
@@ -61,18 +64,18 @@ const CommentItem = React.memo(({ comment, url, onReplySuccess, onTimestampClick
         body: JSON.stringify({ commentId: comment.id, reason }),
       });
       if (res.ok) {
-        alert('신고가 접수되었습니다.');
+        alert('Report submitted successfully.');
       } else {
-        alert('신고 제출에 실패했습니다.');
+        alert('Failed to submit report.');
       }
     } catch (_err) {
-      alert('오류가 발생했습니다.');
+      alert('An error occurred.');
     }
   };
 
   const handleReaction = async (emoji: string) => {
     if (!session?.user) {
-      alert('로그인이 필요합니다.');
+      alert('Login required.');
       return;
     }
     if (isReacting) return;
@@ -90,7 +93,7 @@ const CommentItem = React.memo(({ comment, url, onReplySuccess, onTimestampClick
         setReactions(data.data.reactions);
       }
     } catch (_err) {
-      alert('반응을 남기는 중 오류가 발생했습니다.');
+      alert('An error occurred while reacting.');
     } finally {
       setIsReacting(false);
     }
@@ -104,7 +107,7 @@ const CommentItem = React.memo(({ comment, url, onReplySuccess, onTimestampClick
   };
 
   const handleDelete = async () => {
-    if (!confirm('정말 삭제하시겠습니까?')) return;
+    if (!confirm('Are you sure you want to delete this?')) return;
     
     try {
       const res = await fetch(`/api/comments/${comment.id}`, {
@@ -114,22 +117,22 @@ const CommentItem = React.memo(({ comment, url, onReplySuccess, onTimestampClick
         onReplySuccess(); // refresh comments
       } else {
         const data = await res.json();
-        alert(data.error || '삭제 중 오류가 발생했습니다.');
+        alert(data.error || 'An error occurred while deleting.');
       }
     } catch (_err) {
-      alert('삭제 중 네트워크 에러가 발생했습니다.');
+      alert('Network error occurred while deleting.');
     }
   };
 
   const handleReplySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!replyContent.trim()) {
-      alert('내용을 입력해주세요.');
+      alert('Please enter content.');
       return;
     }
     
     if (!session?.user) {
-      alert('로그인이 필요합니다.');
+      alert('Login required.');
       return;
     }
 
@@ -229,7 +232,7 @@ const CommentItem = React.memo(({ comment, url, onReplySuccess, onTimestampClick
           onClick={(e) => { e.stopPropagation(); setIsRevealed(true); }}
           className="mb-4 p-4 bg-zinc-100 text-zinc-500 text-sm font-medium rounded-md border border-zinc-200 flex items-center justify-center cursor-pointer hover:bg-zinc-200 transition-colors text-center"
         >
-          ⚠️ 시스템에 의해 유해한 콘텐츠로 분류되어 숨김 처리되었습니다. (클릭하여 보기)
+          ⚠️ Content hidden by the system due to harmful content. (Click to view)
         </div>
       ) : (
         <>
@@ -350,16 +353,16 @@ const CommentItem = React.memo(({ comment, url, onReplySuccess, onTimestampClick
       </div>
 
       {isReplying && (
-        <form onSubmit={handleReplySubmit} aria-label="답글 작성 폼" className="mb-4 p-4 bg-zinc-50 rounded-lg border border-zinc-200">
+        <form onSubmit={handleReplySubmit} aria-label="Reply Form" className="mb-4 p-4 bg-zinc-50 rounded-lg border border-zinc-200">
           {!session ? (
             <div className="flex flex-col items-center py-4">
-              <p className="text-sm text-zinc-600 mb-3">로그인하여 답글을 작성하세요</p>
+              <p className="text-sm text-zinc-600 mb-3">Login to post a reply</p>
               <button
                 type="button"
                 onClick={() => signIn()}
                 className="px-4 py-2 bg-zinc-900 text-white text-sm rounded-md hover:bg-zinc-800 transition-colors"
               >
-                이메일/소셜/패스키로 로그인
+                Login with Email/Social/Passkey
               </button>
             </div>
           ) : (
@@ -397,6 +400,14 @@ const CommentItem = React.memo(({ comment, url, onReplySuccess, onTimestampClick
             </div>
           ))}
         </div>
+      )}
+      {isReportModalOpen && (
+        <ReportModal
+          commentId={comment.id}
+          commentContent={comment.content}
+          onClose={() => setIsReportModalOpen(false)}
+          onSubmit={submitReport}
+        />
       )}
     </article>
   );
