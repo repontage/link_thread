@@ -319,7 +319,7 @@ export default function ThreadUI() {
           type="submit"
           disabled={isLoading}
           aria-label="스레드 보기"
-          className="absolute right-2 top-2 bottom-2 px-6 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-full transition-colors disabled:opacity-70 flex items-center gap-2"
+          className="absolute right-2 top-2 bottom-2 px-6 btn-primary disabled:opacity-70 flex items-center gap-2"
         >
           {isLoading ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : null}
           {isLoading ? 'Loading' : 'View Threads'}
@@ -406,7 +406,7 @@ export default function ThreadUI() {
                   <p className="text-zinc-500 mb-6 text-center max-w-sm">Login to freely leave comments and share opinions with others.</p>
                   <button
                     onClick={() => signIn()}
-                    className="px-6 py-2.5 bg-zinc-900 hover:bg-zinc-800 text-white font-medium rounded-lg transition-colors flex items-center gap-2"
+                    className="btn-primary flex items-center gap-2"
                   >
                     Login with Email / Social / Passkey
                   </button>
@@ -498,10 +498,10 @@ export default function ThreadUI() {
                       type="submit"
                       disabled={isSubmittingNew}
                       aria-label="댓글 등록"
-                      className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-70 flex items-center gap-2"
+                      className="btn-primary flex items-center gap-2"
                     >
-                      {isSubmittingNew ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Send className="h-4 w-4" aria-hidden="true" />}
-                      {isSubmittingNew ? 'Submitting...' : 'Post Comment'}
+                      {isSubmittingNew ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                      {isSubmittingNew ? 'Posting...' : 'Post Comment'}
                     </button>
                   </div>
                 </form>

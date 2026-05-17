@@ -220,7 +220,7 @@ const CommentItem = React.memo(({ comment, url, onReplySuccess, onTimestampClick
         {comment.timestamp != null && (
           <button 
             onClick={(e) => { e.stopPropagation(); onTimestampClick?.(comment.timestamp!); }}
-            className="ml-auto px-2 py-1 bg-blue-50 text-blue-600 text-xs font-semibold rounded-md hover:bg-blue-100 transition-colors"
+            className="ml-auto px-2 py-1 bg-primary/10 text-primary text-xs font-semibold rounded-sm hover:bg-primary/20 transition-transform active:scale-95"
           >
             {formatTimestamp(comment.timestamp)}
           </button>
@@ -312,7 +312,7 @@ const CommentItem = React.memo(({ comment, url, onReplySuccess, onTimestampClick
             <button 
               key={emoji}
               onClick={(e) => { e.stopPropagation(); handleReaction(emoji); }}
-              className={`flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium border transition-colors ${hasReacted ? 'bg-blue-50 border-blue-200 text-blue-600' : 'bg-zinc-50 border-zinc-200 text-zinc-500 hover:bg-zinc-100'}`}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-pill text-xs font-semibold border transition-all active:scale-95 ${hasReacted ? 'bg-primary border-primary text-white shadow-sm' : 'bg-canvas border-hairline text-ink hover:bg-canvas-parchment'}`}
             >
               <span>{emoji}</span>
               {count > 0 && <span>{count}</span>}
@@ -360,7 +360,7 @@ const CommentItem = React.memo(({ comment, url, onReplySuccess, onTimestampClick
               <button
                 type="button"
                 onClick={() => signIn()}
-                className="px-4 py-2 bg-zinc-900 text-white text-sm rounded-md hover:bg-zinc-800 transition-colors"
+                className="btn-dark-utility"
               >
                 Login with Email/Social/Passkey
               </button>
@@ -383,7 +383,7 @@ const CommentItem = React.memo(({ comment, url, onReplySuccess, onTimestampClick
               </div>
               <div className="flex justify-end gap-2">
                 <button type="button" onClick={() => setIsReplying(false)} aria-label="취소" className="px-3 py-1.5 text-sm text-zinc-500 hover:text-zinc-700">Cancel</button>
-                <button type="submit" disabled={isSubmitting} aria-label="답글 등록" className="px-3 py-1.5 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors">
+                <button type="submit" disabled={isSubmitting} aria-label="답글 등록" className="btn-primary text-sm px-4 py-1.5">
                   {isSubmitting ? 'Submitting...' : 'Post Reply'}
                 </button>
               </div>

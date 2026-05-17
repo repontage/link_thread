@@ -8,23 +8,23 @@ export default function UserNav() {
   const { data: session, status } = useSession();
 
   if (status === "loading") {
-    return <div className="w-20 h-4 bg-zinc-100 animate-pulse rounded" />;
+    return <div className="w-20 h-4 bg-canvas-parchment animate-pulse rounded-pill" />;
   }
 
   return (
-    <div className="flex items-center gap-4 text-sm font-medium">
+    <div className="flex items-center gap-xl text-nav-link font-text">
       <ThemeToggle />
-      <Link href="/" className="text-zinc-600 hover:text-zinc-900 transition-colors">
+      <Link href="/" className="text-white/80 hover:text-white transition-colors">
         Home
       </Link>
       {session ? (
         <>
-          <Link href="/profile" className="text-zinc-600 hover:text-zinc-900 transition-colors">
+          <Link href="/profile" className="text-white/80 hover:text-white transition-colors">
             Profile
           </Link>
           <button
             onClick={() => signOut({ callbackUrl: "/" })}
-            className="text-zinc-600 hover:text-zinc-900 transition-colors"
+            className="btn-dark-utility"
           >
             Logout
           </button>
@@ -32,9 +32,9 @@ export default function UserNav() {
       ) : (
         <button
           onClick={() => signIn()}
-          className="text-zinc-600 hover:text-zinc-900 transition-colors"
+          className="btn-dark-utility"
         >
-          Profile
+          Sign In
         </button>
       )}
     </div>
