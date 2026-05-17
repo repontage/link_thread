@@ -94,12 +94,12 @@ export default function Home() {
               <p className="text-body text-body-muted">Built with SSE technology, see new comments as they happen without refreshing the page.</p>
             </div>
             <div>
-              <h3 className="text-tagline mb-sm text-white">Secure</h3>
-              <p className="text-body text-body-muted">Login with passkeys or magic links. No passwords, no friction, just pure conversation.</p>
+              <h3 className="text-tagline mb-sm text-white">Clean</h3>
+              <p className="text-body text-body-muted">No distractions. Just a photography-first interface designed to let the product speak.</p>
             </div>
             <div>
-              <h3 className="text-tagline mb-sm text-white">Clean</h3>
-              <p className="text-body text-body-muted">No distractions, no ads. Just a photography-first interface designed to let the product speak.</p>
+              <h3 className="text-tagline mb-sm text-white">Ad-ready</h3>
+              <p className="text-body text-body-muted">Designed with premium placement in mind. High-quality advertising integration coming soon.</p>
             </div>
           </div>
         </div>
