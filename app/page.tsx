@@ -2,20 +2,46 @@ import ThreadUI from '@/components/ThreadUI';
 
 export default function Home() {
   return (
-    <main className="min-h-[calc(100vh-3.5rem)] flex flex-col items-center pt-24 px-4 sm:px-6 lg:px-8">
-      <div className="text-center mb-12">
-        <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 mb-6 pb-2">
-          Comment on any website.
-        </h1>
-        <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-          Paste a link below to see what others are saying, or start a new thread. 
-          Your universal discussion board for the internet.
-        </p>
-      </div>
+    <main className="min-h-screen flex flex-col items-center">
+      {/* Global Nav Placeholder (Should be in layout usually, but for demonstration in this page) */}
+      <nav className="global-nav">
+        <div className="max-w-[1440px] w-full flex items-center justify-between px-lg">
+          <span className="font-display font-semibold">Voidsay</span>
+          <div className="flex gap-xl">
+            <a href="#" className="hover:text-white/80">Search</a>
+            <a href="#" className="hover:text-white/80">About</a>
+          </div>
+        </div>
+      </nav>
 
-      <div className="w-full max-w-4xl mx-auto">
-        <ThreadUI />
-      </div>
+      {/* Hero Section - Light Tile */}
+      <section className="product-tile-light pt-[124px]">
+        <div className="max-w-[980px] px-lg">
+          <h1 className="text-hero mb-xs">
+            Comment on any website.
+          </h1>
+          <p className="text-lead text-ink-muted80 mb-xl max-w-2xl mx-auto">
+            Your universal discussion board for the internet.
+            Paste a link below to start or join a thread.
+          </p>
+          <div className="flex justify-center gap-md">
+            <button className="btn-primary">Get Started</button>
+            <button className="btn-secondary-pill text-primary border-primary">Learn more</button>
+          </div>
+        </div>
+      </section>
+
+      {/* Main Content Area */}
+      <section className="product-tile-parchment py-section w-full flex flex-col items-center">
+        <div className="w-full max-w-4xl px-lg">
+          <ThreadUI />
+        </div>
+      </section>
+
+      {/* Footer Placeholder */}
+      <footer className="w-full bg-canvas-parchment py-section border-t border-divider-soft text-center text-fine-print text-ink-muted48">
+        <p>© 2026 Voidsay Project. Built with Hermes.</p>
+      </footer>
     </main>
   );
 }

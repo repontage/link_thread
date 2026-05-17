@@ -4,55 +4,69 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --surface: 0 0% 100%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --border: 214.3 31.8% 91.4%;
-  }
-
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --surface: 217.2 32.6% 17.5%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --border: 217.2 32.6% 17.5%;
+    --primary: #0066cc;
+    --primary-focus: #0071e3;
+    --primary-on-dark: #2997ff;
+    --ink: #1d1d1f;
+    --canvas: #ffffff;
+    --canvas-parchment: #f5f5f7;
+    --surface-pearl: #fafafc;
+    --surface-tile1: #272729;
+    --surface-tile2: #2a2a2c;
+    --surface-tile3: #252527;
+    --surface-black: #000000;
   }
 
   body {
-    @apply bg-background text-foreground antialiased transition-colors duration-300;
+    @apply bg-canvas text-ink antialiased font-text selection:bg-primary/20 selection:text-primary;
+    font-size: 17px;
+    line-height: 1.47;
+    letter-spacing: -0.374px;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
   }
 }
 
-@layer utilities {
-  .bg-background {
-    background-color: hsl(var(--background));
+@layer components {
+  .btn-primary {
+    @apply bg-primary text-white font-text text-body rounded-pill px-[22px] py-[11px] transition-transform active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary-focus;
   }
-  .text-foreground {
-    color: hsl(var(--foreground));
+
+  .btn-secondary-pill {
+    @apply bg-transparent text-primary border border-primary font-text text-body rounded-pill px-[22px] py-[11px] transition-transform active:scale-95;
   }
-  .bg-surface {
-    background-color: hsl(var(--surface));
+
+  .btn-dark-utility {
+    @apply bg-ink text-white font-text text-button-utility rounded-sm px-[15px] py-[8px] transition-transform active:scale-95;
   }
-  .text-primary {
-    color: hsl(var(--primary));
+
+  .product-tile {
+    @apply flex flex-col items-center text-center py-section w-full;
   }
-  .bg-primary {
-    background-color: hsl(var(--primary));
+
+  .product-tile-light {
+    @apply product-tile bg-canvas text-ink;
   }
-  .text-muted-foreground {
-    @apply text-slate-500 dark:text-slate-400;
+
+  .product-tile-parchment {
+    @apply product-tile bg-canvas-parchment text-ink;
   }
-  .bg-muted {
-    background-color: hsl(var(--muted));
+
+  .product-tile-dark {
+    @apply product-tile bg-surface-tile1 text-white;
   }
-  .border-border {
-    border-color: hsl(var(--border));
+
+  .product-shadow {
+    box-shadow: 0 5px 30px 0 rgba(0, 0, 0, 0.22);
+  }
+
+  .global-nav {
+    @apply fixed top-0 w-full h-[44px] bg-surface-black text-white flex items-center justify-center font-text text-nav-link z-[1000];
+  }
+
+  .sub-nav-frosted {
+    @apply sticky top-[44px] w-full h-[52px] bg-canvas-parchment/80 backdrop-blur-xl border-b border-divider-soft flex items-center justify-between px-lg z-[900];
   }
 }

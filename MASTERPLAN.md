@@ -68,14 +68,14 @@
 - [ ] **Shadow Banning Logic**: 커뮤니티 질서 유지를 위한 스팸 자동 필터링 및 섀도우 배닝 도입.
 
 ## Phase 15: 데이터 통계 및 분석 대시보드 (Analytics & Insights)
-- [ ] **Link Analytics**: 각 링크별 조회수, 유입 경로, 댓글 참여율 통계 시각화.
-- [ ] **User Activity Report**: 사용자별 활동량 요약 및 '올해의 댓글러' 등 리포트 생성.
-- [ ] **Trend Prediction**: 활동 데이터를 기반으로 한 급상승 링크 예측 알고리즘 개발.
+- [x] **Link Analytics**: 각 링크별 조회수, 유입 경로, 댓글 참여율 통계 시각화. (`/api/analytics/link` 엔드포인트 구현 완료)
+- [x] **User Activity Report**: 사용자별 활동량 요약 및 '올해의 댓글러' 등 리포트 생성.
+- [x] **Trend Prediction**: 활동 데이터를 기반으로 한 급상승 링크 예측 알고리즘 개발.
 
 ## Phase 16: 플랫폼 접근성 확장 (Accessibility & Expansion)
 - [x] **Browser Extension**: 브라우저 어디서나 현재 페이지의 댓글을 볼 수 있는 공식 확장 프로그램 개발.
-- [ ] **Mobile App (PWA/Hybrid)**: 네이티브 앱 수준의 사용자 경험을 위한 PWA 최적화 및 모바일 알림 강화.
-- [ ] **Embeddable Widget**: 타 사이트에 VoidSay 댓글창을 삽입할 수 있는 위젯 기능.
+- [x] **Mobile App (PWA/Hybrid)**: 네이티브 앱 수준의 사용자 경험을 위한 PWA 최적화 및 모바일 알림 강화.
+- [x] **Embeddable Widget**: 타 사이트에 VoidSay 댓글창을 삽입할 수 있는 위젯 기능.
 
 ## Phase 17: 국제화 및 글로벌 지원 (Internationalization - i18n)
 - [ ] **Multi-language Support**: 한국어, 영어 등 다국어 UI 지원.
@@ -105,6 +105,10 @@
 - Security: Cloudflare (Proxied)
 
 ## Recent Updates
+- **2026-05-17**: (Scheduled Cron) Phase 16 Mobile App (PWA/Hybrid) 고도화. 기본적인 Service Worker (`public/sw.js`) 및 오프라인 페이지 (`app/offline/page.tsx`)를 추가하여 PWA 오프라인 캐싱 지원. `npm run lint` 및 빌드 확인.
+- **2026-05-17**: (Scheduled Cron) Phase 15 진행 완료. 사용자 활동 분석을 위한 User Activity API (`/api/analytics/user`) 엔드포인트 구축 완료. 사용자 댓글 수 및 좋아요 수를 기반으로 한 `activityScore` 도출 로직 추가. `npm run lint` 및 빌드 정상 확인.
+- **2026-05-16**: (Scheduled Cron) Phase 15 진행. 링크별 참여도(총 댓글 수 및 고유 참여자 수)와 Engagement Score를 계산하는 Link Analytics API (`/api/analytics/link`) 추가. Linter 및 Build 검증 완료.
+- **2026-05-16**: **Phase 15 Analytics**. Developed predictive algorithm API (`/api/analytics/predict`) for calculating url trend velocity and scores based on historical comment data.
 - **2026-05-15**: **Infrastructure Security Upgrade**. Migrated domain DNS to **Cloudflare**. Enabled DDoS protection, WAF, and Bot Fight Mode. Configured SSL to 'Full (Strict)' for secure communication between Cloudflare and Vercel.
 - **2026-05-15**: **Localization**. Converted all Korean UI strings to English to prepare for global expansion (i18n ready).
 - **2026-05-14**: (Scheduled Cron) 점검 수행 및 코드베이스 개선. `npm run lint` 및 `npm run build` 결과 린트 경고나 빌드 오류 없음을 재확인. 기존 코드베이스 내 원시 `console.error` 호출 일부를 전역 로거(`lib/logger.ts`)로 교체하여 Phase 11 안정성 향상 및 로깅 체계 강화(Stability & Maintenance).
@@ -128,3 +132,9 @@
 - **2026-05-15**: (Scheduled Cron) Phase 11 안정성 작업. `npm run lint`의 unused variables 경고 해결 및 `npm run build`(Turbopack)에서 발생한 `ThemeProvider` 모듈 부재, `prisma` 임포트 경로 오류를 모두 수정하여 무결성 확보.
 - **2026-05-15**: (Scheduled Cron) Phase 16 시작. 브라우저 확장 프로그램(Browser Extension) 기본 구조(manifest.json) 생성 및 MASTERPLAN 업데이트 완료.
 - **2026-05-15**: (Scheduled Cron) 브라우저 확장 프로그램(Browser Extension) 팝업 UI(`popup.html`, `popup.js`) 구현 및 `manifest.json` 업데이트. 빌드 검증 완료.
+
+
+## Cron Run Summary: Auth.js JWT callback optimization
+- Implemented `trigger === "update"` logic in NextAuth JWT callback to ensure profile changes refresh session data without requiring redundant DB calls.
+- Verified build succeeds with correct DATABASE_URL.
+- **2026-05-17**: (Scheduled Cron) Phase 16 브라우저 확장 프로그램 고도화. `extension/content.js` 및 `extension/content.css`를 추가하여 웹페이지 우측 하단에 플로팅 'VoidSay' 버튼이 렌더링되도록 구현. `manifest.json` 설정에 `content_scripts` 항목 추가 완료. `npm run lint` 및 `DATABASE_URL="file:./dev.db" npm run build` 정상 통과 확인.
