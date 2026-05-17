@@ -2,12 +2,13 @@
 
 import ThreadUI from '@/components/ThreadUI';
 import UserNav from '@/components/UserNav';
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 
 export default function Home() {
   const discussionRef = useRef<HTMLDivElement>(null);
 
-  const scrollToDiscussion = () => {
+  const scrollToDiscussion = (e?: React.MouseEvent) => {
+    if (e) e.preventDefault();
     discussionRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
@@ -19,8 +20,19 @@ export default function Home() {
           <div className="flex items-center gap-xl">
             <span className="font-display font-semibold text-[14px] tracking-tight">Voidsay</span>
             <div className="hidden md:flex gap-xl">
-              <button onClick={scrollToDiscussion} className="text-white/80 hover:text-white transition-colors text-nav-link">Search</button>
-              <a href="#about" className="text-white/80 hover:text-white transition-colors text-nav-link">About</a>
+              <button 
+                type="button"
+                onClick={scrollToDiscussion} 
+                className="text-white/80 hover:text-white transition-colors text-nav-link"
+              >
+                Search
+              </button>
+              <a 
+                href="#about" 
+                className="text-white/80 hover:text-white transition-colors text-nav-link"
+              >
+                About
+              </a>
             </div>
           </div>
           <UserNav />
@@ -29,21 +41,27 @@ export default function Home() {
 
       {/* Hero Section - Light Tile */}
       <section className="product-tile-light pt-[140px] pb-section min-h-[80vh] flex flex-col justify-center">
-        <div className="max-w-[980px] px-lg">
-          <h1 className="text-hero mb-md animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div className="max-w-[980px] px-lg mx-auto">
+          <h1 className="text-hero mb-md">
             Comment on any website.
           </h1>
-          <p className="text-lead text-ink-muted48 mb-xxl max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-1000">
+          <p className="text-lead text-ink-muted48 mb-xxl max-w-2xl mx-auto">
             Your universal discussion board for the internet.
             Paste a link below to start or join a thread.
           </p>
-          <div className="flex justify-center gap-lg animate-in fade-in slide-in-from-bottom-4 duration-1000">
-            <button onClick={scrollToDiscussion} className="btn-primary">Get Started</button>
+          <div className="flex justify-center gap-lg">
+            <button 
+              type="button"
+              onClick={scrollToDiscussion} 
+              className="btn-primary"
+            >
+              Get Started
+            </button>
             <a href="#about" className="btn-secondary-pill">Learn more</a>
           </div>
         </div>
         
-        {/* Decorative Product Placeholder (Apple Style) */}
+        {/* Decorative Product Placeholder */}
         <div className="mt-section w-full max-w-5xl px-lg mx-auto">
            <div className="aspect-[21/9] bg-canvas-parchment rounded-lg border border-divider-soft overflow-hidden product-shadow flex items-center justify-center text-ink-muted48 italic">
               [ Product Hero Visual Placeholder ]
@@ -89,31 +107,11 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="w-full bg-canvas-parchment py-section border-t border-divider-soft">
-        <div className="max-w-[1440px] px-lg mx-auto flex flex-col md:flex-row justify-between items-start gap-xl">
+        <div className="max-w-[1440px] px-lg mx-auto">
           <div className="flex flex-col gap-sm">
             <span className="text-body-strong">Voidsay</span>
             <p className="text-fine-print text-ink-muted48">Universal Discussion Platform</p>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-xl">
-             <div className="flex flex-col gap-xs">
-                <span className="text-caption-strong">Explore</span>
-                <a href="#" className="text-dense-link text-ink-muted80 hover:text-primary">Trending</a>
-                <a href="#" className="text-dense-link text-ink-muted80 hover:text-primary">Search</a>
-             </div>
-             <div className="flex flex-col gap-xs">
-                <span className="text-caption-strong">Platform</span>
-                <a href="#" className="text-dense-link text-ink-muted80 hover:text-primary">Embed</a>
-                <a href="#" className="text-dense-link text-ink-muted80 hover:text-primary">Extension</a>
-             </div>
-             <div className="flex flex-col gap-xs">
-                <span className="text-caption-strong">Account</span>
-                <button onClick={() => {}} className="text-dense-link text-ink-muted80 hover:text-primary text-left">Sign In</button>
-                <a href="/profile" className="text-dense-link text-ink-muted80 hover:text-primary">Profile</a>
-             </div>
-          </div>
-        </div>
-        <div className="max-w-[1440px] px-lg mx-auto mt-xxl pt-xl border-t border-hairline text-micro-legal text-ink-muted48">
-          <p>© 2026 Voidsay Project. Built with Hermes Agent. All rights reserved.</p>
         </div>
       </footer>
     </main>
