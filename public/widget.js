@@ -1,21 +1,20 @@
 (function() {
   const scriptTag = document.currentScript;
-  const targetUrl = scriptTag.getAttribute('data-url') || window.location.href;
-  const containerId = scriptTag.getAttribute('data-container') || 'voidsay-widget';
-  
-  let container = document.getElementById(containerId);
-  if (!container) {
-    container = document.createElement('div');
-    container.id = containerId;
-    scriptTag.parentNode.insertBefore(container, scriptTag.nextSibling);
-  }
+  const container = document.createElement('div');
+  container.id = 'voidsay-widget-container';
+  container.style.width = '100%';
+  container.style.minHeight = '400px';
+  container.style.border = '1px solid #eaeaea';
+  container.style.borderRadius = '8px';
+  container.style.overflow = 'hidden';
 
   const iframe = document.createElement('iframe');
-  iframe.src = `https://voidsay.com/embed?url=${encodeURIComponent(targetUrl)}`;
+  const currentUrl = encodeURIComponent(window.location.href);
+  iframe.src = `https://voidsay.com/embed?url=${currentUrl}`;
   iframe.style.width = '100%';
-  iframe.style.height = '400px';
-  iframe.style.border = '1px solid #e5e7eb';
-  iframe.style.borderRadius = '8px';
-  
+  iframe.style.height = '100%';
+  iframe.style.border = 'none';
+
   container.appendChild(iframe);
+  scriptTag.parentNode.insertBefore(container, scriptTag);
 })();
