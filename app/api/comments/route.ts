@@ -3,7 +3,7 @@ import { getThreadId } from '../../../lib/url-parser';
 import prisma from '../../../lib/prisma';
 import { auth } from '@/auth';
 import { rateLimit } from '@/lib/rate-limit';
-import { logToTelegram } from '@/lib/telegram-logger';
+import { reportErrorToMultica } from '@/lib/multica';
 import { logger } from '@/lib/logger';
 
 // 트리를 구성하는 헬퍼 함수
@@ -45,9 +45,11 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: '유효한 url 쿼리 파라미터가 필요합니다.' }, { status: 400 });
   }
 
+  let currentUserId: string | undefined;
+
   try {
     const session = await auth();
-    const currentUserId = (session?.user as any)?.id;
+    currentUserId = (session?.user as any)?.id;
     const isAdmin = (session?.user as any)?.role === 'ADMIN';
 
     const threadId = getThreadId(url);
@@ -113,6 +115,11 @@ export async function GET(req: NextRequest) {
     });
   } catch (error: any) {
     logger.error(error);
+    try {
+      await reportErrorToMultica('댓글 조회 실패', `URL: ${url}\n사용자: ${currentUserId || 'Anonymous'}\n에러: ${error.message}`);
+    } catch (logError) {
+      console.error("Failed to report error to Multica:", logError);
+    }
     return NextResponse.json({ error: 'URL 처리 중 오류가 발생했습니다.', details: error.message }, { status: 400 });
   }
 }
@@ -160,6 +167,7 @@ export async function POST(req: NextRequest) {
     const newComment = await prisma.comment.create({
       data: {
         threadId,
+        url,
         parentId: parentId || null,
         author: authorName,
         content,
@@ -227,9 +235,9 @@ export async function POST(req: NextRequest) {
       const currentSession = await auth();
       const currentBody = await req.json().catch(() => ({}));
       const currentContent = currentBody.content || "No content";
-      await logToTelegram(`🚨 *댓글 생성 에러*\n사용자: ${currentSession?.user?.name || 'Unknown'}\n내용: ${currentContent.substring(0, 50)}\n에러: \`\`\`${error.message}\`\`\``);
+      await reportErrorToMultica('댓글 생성 실패', `사용자: ${currentSession?.user?.name || 'Unknown'}\n내용: ${currentContent.substring(0, 50)}\n에러: ${error.message}`);
     } catch (logError) {
-      console.error("Failed to log error to Telegram:", logError);
+      console.error("Failed to report error to Multica:", logError);
     }
     return NextResponse.json({ error: '잘못된 요청입니다.' }, { status: 400 });
   }

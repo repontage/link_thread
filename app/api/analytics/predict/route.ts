@@ -7,13 +7,14 @@ export async function GET(_request: Request) {
     const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
     const twoDaysAgo = new Date(now.getTime() - 48 * 60 * 60 * 1000);
 
-    // Get comments from the last 24 hours
+    // Get comments from the last 24 hours including upvotes sum
     const recentStats = await prisma.comment.groupBy({
       by: ['url'],
       _count: { url: true },
+      _sum: { upvotes: true },
       where: {
         createdAt: { gte: oneDayAgo },
-        url: { not: '' }
+        url: { not: null }
       }
     });
 
@@ -21,30 +22,41 @@ export async function GET(_request: Request) {
     const previousStats = await prisma.comment.groupBy({
       by: ['url'],
       _count: { url: true },
+      _sum: { upvotes: true },
       where: {
         createdAt: { gte: twoDaysAgo, lt: oneDayAgo },
-        url: { not: '' }
+        url: { not: null }
       }
     });
 
-    const previousMap = new Map(previousStats.map(s => [s.url, s._count.url]));
+    const previousCountMap = new Map(previousStats.map(s => [String(s.url), s._count.url]));
+    const previousUpvotesMap = new Map(previousStats.map(s => [String(s.url), s._sum.upvotes || 0]));
 
     const predictions = recentStats.map(recent => {
-      const prevCount = previousMap.get(recent.url) || 0;
+      const url = String(recent.url);
+      const prevCount = previousCountMap.get(url) || 0;
       const recentCount = recent._count.url;
       
-      // Calculate growth velocity
-      const velocity = recentCount - prevCount;
-      const growthRate = prevCount > 0 ? (velocity / prevCount) * 100 : 100;
+      const prevUpvotes = previousUpvotesMap.get(url) || 0;
+      const recentUpvotes = recent._sum.upvotes || 0;
       
-      // Trend score is higher for higher growth rate and volume
-      const trendScore = (recentCount * 0.5) + (velocity * 1.5);
+      // Calculate growth velocity for comments and upvotes
+      const commentVelocity = recentCount - prevCount;
+      const upvoteVelocity = recentUpvotes - prevUpvotes;
+      
+      const growthRate = prevCount > 0 ? (commentVelocity / prevCount) * 100 : 100;
+      
+      // Trend score is a combination of volume, velocity, and upvotes
+      const trendScore = (recentCount * 0.5) + (commentVelocity * 1.5) + (recentUpvotes * 2.0) + (upvoteVelocity * 1.0);
 
       return {
-        url: recent.url,
+        url,
         recentCount,
         prevCount,
-        velocity,
+        commentVelocity,
+        recentUpvotes,
+        prevUpvotes,
+        upvoteVelocity,
         growthRate,
         trendScore
       };

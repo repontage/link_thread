@@ -91,6 +91,29 @@ export default function ThreadUI() {
     }
   }, [inView, hasNextPage, isLoadingMore]);
 
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const urlParam = searchParams.get('url');
+    if (urlParam) {
+      setUrl(urlParam);
+      // Automatically trigger search
+      const currentSearchId = ++searchIdRef.current;
+      setIsLoading(true);
+      setShowComments(false);
+      setCurrentUrl(urlParam);
+      
+      Promise.all([
+        fetchComments(urlParam, currentSearchId, 1),
+        fetchPreview(urlParam, currentSearchId)
+      ]).finally(() => {
+        if (currentSearchId === searchIdRef.current) {
+          setIsLoading(false);
+          setShowComments(true);
+        }
+      });
+    }
+  }, []); // Only on mount
+
   // SSE (Server-Sent Events) 로 실시간 스트림 연결
   useEffect(() => {
     if (!currentUrl || !showComments) return;
@@ -135,7 +158,8 @@ export default function ThreadUI() {
         if (searchId !== undefined && searchId !== searchIdRef.current) return;
         
         if (!res.ok) {
-          throw new Error('서버 에러가 발생했습니다.');
+          const errorData = await res.json().catch(() => ({}));
+          throw new Error(errorData.error || '서버 에러가 발생했습니다.');
         }
         const data = await res.json();
         if (searchId !== undefined && searchId !== searchIdRef.current) return;
@@ -151,9 +175,9 @@ export default function ThreadUI() {
         } else {
           if (pageNumber === 1) setFetchError(data.error || '데이터를 불러오는 중 오류가 발생했습니다.');
         }
-      } catch (_err) {
+      } catch (err: any) {
         if (searchId !== undefined && searchId !== searchIdRef.current) return;
-        if (pageNumber === 1) setFetchError('네트워크 에러가 발생하여 댓글을 불러올 수 없습니다.');
+        if (pageNumber === 1) setFetchError(err.message || '네트워크 에러가 발생하여 댓글을 불러올 수 없습니다.');
       }
     }, []);
 
