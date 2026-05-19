@@ -104,6 +104,9 @@
 - Hosting: Vercel
 - Security: Cloudflare (Proxied)
 
+## Recent Updates
+
+- **2026-05-19**: (Scheduled Cron) 코드 리뷰 수행. `public/widget.js`의 iframe 높이 버그 수정 — `min-height`만 있는 컨테이너에서 `height: 100%`가 동작하지 않는 문제를 `height: 400px`로 변경하여 해결. `MASTERPLAN.md`의 `## Recent Updates` 섹션 헤더 누락 복구.
 - **2026-05-18**: (Scheduled Cron) 긴급 점검 수행. Voidsay 운영 서버(https://voidsay.com/)의 푸터 디자인 제거 및 버튼 인터랙션(`window.scrollY` 이동) 정상 작동 여부를 브라우저를 통해 검증 완료. 두 항목 모두 정상 동작(Footer 제거됨, Get Started 버튼 클릭 시 스크롤 이동 확인)하므로 강제 재배포 로직은 우회함. Phase 16의 일환으로 Embeddable Widget (`public/widget.js`) 스크립트를 추가하여 외부 사이트 통합 기반 마련. `npm run lint` 및 빌드 확인.
 - **2026-05-17**: (Scheduled Cron) Phase 16 Mobile App (PWA/Hybrid) 고도화. 기본적인 Service Worker (`public/sw.js`) 및 오프라인 페이지 (`app/offline/page.tsx`)를 추가하여 PWA 오프라인 캐싱 지원. `npm run lint` 및 빌드 확인.
 - **2026-05-17**: (Scheduled Cron) Phase 15 진행 완료. 사용자 활동 분석을 위한 User Activity API (`/api/analytics/user`) 엔드포인트 구축 완료. 사용자 댓글 수 및 좋아요 수를 기반으로 한 `activityScore` 도출 로직 추가. `npm run lint` 및 빌드 정상 확인.

@@ -3,7 +3,7 @@
   const container = document.createElement('div');
   container.id = 'voidsay-widget-container';
   container.style.width = '100%';
-  container.style.minHeight = '400px';
+  container.style.height = '400px';
   container.style.border = '1px solid #eaeaea';
   container.style.borderRadius = '8px';
   container.style.overflow = 'hidden';
