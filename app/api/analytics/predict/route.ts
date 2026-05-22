@@ -14,7 +14,10 @@ export async function GET(_request: Request) {
       _sum: { upvotes: true },
       where: {
         createdAt: { gte: oneDayAgo },
-        url: { not: null }
+        AND: [
+          { url: { not: null } },
+          { url: { not: '' } }
+        ]
       }
     });
 
@@ -25,7 +28,10 @@ export async function GET(_request: Request) {
       _sum: { upvotes: true },
       where: {
         createdAt: { gte: twoDaysAgo, lt: oneDayAgo },
-        url: { not: null }
+        AND: [
+          { url: { not: null } },
+          { url: { not: '' } }
+        ]
       }
     });
 
@@ -54,6 +60,7 @@ export async function GET(_request: Request) {
         recentCount,
         prevCount,
         commentVelocity,
+        velocity: commentVelocity,
         recentUpvotes,
         prevUpvotes,
         upvoteVelocity,
