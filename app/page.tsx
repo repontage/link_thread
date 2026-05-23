@@ -105,15 +105,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="w-full bg-canvas-parchment py-section border-t border-divider-soft">
-        <div className="max-w-[1440px] px-lg mx-auto">
-          <div className="flex flex-col gap-sm">
-            <span className="text-body-strong">Voidsay</span>
-            <p className="text-fine-print text-ink-muted48">Universal Discussion Platform</p>
-          </div>
-        </div>
-      </footer>
+
     </main>
   );
 }
