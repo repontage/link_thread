@@ -2,6 +2,7 @@
 
 import ThreadUI from '@/components/ThreadUI';
 import UserNav from '@/components/UserNav';
+import ProductHeroVisual from '@/components/ProductHeroVisual';
 import { useRef } from 'react';
 
 export default function Home() {
@@ -63,15 +64,13 @@ export default function Home() {
         
         {/* Decorative Product Placeholder */}
         <div className="mt-section w-full max-w-5xl px-lg mx-auto">
-           <div className="aspect-[21/9] bg-canvas-parchment rounded-lg border border-divider-soft overflow-hidden product-shadow flex items-center justify-center text-ink-muted48 italic">
-              [ Product Hero Visual Placeholder ]
-           </div>
+          <ProductHeroVisual onCommentClick={scrollToDiscussion} />
         </div>
       </section>
 
       {/* Discussion Area */}
       <section id="discussion" ref={discussionRef} className="product-tile-parchment py-section w-full min-h-screen">
-        <div className="w-full max-w-4xl px-lg mx-auto">
+        <div className="w-full max-w-2xl px-lg mx-auto">
           <div className="text-center mb-section">
              <h2 className="text-display-lg mb-xs">Join the Thread</h2>
              <p className="text-lead text-ink-muted48">Any URL, any video, any time.</p>

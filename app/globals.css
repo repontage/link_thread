@@ -8,6 +8,8 @@
     --primary-focus: #0071e3;
     --primary-on-dark: #2997ff;
     --ink: #1d1d1f;
+    --ink-muted80: #333333;
+    --ink-muted48: #7a7a7a;
     --canvas: #ffffff;
     --canvas-parchment: #f5f5f7;
     --surface-pearl: #fafafc;
@@ -15,17 +17,123 @@
     --surface-tile2: #2a2a2c;
     --surface-tile3: #252527;
     --surface-black: #000000;
+    --surface-chip: rgba(210, 210, 215, 0.64);
+    --divider-soft: #f0f0f0;
+    --hairline: #e0e0e0;
+  }
+
+  .dark {
+    --primary: #2997ff;
+    --primary-focus: #0071e3;
+    --primary-on-dark: #2997ff;
+    --ink: #f5f5f7;
+    --ink-muted80: #d2d2d7;
+    --ink-muted48: #86868b;
+    --canvas: #161617;
+    --canvas-parchment: #0f0f10;
+    --surface-pearl: #1d1d1f;
+    --surface-tile1: #1c1c1e;
+    --surface-tile2: #272729;
+    --surface-tile3: #2a2a2c;
+    --surface-black: #000000;
+    --surface-chip: rgba(50, 50, 54, 0.64);
+    --divider-soft: #2c2c2e;
+    --hairline: #3a3a3c;
+    
+    color-scheme: dark;
   }
 
   body {
-    @apply bg-canvas text-ink antialiased font-text selection:bg-primary/20 selection:text-primary;
+    @apply bg-canvas text-ink antialiased font-text selection:text-primary;
     font-size: 17px;
     line-height: 1.47;
     letter-spacing: -0.374px;
   }
 
+  body::selection {
+    background-color: rgba(0, 102, 204, 0.2);
+  }
+  .dark body::selection {
+    background-color: rgba(41, 151, 255, 0.2);
+  }
+
   h1, h2, h3, h4, h5, h6 {
     @apply font-display;
+  }
+
+  /* Automatic retrofitting of hardcoded light classes to dark mode */
+  .dark .bg-white {
+    background-color: var(--surface-pearl) !important;
+  }
+  .dark .bg-zinc-50 {
+    background-color: var(--canvas-parchment) !important;
+  }
+  .dark .bg-zinc-100 {
+    background-color: var(--surface-tile2) !important;
+  }
+  .dark .text-zinc-900 {
+    color: var(--ink) !important;
+  }
+  .dark .text-zinc-800 {
+    color: var(--ink) !important;
+  }
+  .dark .text-zinc-700 {
+    color: var(--ink-muted80) !important;
+  }
+  .dark .text-zinc-600 {
+    color: var(--ink-muted80) !important;
+  }
+  .dark .text-zinc-500 {
+    color: var(--ink-muted48) !important;
+  }
+  .dark .text-zinc-400 {
+    color: var(--ink-muted48) !important;
+  }
+  .dark .border-zinc-100 {
+    border-color: var(--divider-soft) !important;
+  }
+  .dark .border-zinc-200 {
+    border-color: var(--hairline) !important;
+  }
+  .dark input, .dark textarea, .dark select {
+    background-color: var(--canvas-parchment) !important;
+    color: var(--ink) !important;
+    border-color: var(--hairline) !important;
+  }
+
+  /* Automatic hover remapping in dark mode */
+  .dark .hover\:bg-zinc-50\/50:hover {
+    background-color: rgba(255, 255, 255, 0.04) !important;
+  }
+  .dark .hover\:bg-zinc-50:hover {
+    background-color: rgba(255, 255, 255, 0.04) !important;
+  }
+  .dark .hover\:bg-zinc-100:hover {
+    background-color: rgba(255, 255, 255, 0.06) !important;
+  }
+  .dark .hover\:bg-zinc-200:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+  }
+  .dark .hover\:bg-blue-50\/50:hover {
+    background-color: rgba(41, 151, 255, 0.08) !important;
+  }
+
+  /* Sponsor UI dark remapping */
+  .dark .from-amber-50 {
+    --tw-gradient-from: rgba(245, 158, 11, 0.05) !important;
+    --tw-gradient-to: rgba(249, 115, 22, 0.02) !important;
+  }
+  .dark .to-orange-50 {
+    --tw-gradient-to: rgba(249, 115, 22, 0.05) !important;
+  }
+  .dark .border-amber-200 {
+    border-color: rgba(245, 158, 11, 0.15) !important;
+  }
+  .dark .text-amber-900 {
+    color: #f59e0b !important;
+  }
+  .dark .text-amber-700 {
+    color: #fbbf24 !important;
   }
 }
 
@@ -39,7 +147,7 @@
   }
 
   .btn-dark-utility {
-    @apply bg-ink text-white font-text text-button-utility rounded-sm px-[15px] py-[8px] transition-transform active:scale-95;
+    @apply bg-surface-tile1 text-white font-text text-button-utility rounded-sm px-[15px] py-[8px] transition-transform active:scale-95;
   }
 
   .product-tile {
@@ -68,5 +176,29 @@
 
   .sub-nav-frosted {
     @apply sticky top-[44px] w-full h-[52px] bg-canvas-parchment/80 backdrop-blur-xl border-b border-divider-soft flex items-center justify-between px-lg z-[900];
+  }
+
+  /* Custom scrollbar for dark theme mockup */
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.15) rgba(0, 0, 0, 0.1);
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 9999px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 9999px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
   }
 }

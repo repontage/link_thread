@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: 'class',
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -8,31 +9,31 @@ module.exports = {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#0066cc',
-          focus: '#0071e3',
-          dark: '#2997ff',
+          DEFAULT: 'var(--primary)',
+          focus: 'var(--primary-focus)',
+          dark: 'var(--primary-on-dark)',
         },
         ink: {
-          DEFAULT: '#1d1d1f',
-          muted80: '#333333',
-          muted48: '#7a7a7a',
+          DEFAULT: 'var(--ink)',
+          muted80: 'var(--ink-muted80)',
+          muted48: 'var(--ink-muted48)',
         },
         canvas: {
-          DEFAULT: '#ffffff',
-          parchment: '#f5f5f7',
+          DEFAULT: 'var(--canvas)',
+          parchment: 'var(--canvas-parchment)',
         },
         surface: {
-          pearl: '#fafafc',
-          tile1: '#272729',
-          tile2: '#2a2a2c',
-          tile3: '#252527',
-          black: '#000000',
-          chip: 'rgba(210, 210, 215, 0.64)',
+          pearl: 'var(--surface-pearl)',
+          tile1: 'var(--surface-tile1)',
+          tile2: 'var(--surface-tile2)',
+          tile3: 'var(--surface-tile3)',
+          black: 'var(--surface-black)',
+          chip: 'var(--surface-chip)',
         },
         divider: {
-          soft: '#f0f0f0',
+          soft: 'var(--divider-soft)',
         },
-        hairline: '#e0e0e0',
+        hairline: 'var(--hairline)',
       },
       fontFamily: {
         display: ['SF Pro Display', 'system-ui', '-apple-system', 'sans-serif'],
