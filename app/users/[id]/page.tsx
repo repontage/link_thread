@@ -1,11 +1,13 @@
 import { notFound } from 'next/navigation';
+import LocalizedDate from '@/components/LocalizedDate';
 import prisma from '@/lib/prisma';
 import Image from 'next/image';
 import { User as UserIcon } from 'lucide-react';
 import Link from 'next/link';
 
-export default async function UserProfilePage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default async function UserProfilePage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = await params;
+  const { id } = resolvedParams;
 
   // Fetch user data
   const user = await prisma.user.findUnique({
@@ -76,7 +78,7 @@ export default async function UserProfilePage({ params }: { params: { id: string
               <div key={comment.id} className="p-5 bg-white rounded-xl shadow-sm border border-zinc-100 hover:border-blue-100 transition-colors">
                 <div className="flex items-center justify-between mb-2">
                   <div className="text-xs text-zinc-500">
-                    {new Date(comment.createdAt).toLocaleString()}
+                    <LocalizedDate date={comment.createdAt} />
                   </div>
                   {comment.url && (
                     <Link href={`/?url=${encodeURIComponent(comment.url)}`} className="text-xs text-blue-600 hover:underline">

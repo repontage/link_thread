@@ -6,6 +6,8 @@ import { rateLimit } from '@/lib/rate-limit';
 import { reportErrorToMultica } from '@/lib/multica';
 import { logger } from '@/lib/logger';
 
+export const dynamic = 'force-dynamic';
+
 // 트리를 구성하는 헬퍼 함수
 const buildCommentTree = (comments: any[]): any[] => {
   const map = new Map<string, any>();

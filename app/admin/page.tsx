@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Shield, Users, Flag, Ban, CheckCircle, EyeOff, Eye, TrendingUp } from 'lucide-react';
 import { useSession } from 'next-auth/react';
+import LocalizedDate from '@/components/LocalizedDate';
 
 type Stats = {
   totalUsers: number;
@@ -325,7 +326,7 @@ export default function AdminDashboard() {
                         {report.status}
                       </span>
                       <span className="text-sm text-gray-500">
-                        {new Date(report.createdAt).toLocaleString()}
+                        <LocalizedDate date={report.createdAt} />
                       </span>
                     </div>
                     <div className="mb-2">

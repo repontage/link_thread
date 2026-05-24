@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 interface UserProfile {
   name?: string | null;
@@ -13,6 +14,7 @@ interface UserProfile {
 
 export default function ProfileEditForm({ user }: { user: UserProfile }) {
   const router = useRouter();
+  const { update } = useSession();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     name: user.name || "",
@@ -43,6 +45,13 @@ export default function ProfileEditForm({ user }: { user: UserProfile }) {
       if (!res.ok) {
         const data = await res.json();
         throw new Error(data.error || "Failed to update profile");
+      }
+
+      // Sync browser session details (e.g. cookies) with the newly updated DB info
+      try {
+        await update();
+      } catch (sessErr) {
+        console.error("Session update failed:", sessErr);
       }
 
       setIsEditing(false);

@@ -14,6 +14,7 @@ interface MockComment {
 interface MockTab {
   id: string;
   name: string;
+  shortName?: string;
   url: string;
   contentType: 'article' | 'video' | 'gallery' | 'custom';
   title: string;
@@ -25,6 +26,7 @@ const mockTabs: MockTab[] = [
   {
     id: 'article',
     name: 'Wired Article',
+    shortName: 'Wired',
     url: 'wired.com/future-of-universal-web',
     contentType: 'article',
     title: 'The Web is Fragmented. Can We Reclaim the Commons?',
@@ -51,6 +53,7 @@ const mockTabs: MockTab[] = [
   {
     id: 'video',
     name: 'YouTube Video',
+    shortName: 'YouTube',
     url: 'youtube.com/watch?v=misty-valleys',
     contentType: 'video',
     title: 'The Art of Wandering: Misty Valleys',
@@ -77,6 +80,7 @@ const mockTabs: MockTab[] = [
   {
     id: 'gallery',
     name: 'Design Journal',
+    shortName: 'Journal',
     url: 'minimaljournal.com/arch-and-light',
     contentType: 'gallery',
     title: 'Interplay of Concrete and Sunlight in Modern Architecture',
@@ -103,6 +107,7 @@ const mockTabs: MockTab[] = [
   {
     id: 'custom',
     name: '✦ Any Website',
+    shortName: '✦ Any',
     url: 'any-website.com/your-favorite-link',
     contentType: 'custom',
     title: 'Universal Canvas: Discuss Anything',
@@ -169,24 +174,25 @@ export default function ProductHeroVisual({ onCommentClick }: ProductHeroVisualP
         </div>
 
         {/* Tab Switcher */}
-        <div className="hidden sm:flex gap-xs flex-1 max-w-lg">
+        <div className="flex gap-xs flex-1 max-w-full sm:max-w-lg overflow-x-auto scrollbar-none py-[2px]">
           {mockTabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => handleTabClick(tab.id)}
-              className={`px-sm py-[6px] rounded-sm text-micro-legal font-text transition-all truncate max-w-[120px] ${
+              className={`px-sm py-[4px] sm:py-[6px] rounded-sm text-[10px] sm:text-micro-legal font-text transition-all whitespace-nowrap ${
                 activeTabId === tab.id
                   ? 'bg-[#272729] text-white font-medium'
                   : 'text-white/40 hover:text-white/60 hover:bg-[#272729]/50'
               }`}
             >
-              {tab.name}
+              <span className="sm:hidden">{tab.shortName || tab.name}</span>
+              <span className="hidden sm:inline">{tab.name}</span>
             </button>
           ))}
         </div>
 
         {/* Browser URL Bar */}
-        <div className="flex-1 max-w-md bg-[#272729] rounded-sm px-md py-[6px] flex items-center justify-between text-caption font-text text-white/50 border border-white/5 mx-auto">
+        <div className="hidden md:flex flex-1 max-w-xs bg-[#272729] rounded-sm px-sm py-[6px] flex items-center justify-between text-caption font-text text-white/50 border border-white/5 mx-auto">
           <div className="flex items-center gap-xs truncate">
             <span className="text-white/30 text-[10px]">🔒</span>
             <span className="truncate text-white/80">{activeTab.url}</span>
@@ -206,18 +212,18 @@ export default function ProductHeroVisual({ onCommentClick }: ProductHeroVisualP
       </div>
 
       {/* Main Container - Split View */}
-      <div className="grid md:grid-cols-12 h-[340px] md:h-[420px] bg-[#121213] relative text-left">
+      <div className="grid grid-cols-12 h-[540px] md:h-[420px] bg-[#121213] relative text-left">
         {/* Left Side: Mock Target Website Content */}
-        <div className="md:col-span-7 p-lg flex flex-col justify-between overflow-hidden border-b md:border-b-0 md:border-r border-white/5 bg-[#0f0f10]">
+        <div className="col-span-12 md:col-span-7 h-[230px] md:h-full p-sm sm:p-lg flex flex-col justify-between overflow-hidden border-b md:border-b-0 md:border-r border-white/5 bg-[#0f0f10]">
           {activeTab.contentType === 'article' && (
-            <div className="space-y-sm animate-fade-in flex flex-col justify-between h-full">
+            <div className="space-y-xs sm:space-y-sm animate-fade-in flex flex-col justify-between h-full">
               <div className="space-y-xxs">
-                <span className="text-[11px] font-semibold text-primary-dark tracking-wider uppercase">Editorial</span>
-                <h2 className="text-tagline font-display text-white font-bold leading-snug">{activeTab.title}</h2>
-                <p className="text-micro-legal text-white/40">{activeTab.meta}</p>
+                <span className="text-[10px] sm:text-[11px] font-semibold text-primary-dark tracking-wider uppercase">Editorial</span>
+                <h2 className="text-[16px] sm:text-tagline font-display text-white font-bold leading-snug line-clamp-2">{activeTab.title}</h2>
+                <p className="text-[9px] sm:text-micro-legal text-white/40">{activeTab.meta}</p>
               </div>
               
-              <div className="aspect-[16/7] w-full rounded-sm border border-white/5 relative overflow-hidden my-xxs">
+              <div className="aspect-[16/6] md:aspect-[16/7] w-full rounded-sm border border-white/5 relative overflow-hidden my-xxs flex-1 max-h-[80px] sm:max-h-none">
                 <img 
                   src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=600&q=80" 
                   alt="Future of Web"
@@ -225,16 +231,16 @@ export default function ProductHeroVisual({ onCommentClick }: ProductHeroVisualP
                 />
               </div>
               
-              <p className="text-micro-legal text-white/70 leading-relaxed font-text line-clamp-3">
+              <p className="text-[10px] sm:text-micro-legal text-white/70 leading-relaxed font-text line-clamp-2 sm:line-clamp-3">
                 The internet was envisioned as an open, shared square for human collaboration. Yet, over the last decades, digital walled gardens have isolated us, restricting how we discuss and analyze our shared experiences online. Voidsay bridges those gaps.
               </p>
             </div>
           )}
 
           {activeTab.contentType === 'video' && (
-            <div className="space-y-md animate-fade-in h-full flex flex-col justify-between">
+            <div className="space-y-xs sm:space-y-md animate-fade-in h-full flex flex-col justify-between">
               <div 
-                className="aspect-[16/9] w-full bg-[#1c1c1e] rounded-sm border border-white/5 relative overflow-hidden flex-1"
+                className="aspect-[16/9] w-full bg-[#1c1c1e] rounded-sm border border-white/5 relative overflow-hidden flex-1 max-h-[140px] sm:max-h-none"
                 style={{
                   backgroundImage: 'url("https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80")',
                   backgroundSize: 'cover',
@@ -252,11 +258,11 @@ export default function ProductHeroVisual({ onCommentClick }: ProductHeroVisualP
                 />
                 
                 {/* Video controls overlay */}
-                <div className="absolute bottom-0 left-0 right-0 p-xs bg-gradient-to-t from-black/90 to-transparent flex items-center justify-between text-[10px] text-white/60 z-10 pointer-events-none">
+                <div className="absolute bottom-0 left-0 right-0 p-xs bg-gradient-to-t from-black/90 to-transparent flex items-center justify-between text-[9px] sm:text-[10px] text-white/60 z-10 pointer-events-none">
                   <div className="flex items-center gap-xs">
                     <span className="text-primary-dark">● LIVE</span>
                     <span className="opacity-60">03:14</span>
-                    <div className="w-20 h-1 bg-white/20 rounded-pill overflow-hidden">
+                    <div className="w-12 sm:w-20 h-1 bg-white/20 rounded-pill overflow-hidden">
                       <div className="w-3/5 h-full bg-primary-dark"></div>
                     </div>
                   </div>
@@ -264,62 +270,62 @@ export default function ProductHeroVisual({ onCommentClick }: ProductHeroVisualP
                 </div>
               </div>
               <div className="pt-xxs">
-                <h2 className="text-caption-strong text-white font-medium truncate">{activeTab.title}</h2>
-                <p className="text-micro-legal text-white/40 mt-[2px]">{activeTab.meta}</p>
+                <h2 className="text-[12px] sm:text-caption-strong text-white font-medium truncate">{activeTab.title}</h2>
+                <p className="text-[9px] sm:text-micro-legal text-white/40 mt-[2px]">{activeTab.meta}</p>
               </div>
             </div>
           )}
 
           {activeTab.contentType === 'gallery' && (
-            <div className="space-y-md animate-fade-in h-full flex flex-col justify-between">
+            <div className="space-y-xs sm:space-y-md animate-fade-in h-full flex flex-col justify-between">
               <div>
-                <span className="text-[11px] font-semibold text-primary-dark tracking-wider uppercase">Photo Essay</span>
-                <h2 className="text-caption-strong text-white font-medium mt-xxs">{activeTab.title}</h2>
+                <span className="text-[9px] sm:text-[11px] font-semibold text-primary-dark tracking-wider uppercase">Photo Essay</span>
+                <h2 className="text-[12px] sm:text-caption-strong text-white font-medium mt-xxs">{activeTab.title}</h2>
               </div>
               
-              <div className="grid grid-cols-2 gap-sm my-auto">
-                <div className="aspect-[4/3] bg-gradient-to-br from-[#1c1c1e] to-[#272729] rounded-sm border border-white/5 flex items-center justify-center relative overflow-hidden">
+              <div className="grid grid-cols-2 gap-xs sm:gap-sm my-auto">
+                <div className="aspect-[16/10] sm:aspect-[4/3] bg-gradient-to-br from-[#1c1c1e] to-[#272729] rounded-sm border border-white/5 flex items-center justify-center relative overflow-hidden">
                   <div className="absolute inset-0 bg-cover bg-center opacity-60" style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=300&q=80")' }} />
-                  <span className="text-[10px] text-white/40 absolute bottom-xs left-xs bg-black/50 px-xs py-[2px] rounded">Ando Concrete</span>
+                  <span className="text-[8px] sm:text-[10px] text-white/40 absolute bottom-xs left-xs bg-black/50 px-xs py-[2px] rounded">Ando Concrete</span>
                 </div>
-                <div className="aspect-[4/3] bg-gradient-to-br from-[#1c1c1e] to-[#272729] rounded-sm border border-white/5 flex items-center justify-center relative overflow-hidden">
+                <div className="aspect-[16/10] sm:aspect-[4/3] bg-gradient-to-br from-[#1c1c1e] to-[#272729] rounded-sm border border-white/5 flex items-center justify-center relative overflow-hidden">
                   <div className="absolute inset-0 bg-cover bg-center opacity-60" style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=300&q=80")' }} />
-                  <span className="text-[10px] text-white/40 absolute bottom-xs left-xs bg-black/50 px-xs py-[2px] rounded">Sunlight Line</span>
+                  <span className="text-[8px] sm:text-[10px] text-white/40 absolute bottom-xs left-xs bg-black/50 px-xs py-[2px] rounded">Sunlight Line</span>
                 </div>
               </div>
               
-              <p className="text-micro-legal text-white/40">{activeTab.meta}</p>
+              <p className="text-[9px] sm:text-micro-legal text-white/40">{activeTab.meta}</p>
             </div>
           )}
 
           {activeTab.contentType === 'custom' && (
-            <div className="space-y-sm animate-fade-in h-full flex flex-col justify-between">
+            <div className="space-y-xs sm:space-y-sm animate-fade-in h-full flex flex-col justify-between">
               <div className="space-y-xxs">
-                <span className="text-[11px] font-semibold text-primary-dark tracking-wider uppercase">Universal Canvas</span>
-                <h2 className="text-tagline font-display text-white font-bold leading-snug">{activeTab.title}</h2>
-                <p className="text-micro-legal text-white/40">{activeTab.meta}</p>
+                <span className="text-[10px] sm:text-[11px] font-semibold text-primary-dark tracking-wider uppercase">Universal Canvas</span>
+                <h2 className="text-[16px] sm:text-tagline font-display text-white font-bold leading-snug">{activeTab.title}</h2>
+                <p className="text-[9px] sm:text-micro-legal text-white/40">{activeTab.meta}</p>
               </div>
 
               {/* Dynamic Grid of logos / platform names representing universal support */}
-              <div className="grid grid-cols-3 gap-xs my-auto py-xs text-center select-none">
+              <div className="grid grid-cols-3 gap-xxs sm:gap-xs my-auto py-xxs sm:py-xs text-center select-none">
                 {['Wikipedia', 'GitHub', 'Medium', 'Reddit', 'Substack', 'NY Times', 'Notion', 'TechCrunch', 'X / Twitter'].map((item, index) => (
                   <div 
                     key={index} 
-                    className="bg-white/5 border border-white/5 rounded-xs p-xs text-[10px] text-white/60 font-medium hover:bg-white/10 hover:text-white transition-colors flex items-center justify-center h-8"
+                    className="bg-white/5 border border-white/5 rounded-xs p-xxs text-[8px] sm:text-[10px] text-white/60 font-medium hover:bg-white/10 hover:text-white transition-colors flex items-center justify-center h-6 sm:h-8"
                   >
                     {item}
                   </div>
                 ))}
               </div>
 
-              <div className="bg-[#1c1c1e] border border-white/5 rounded-sm p-sm text-center space-y-xs">
-                <p className="text-micro-legal text-white/80 font-text leading-relaxed">
+              <div className="bg-[#1c1c1e] border border-white/5 rounded-sm p-xs sm:p-sm text-center space-y-xxs sm:space-y-xs">
+                <p className="text-[10px] sm:text-micro-legal text-white/80 font-text leading-relaxed line-clamp-2">
                   Blogs, newsletters, source code, research papers, news outlets, wikis, or forums. 
                   If it has a URL, Voidsay instantly spawns a beautiful comment thread for it.
                 </p>
                 <button
                   onClick={onCommentClick}
-                  className="w-full text-white bg-primary hover:bg-primary-focus transition-all rounded-pill font-medium text-micro-legal py-xs focus:outline-none focus:ring-2 focus:ring-primary-focus active:scale-[0.98]"
+                  className="w-full text-white bg-primary hover:bg-primary-focus transition-all rounded-pill font-medium text-[9px] sm:text-micro-legal py-xs focus:outline-none focus:ring-2 focus:ring-primary-focus active:scale-[0.98]"
                 >
                   Try Any Website Link Below ↴
                 </button>
@@ -329,35 +335,35 @@ export default function ProductHeroVisual({ onCommentClick }: ProductHeroVisualP
         </div>
 
         {/* Right Side: Voidsay Floating Panel Simulation */}
-        <div className="md:col-span-5 bg-[#171718] p-lg flex flex-col justify-between overflow-hidden">
-          <div className="space-y-md flex-1 overflow-y-auto custom-scrollbar">
+        <div className="col-span-12 md:col-span-5 h-[310px] md:h-full bg-[#171718] p-sm sm:p-lg flex flex-col justify-between overflow-hidden">
+          <div className="space-y-xs sm:space-y-md flex-1 overflow-y-auto custom-scrollbar">
             {/* Voidsay Brand Overlay Header */}
-            <div className="flex items-center justify-between pb-sm border-b border-white/5">
+            <div className="flex items-center justify-between pb-xxs sm:pb-sm border-b border-white/5">
               <div className="flex items-center gap-xs">
                 <span className="w-2 h-2 rounded-full bg-primary-dark animate-pulse"></span>
-                <span className="text-[11px] font-display font-semibold text-white tracking-tight">Voidsay Thread</span>
+                <span className="text-[10px] sm:text-[11px] font-display font-semibold text-white tracking-tight">Voidsay Thread</span>
               </div>
-              <span className="text-micro-legal text-primary-dark font-medium">{activeTab.comments.length} active</span>
+              <span className="text-[9px] sm:text-micro-legal text-primary-dark font-medium">{activeTab.comments.length} active</span>
             </div>
 
             {/* Simulated Live Comments */}
-            <div className="space-y-sm pt-xs">
+            <div className="space-y-xs pt-xxs sm:pt-xs">
               {activeTab.comments.map((comment) => (
                 <div
                   key={comment.id}
-                  className="bg-[#212123] rounded-sm p-sm border border-white/5 transition-all duration-500 hover:border-white/10 hover:bg-[#252528] animate-fade-in"
+                  className="bg-[#212123] rounded-sm p-xs sm:p-sm border border-white/5 transition-all duration-500 hover:border-white/10 hover:bg-[#252528] animate-fade-in"
                 >
                   <div className="flex items-center justify-between mb-xxs">
                     <div className="flex items-center gap-xs">
-                      <div className="w-5 h-5 rounded-full bg-primary-dark flex items-center justify-center text-[9px] font-bold text-white">
+                      <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-primary-dark flex items-center justify-center text-[8px] sm:text-[9px] font-bold text-white">
                         {comment.avatar}
                       </div>
-                      <span className="text-caption-strong text-white font-medium">{comment.author}</span>
+                      <span className="text-[11px] sm:text-caption-strong text-white font-medium">{comment.author}</span>
                     </div>
-                    <span className="text-micro-legal text-white/30">{comment.time}</span>
+                    <span className="text-[8px] sm:text-micro-legal text-white/30">{comment.time}</span>
                   </div>
-                  <p className="text-[13px] text-white/70 leading-normal font-text">{comment.content}</p>
-                  <div className="flex items-center gap-xs mt-sm text-micro-legal text-white/40">
+                  <p className="text-[11px] sm:text-[13px] text-white/70 leading-normal font-text line-clamp-3 sm:line-clamp-none">{comment.content}</p>
+                  <div className="flex items-center gap-xs mt-xs sm:mt-sm text-[9px] sm:text-micro-legal text-white/40">
                     <button className="hover:text-primary-dark transition-colors flex items-center gap-[3px]">
                       <span>▲</span> {comment.likes}
                     </button>
@@ -370,15 +376,15 @@ export default function ProductHeroVisual({ onCommentClick }: ProductHeroVisualP
           </div>
 
           {/* Comment Box Simulation */}
-          <div className="mt-md pt-md border-t border-white/5 space-y-sm">
+          <div className="mt-xs sm:mt-md pt-xs sm:pt-md border-t border-white/5 space-y-xs">
             <button
               onClick={onCommentClick}
-              className="w-full bg-[#121213] border border-white/5 rounded-sm px-sm py-[8px] flex items-center justify-between text-caption text-white/40 font-text cursor-pointer hover:border-white/15 hover:bg-[#1a1a1c] transition-all text-left focus:outline-none focus:ring-1 focus:ring-primary-dark"
+              className="w-full bg-[#121213] border border-white/5 rounded-sm px-sm py-[6px] sm:py-[8px] flex items-center justify-between text-[11px] sm:text-caption text-white/40 font-text cursor-pointer hover:border-white/15 hover:bg-[#1a1a1c] transition-all text-left focus:outline-none focus:ring-1 focus:ring-primary-dark"
             >
               <span>Write a universal comment...</span>
-              <span className="text-xs bg-primary px-xs py-[2px] rounded text-white font-medium">↵</span>
+              <span className="text-[10px] sm:text-xs bg-primary px-xs py-[2px] rounded text-white font-medium">↵</span>
             </button>
-            <div className="flex justify-between items-center text-[10px] text-white/30 px-xxs select-none">
+            <div className="flex justify-between items-center text-[8px] sm:text-[10px] text-white/30 px-xxs select-none">
               <span>Click to post a real comment below</span>
               <span className="text-primary-dark font-medium">Secured with Passkey</span>
             </div>

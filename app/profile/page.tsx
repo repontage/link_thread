@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Clock, MessageSquare, Link as LinkIcon } from "lucide-react";
 import prisma from "../../lib/prisma";
 import ProfileEditForm from "@/components/ProfileEditForm";
+import LocalizedDate from "@/components/LocalizedDate";
 
 export default async function ProfilePage() {
   const session = await auth();
@@ -98,7 +99,7 @@ export default async function ProfilePage() {
               </p>
               <div className="flex items-center text-xs text-zinc-500 gap-1.5">
                 <Clock className="h-3.5 w-3.5" />
-                <span>{new Date(comment.createdAt).toLocaleString()}</span>
+                <LocalizedDate date={comment.createdAt} />
               </div>
             </div>
           ))}

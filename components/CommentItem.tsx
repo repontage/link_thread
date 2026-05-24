@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import LocalizedDate from './LocalizedDate';
 import { useSession, signIn } from 'next-auth/react';
 import { Reply, Clock, User, Trash, Heart, Flag } from 'lucide-react';
 import ImageCarousel from './ImageCarousel';
@@ -196,7 +197,9 @@ const CommentItem = React.memo(({ comment, url, onReplySuccess, onTimestampClick
           <div className="flex items-center gap-2">
             {comment.userId ? (
               <Link href={`/users/${comment.userId}`}>
-                <h4 className="text-sm font-semibold text-zinc-900 hover:text-blue-600 hover:underline">{comment.author}</h4>
+                <h4 className="text-sm font-semibold text-zinc-900 hover:text-blue-600 hover:underline">
+                  {(comment as any).user?.name || comment.author}
+                </h4>
               </Link>
             ) : (
               <h4 className="text-sm font-semibold text-zinc-900">{comment.author}</h4>
@@ -214,7 +217,7 @@ const CommentItem = React.memo(({ comment, url, onReplySuccess, onTimestampClick
           </div>
           <div className="flex items-center gap-1 text-xs text-zinc-500 mt-0.5">
             <Clock className="h-3 w-3" />
-            <span>{new Date(comment.createdAt).toLocaleString()}</span>
+            <LocalizedDate date={comment.createdAt} relative={true} />
           </div>
         </div>
         {comment.timestamp != null && (
