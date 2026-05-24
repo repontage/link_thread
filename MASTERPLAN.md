@@ -80,7 +80,7 @@
 ## Phase 17: 국제화 및 글로벌 지원 (Internationalization - i18n)
 - [ ] **Multi-language Support**: 한국어, 영어 등 다국어 UI 지원.
 - [ ] **Regional Trending**: 국가별/언어별 인기 링크 대시보드 분리 및 최적화.
-- [ ] **Timezone Localization**: 사용자 위치에 따른 시간 표시 로컬라이징.
+- [x] **Timezone Localization**: 사용자 위치에 따른 시간 표시 로컬라이징.
 
 ## Phase 18: 데이터베이스 마이그레이션 및 확장 (Database Scaling)
 - [ ] **Turso/PostgreSQL Migration**: 로컬 SQLite에서 글로벌 배포에 최적화된 Turso 또는 Managed Postgres로 전환.
