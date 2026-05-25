@@ -10,12 +10,13 @@ interface TrendingItem {
 
 export default function TrendingBoard({ onSelectUrl }: { onSelectUrl: (_url: string) => void }) {
   const [period, setPeriod] = useState('today');
+  const [region, setRegion] = useState('global');
   const [links, setLinks] = useState<TrendingItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     setIsLoading(true);
-    fetch(`/api/trending?period=${period}`)
+    fetch(`/api/trending?period=${period}&region=${region}`)
       .then(res => res.json())
       .then(data => {
         if (data.success) {
@@ -23,7 +24,7 @@ export default function TrendingBoard({ onSelectUrl }: { onSelectUrl: (_url: str
         }
       })
       .finally(() => setIsLoading(false));
-  }, [period]);
+  }, [period, region]);
 
   return (
     <div className="w-full max-w-2xl bg-white rounded-2xl shadow-sm border border-zinc-100 p-5 mb-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -31,25 +32,47 @@ export default function TrendingBoard({ onSelectUrl }: { onSelectUrl: (_url: str
         <h2 className="text-lg font-bold text-zinc-800 flex items-center gap-2">
           <TrendingUp className="text-blue-500 h-5 w-5" /> Trending Threads
         </h2>
-        <div className="flex gap-2 text-xs font-semibold bg-zinc-50 p-1 rounded-lg border border-zinc-100">
-          <button 
-            onClick={() => setPeriod('today')} 
-            className={`px-3 py-1.5 rounded-md transition-colors ${period === 'today' ? 'bg-white text-blue-600 shadow-sm' : 'text-zinc-500 hover:text-zinc-700'}`}
-          >
-            Today
-          </button>
-          <button 
-            onClick={() => setPeriod('month')} 
-            className={`px-3 py-1.5 rounded-md transition-colors ${period === 'month' ? 'bg-white text-blue-600 shadow-sm' : 'text-zinc-500 hover:text-zinc-700'}`}
-          >
-            This Month
-          </button>
-          <button 
-            onClick={() => setPeriod('year')} 
-            className={`px-3 py-1.5 rounded-md transition-colors ${period === 'year' ? 'bg-white text-blue-600 shadow-sm' : 'text-zinc-500 hover:text-zinc-700'}`}
-          >
-            This Year
-          </button>
+        <div className="flex flex-wrap gap-2">
+          <div className="flex gap-1 text-xs font-semibold bg-zinc-50 p-1 rounded-lg border border-zinc-100">
+            <button 
+              onClick={() => setRegion('global')} 
+              className={`px-2.5 py-1.5 rounded-md transition-colors ${region === 'global' ? 'bg-white text-blue-600 shadow-sm' : 'text-zinc-500 hover:text-zinc-700'}`}
+            >
+              Global
+            </button>
+            <button 
+              onClick={() => setRegion('kr')} 
+              className={`px-2.5 py-1.5 rounded-md transition-colors ${region === 'kr' ? 'bg-white text-blue-600 shadow-sm' : 'text-zinc-500 hover:text-zinc-700'}`}
+            >
+              KR
+            </button>
+            <button 
+              onClick={() => setRegion('en')} 
+              className={`px-2.5 py-1.5 rounded-md transition-colors ${region === 'en' ? 'bg-white text-blue-600 shadow-sm' : 'text-zinc-500 hover:text-zinc-700'}`}
+            >
+              EN
+            </button>
+          </div>
+          <div className="flex gap-1 text-xs font-semibold bg-zinc-50 p-1 rounded-lg border border-zinc-100">
+            <button 
+              onClick={() => setPeriod('today')} 
+              className={`px-2.5 py-1.5 rounded-md transition-colors ${period === 'today' ? 'bg-white text-blue-600 shadow-sm' : 'text-zinc-500 hover:text-zinc-700'}`}
+            >
+              Today
+            </button>
+            <button 
+              onClick={() => setPeriod('month')} 
+              className={`px-2.5 py-1.5 rounded-md transition-colors ${period === 'month' ? 'bg-white text-blue-600 shadow-sm' : 'text-zinc-500 hover:text-zinc-700'}`}
+            >
+              Month
+            </button>
+            <button 
+              onClick={() => setPeriod('year')} 
+              className={`px-2.5 py-1.5 rounded-md transition-colors ${period === 'year' ? 'bg-white text-blue-600 shadow-sm' : 'text-zinc-500 hover:text-zinc-700'}`}
+            >
+              Year
+            </button>
+          </div>
         </div>
       </div>
 
@@ -57,7 +80,7 @@ export default function TrendingBoard({ onSelectUrl }: { onSelectUrl: (_url: str
         {isLoading ? (
           <div className="text-center py-6 text-sm text-zinc-400 animate-pulse">Loading trending links...</div>
         ) : links.length === 0 ? (
-          <div className="text-center py-6 text-sm text-zinc-400">No trending links found for this period.</div>
+          <div className="text-center py-6 text-sm text-zinc-400">No trending links found for this period and region.</div>
         ) : (
           links.map((link, idx) => (
             <div 
