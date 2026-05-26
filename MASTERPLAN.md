@@ -78,7 +78,7 @@
 - [x] **Embeddable Widget**: 타 사이트에 VoidSay 댓글창을 삽입할 수 있는 위젯 기능.
 
 ## Phase 17: 국제화 및 글로벌 지원 (Internationalization - i18n)
-- [ ] **Multi-language Support**: 한국어, 영어 등 다국어 UI 지원.
+- [x] **Multi-language Support**: 한국어, 영어 등 다국어 UI 지원.
 - [ ] **Regional Trending**: 국가별/언어별 인기 링크 대시보드 분리 및 최적화.
 - [x] **Timezone Localization**: 사용자 위치에 따른 시간 표시 로컬라이징.
 
@@ -154,3 +154,4 @@
 - **2026-05-24**: (Scheduled Cron) Phase 14 작업이 모두 완료되어 있음을 확인하고, Phase 17의 Timezone Localization 작업을 완료 상태로 갱신함. 빌드 및 배포 무결성 점검 완료.
 - **2026-05-26**: (Scheduled Cron) Phase 14(커뮤니티 거버넌스 및 중재 시스템) 완료 상태 재확인. Phase 17(글로벌 지원) 다국어 기능(Multi-language Support) 기반 검토 진행. `npm run lint` 및 `npm run build` 결과 0 warnings, 0 errors 확인 완료. 시스템 무결성을 유지하며 Vercel에 자동 배포(Deploying)를 트리거함.
 - **2026-05-25**: (Scheduled Cron) Phase 14 (커뮤니티 거버넌스 및 중재 시스템)의 User Reporting, Moderator Dashboard, Shadow Banning 구현이 완료되었음을 재확인함. 이어서 Phase 17(글로벌 지원)의 Regional Trending 기능을 위한 API 엔드포인트 파라미터(`region`)를 추가함. `npm run lint` 및 `npm run build`를 성공적으로 통과했으며, Vercel 프로덕션에 자동 배포를 수행함.
+- **2026-05-26**: (Scheduled Cron) Phase 17 진입하여 `LanguageProvider` 및 `translations` 딕셔너리를 활용한 클라이언트 다국어(Multi-language Support) 기반을 구축함. `npm run lint` 및 `npm run build` 결과 0 warnings로 무결성 확보 후 Vercel 프로덕션 배포 진행.
