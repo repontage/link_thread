@@ -10,7 +10,7 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
     const user = await prisma.user.findUnique({
       where: { id },
       include: {
-        comments: {
+        Comment: {
           orderBy: { createdAt: 'desc' },
           take: 20, // 최근 20개 가져오기
         },

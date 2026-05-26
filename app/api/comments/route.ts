@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { getThreadId } from '../../../lib/url-parser';
 import prisma from '../../../lib/prisma';
@@ -66,11 +67,11 @@ export async function GET(req: NextRequest) {
       where: { 
         threadId,
         OR: [
-          { user: { isShadowBanned: false } },
-          { user: null }, // Anonymous or deleted users
+          { User: { isShadowBanned: false } },
+          { User: null }, // Anonymous or deleted users
           ...(currentUserId ? [
             { userId: currentUserId }, // Author can see their own
-            ...(isAdmin ? [{ user: { isShadowBanned: true } }] : []) // Admin can see all
+            ...(isAdmin ? [{ User: { isShadowBanned: true } }] : []) // Admin can see all
           ] : [])
         ]
       },
@@ -78,9 +79,9 @@ export async function GET(req: NextRequest) {
       skip,
       take: limit,
       include: { 
-        reactions: true,
-        user: {
-          include: { badges: true }
+        Reaction: true,
+        User: {
+          include: { UserBadge: true }
         }
       }
     });
@@ -89,11 +90,11 @@ export async function GET(req: NextRequest) {
       where: { 
         threadId,
         OR: [
-          { user: { isShadowBanned: false } },
-          { user: null },
+          { User: { isShadowBanned: false } },
+          { User: null },
           ...(currentUserId ? [
             { userId: currentUserId },
-            ...(isAdmin ? [{ user: { isShadowBanned: true } }] : [])
+            ...(isAdmin ? [{ User: { isShadowBanned: true } }] : [])
           ] : [])
         ]
       } 
@@ -166,8 +167,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const newComment = await prisma.comment.create({
-      data: {
+    const newComment = await prisma.comment.create({ data: { id: crypto.randomUUID(),
         threadId,
         url,
         parentId: parentId || null,
@@ -186,13 +186,13 @@ export async function POST(req: NextRequest) {
       await prisma.userBadge.upsert({
         where: { userId_badgeType: { userId, badgeType: 'First Comment' } },
         update: {},
-        create: { userId, badgeType: 'First Comment' }
+        create: { id: crypto.randomUUID(), userId, badgeType: 'First Comment'  }
       });
     } else if (userCommentsCount === 10) {
       await prisma.userBadge.upsert({
         where: { userId_badgeType: { userId, badgeType: '10 Comments' } },
         update: {},
-        create: { userId, badgeType: '10 Comments' }
+        create: { id: crypto.randomUUID(), userId, badgeType: '10 Comments'  }
       });
     }
 
@@ -200,8 +200,7 @@ export async function POST(req: NextRequest) {
     if (parentId) {
       const parentComment = await prisma.comment.findUnique({ where: { id: parentId } });
       if (parentComment && parentComment.userId && parentComment.userId !== userId) {
-        await prisma.notification.create({
-          data: {
+        await prisma.notification.create({ data: { id: crypto.randomUUID(),
             userId: parentComment.userId,
             type: 'reply',
             message: `${authorName}님이 회원님의 댓글에 답글을 남겼습니다: "${content.substring(0, 30)}..."`
@@ -220,6 +219,7 @@ export async function POST(req: NextRequest) {
       const notificationsData = mentionedUsers
         .filter(u => u.id !== userId)
         .map(u => ({
+          id: crypto.randomUUID(),
           userId: u.id,
           type: 'mention',
           message: `${authorName}님이 댓글에서 회원님을 멘션했습니다: "${content.substring(0, 30)}..."`
@@ -284,14 +284,12 @@ export async function PATCH(req: NextRequest) {
           where: { id: existingReaction.id }
         });
       } else {
-        await prisma.reaction.create({
-          data: { commentId: id, userId, emoji }
+        await prisma.reaction.create({ data: { id: crypto.randomUUID(), commentId: id, userId, emoji }
         });
         
         // Notify
         if (existingComment.userId && existingComment.userId !== userId) {
-          await prisma.notification.create({
-            data: {
+          await prisma.notification.create({ data: { id: crypto.randomUUID(),
               userId: existingComment.userId,
               type: 'reaction',
               message: `${authorName}님이 회원님의 댓글에 ${emoji} 반응을 남겼습니다.`
@@ -301,7 +299,7 @@ export async function PATCH(req: NextRequest) {
       }
 
       const updatedReactions = await prisma.reaction.findMany({ where: { commentId: id } });
-      return NextResponse.json({ success: true, data: { ...existingComment, reactions: updatedReactions } }, { status: 200 });
+      return NextResponse.json({ success: true, data: { ...existingComment, Reaction: updatedReactions } }, { status: 200 });
     }
 
     // Legacy upvote fallback
@@ -311,8 +309,7 @@ export async function PATCH(req: NextRequest) {
     });
 
     if (existingComment.userId && existingComment.userId !== userId) {
-      await prisma.notification.create({
-        data: {
+      await prisma.notification.create({ data: { id: crypto.randomUUID(),
           userId: existingComment.userId,
           type: 'like',
           message: `누군가 회원님의 댓글을 좋아합니다.`

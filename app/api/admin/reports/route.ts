@@ -13,10 +13,10 @@ export async function GET() {
 
     const reports = await prisma.report.findMany({
       include: {
-        reporter: {
+        User: {
           select: { id: true, name: true, email: true },
         },
-        comment: {
+        Comment: {
           select: { id: true, content: true, author: true },
         },
       },

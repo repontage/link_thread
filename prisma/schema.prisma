@@ -9,7 +9,7 @@ datasource db {
 }
 
 model Account {
-  id                String  @id @default(cuid())
+  id                String  @id
   userId            String
   type              String
   provider          String
@@ -21,39 +21,9 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  User              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
-}
-
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model User {
-  id                String          @id @default(cuid())
-  name              String?
-  username          String?         @unique
-  bio               String?
-  profileBackground String?
-  email             String?         @unique
-  emailVerified     DateTime?
-  image             String?
-  role              String          @default("USER")
-  isBanned          Boolean         @default(false)
-  isShadowBanned    Boolean         @default(false)
-  accounts          Account[]
-  authenticators    Authenticator[]
-  comments          Comment[]
-  notifications     Notification[]
-  reactions         Reaction[]
-  Report            Report[]
-  sessions          Session[]
-  badges            UserBadge[]
 }
 
 model Authenticator {
@@ -65,103 +35,35 @@ model Authenticator {
   credentialDeviceType String
   credentialBackedUp   Boolean
   transports           String?
-  user                 User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  User                 User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, credentialID])
 }
 
-model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
-
-  @@unique([identifier, token])
-}
-
 model Comment {
-  id        String     @id @default(uuid())
-  threadId  String
-  url       String?
-  parentId  String?
-  author    String
-  content   String
-  timestamp Int?
-  imageUrls String?
-  tags      String?
-  upvotes   Int        @default(0)
-  createdAt DateTime   @default(now())
-  isToxic   Boolean    @default(false)
-  userId    String?
-  category  String?
-  parent    Comment?   @relation("CommentToComment", fields: [parentId], references: [id])
-  children  Comment[]  @relation("CommentToComment")
-  user      User?      @relation(fields: [userId], references: [id])
-  reactions Reaction[]
-  Report    Report[]
+  id            String     @id
+  threadId      String
+  url           String?
+  parentId      String?
+  author        String
+  content       String
+  timestamp     Int?
+  imageUrls     String?
+  tags          String?
+  upvotes       Int        @default(0)
+  createdAt     DateTime   @default(now())
+  isToxic       Boolean    @default(false)
+  userId        String?
+  category      String?
+  Comment       Comment?   @relation("CommentToComment", fields: [parentId], references: [id])
+  other_Comment Comment[]  @relation("CommentToComment")
+  User          User?      @relation(fields: [userId], references: [id])
+  Reaction      Reaction[]
+  Report        Report[]
 
-  @@index([threadId])
+  @@index([userId])
   @@index([threadId, createdAt])
-  @@index([userId])
-}
-
-model Reaction {
-  id        String   @id @default(uuid())
-  emoji     String
-  commentId String
-  userId    String
-  createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
-
-  @@unique([commentId, userId, emoji])
-  @@index([commentId])
-  @@index([userId])
-}
-
-model Notification {
-  id        String   @id @default(uuid())
-  userId    String
-  type      String
-  message   String
-  isRead    Boolean  @default(false)
-  createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId, isRead])
-}
-
-model Report {
-  id         String   @id @default(uuid())
-  commentId  String
-  reporterId String
-  reason     String
-  status     String   @default("PENDING")
-  createdAt  DateTime @default(now())
-  reporter   User     @relation(fields: [reporterId], references: [id], onDelete: Cascade)
-  comment    Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
-
-  @@index([commentId])
-  @@index([reporterId])
-  @@index([status])
-}
-
-model UserBadge {
-  id        String   @id @default(uuid())
-  userId    String
-  badgeType String
-  createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, badgeType])
-  @@index([userId])
-}
-
-model LinkStats {
-  id        String   @id @default(uuid())
-  url       String   @unique
-  threadId  String   @unique
-  views     Int      @default(0)
-  updatedAt DateTime @updatedAt
+  @@index([threadId])
 }
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
@@ -200,4 +102,102 @@ model Comment_FTS_idx {
 
   @@id([segid, term])
   @@ignore
+}
+
+model LinkStats {
+  id        String   @id
+  url       String   @unique
+  threadId  String   @unique
+  views     Int      @default(0)
+  updatedAt DateTime
+}
+
+model Notification {
+  id        String   @id
+  userId    String
+  type      String
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+}
+
+model Reaction {
+  id        String   @id
+  emoji     String
+  commentId String
+  userId    String
+  createdAt DateTime @default(now())
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@unique([commentId, userId, emoji])
+  @@index([userId])
+  @@index([commentId])
+}
+
+model Report {
+  id         String   @id
+  commentId  String
+  reporterId String
+  reason     String
+  status     String   @default("PENDING")
+  createdAt  DateTime @default(now())
+  User       User     @relation(fields: [reporterId], references: [id], onDelete: Cascade)
+  Comment    Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+  @@index([reporterId])
+  @@index([commentId])
+}
+
+model Session {
+  id           String   @id
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  User         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id                String          @id
+  name              String?
+  username          String?         @unique
+  bio               String?
+  profileBackground String?
+  email             String?         @unique
+  emailVerified     DateTime?
+  image             String?
+  role              String          @default("USER")
+  isBanned          Boolean         @default(false)
+  isShadowBanned    Boolean         @default(false)
+  Account           Account[]
+  Authenticator     Authenticator[]
+  Comment           Comment[]
+  Notification      Notification[]
+  Reaction          Reaction[]
+  Report            Report[]
+  Session           Session[]
+  UserBadge         UserBadge[]
+}
+
+model UserBadge {
+  id        String   @id
+  userId    String
+  badgeType String
+  createdAt DateTime @default(now())
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, badgeType])
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
 }

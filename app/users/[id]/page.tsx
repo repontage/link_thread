@@ -13,7 +13,7 @@ export default async function UserProfilePage({ params }: { params: Promise<{ id
   const user = await prisma.user.findUnique({
     where: { id },
     include: {
-      badges: true,
+      UserBadge: true,
     },
   });
 
@@ -26,7 +26,7 @@ export default async function UserProfilePage({ params }: { params: Promise<{ id
     where: { userId: id },
     orderBy: { createdAt: 'desc' },
     include: {
-      reactions: true, // we might want to display reactions, though we have a separate component usually
+      Reaction: true, // we might want to display reactions, though we have a separate component usually
     },
   });
 
@@ -45,9 +45,9 @@ export default async function UserProfilePage({ params }: { params: Promise<{ id
           <h1 className="text-2xl font-bold text-zinc-900">{user.name || 'Anonymous User'}</h1>
           <p className="text-zinc-500 mt-1">{user.email}</p>
           
-          {user.badges && user.badges.length > 0 && (
+          {user.UserBadge && user.UserBadge.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-3">
-              {user.badges.map(badge => (
+              {user.UserBadge.map(badge => (
                 <span key={badge.id} className="px-2.5 py-1 bg-yellow-100 text-yellow-800 text-xs font-bold rounded-full border border-yellow-200">
                   {badge.badgeType}
                 </span>

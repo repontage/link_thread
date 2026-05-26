@@ -23,9 +23,9 @@ export async function GET() {
         select: {
           id: true,
           name: true,
-          _count: { select: { comments: true } },
+          _count: { select: { Comment: true } },
         },
-        orderBy: { comments: { _count: 'desc' } },
+        orderBy: { Comment: { _count: 'desc' } },
         take: 5,
       }),
     ]);

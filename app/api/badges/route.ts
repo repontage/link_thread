@@ -56,6 +56,7 @@ export async function POST(request: NextRequest) {
 
     const newBadge = await prisma.userBadge.create({
       data: {
+        id: crypto.randomUUID(),
         userId,
         badgeType,
       },

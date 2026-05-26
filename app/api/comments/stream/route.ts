@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
               createdAt: { gt: latest?.createdAt || new Date(0) }
             },
             orderBy: { createdAt: 'desc' },
-            include: { children: { include: { reactions: true } }, reactions: true }
+            include: { other_Comment: { include: { Reaction: true } }, Reaction: true }
           });
 
           // 새 댓글이 있으면 클라이언트 측으로 이벤트 푸시

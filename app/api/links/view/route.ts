@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '../../../../lib/prisma';
 import { getThreadId } from '../../../../lib/url-parser';
@@ -17,11 +18,7 @@ export async function POST(req: NextRequest) {
       update: {
         views: { increment: 1 },
       },
-      create: {
-        url,
-        threadId,
-        views: 1,
-      },
+      create: { id: crypto.randomUUID(), url, threadId, views: 1, updatedAt: new Date() },
     });
 
     return NextResponse.json(stats);

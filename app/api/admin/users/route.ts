@@ -20,7 +20,7 @@ export async function GET() {
         isBanned: true,
         isShadowBanned: true,
         _count: {
-          select: { comments: true, Report: true },
+          select: { Comment: true, Report: true },
         },
       },
       orderBy: { id: 'desc' },

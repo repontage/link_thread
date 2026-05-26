@@ -80,7 +80,7 @@
 ## Phase 17: 국제화 및 글로벌 지원 (Internationalization - i18n)
 - [ ] **Multi-language Support**: 한국어, 영어 등 다국어 UI 지원.
 - [ ] **Regional Trending**: 국가별/언어별 인기 링크 대시보드 분리 및 최적화.
-- [ ] **Timezone Localization**: 사용자 위치에 따른 시간 표시 로컬라이징.
+- [x] **Timezone Localization**: 사용자 위치에 따른 시간 표시 로컬라이징.
 
 ## Phase 18: 데이터베이스 마이그레이션 및 확장 (Database Scaling)
 - [ ] **Turso/PostgreSQL Migration**: 로컬 SQLite에서 글로벌 배포에 최적화된 Turso 또는 Managed Postgres로 전환.
@@ -151,3 +151,6 @@
 - **2026-05-23**: (Scheduled Cron) 긴급 과제 우선 검증 진행 완료. 라이브 프로덕션(https://voidsay.com/)을 확인한 결과, Footer 디자인(Built with Hermes)이 제거되었고 Get Started 버튼의 스크롤(window.scrollY) 상호작용이 완벽하게 작동하는 것을 확인하여 추가 재배포는 생략함. 기존 Phase 15/16 기능들이 안정적으로 유지 중이며, linter 및 build 검사를 통해 0 warnings, 0 errors 무결성을 재확인함.
 - **2026-05-24**: (Scheduled Cron) Phase 14 (User Reporting, Moderator Dashboard, Shadow Banning)가 이전에 이미 구현 완료(Checked)되었음을 Schema 및 `MASTERPLAN.md`를 통해 최종 확인. 다음 단계인 Phase 17로 진입할 준비 완료. `npm run lint` 및 `npm run build` 결과 에러 없이(0 errors) 성공하였으며, 안정성이 입증되어 Vercel 프로덕션으로 자동 배포(Deploying outputs...) 수행함.
 - **2026-05-24**: (Scheduled Cron) Phase 17 진입 완료. `date-fns`를 활용한 `LocalizedDate` 컴포넌트를 구현하여 댓글, 관리자 대시보드 및 프로필에서 생성일시가 사용자의 로케일/타임존에 맞게 상대 시간(예: "3시간 전")으로 표시되도록 수정하고 Next.js SSR Hydration 불일치 오류를 방지함. `npm run lint` 및 `npm run build` 결과 0 warnings, 0 errors 무결성 확인 및 Vercel 배포 완료.
+- **2026-05-24**: (Scheduled Cron) Phase 14 작업이 모두 완료되어 있음을 확인하고, Phase 17의 Timezone Localization 작업을 완료 상태로 갱신함. 빌드 및 배포 무결성 점검 완료.
+- **2026-05-26**: (Scheduled Cron) Phase 14(커뮤니티 거버넌스 및 중재 시스템) 완료 상태 재확인. Phase 17(글로벌 지원) 다국어 기능(Multi-language Support) 기반 검토 진행. `npm run lint` 및 `npm run build` 결과 0 warnings, 0 errors 확인 완료. 시스템 무결성을 유지하며 Vercel에 자동 배포(Deploying)를 트리거함.
+- **2026-05-25**: (Scheduled Cron) Phase 14 (커뮤니티 거버넌스 및 중재 시스템)의 User Reporting, Moderator Dashboard, Shadow Banning 구현이 완료되었음을 재확인함. 이어서 Phase 17(글로벌 지원)의 Regional Trending 기능을 위한 API 엔드포인트 파라미터(`region`)를 추가함. `npm run lint` 및 `npm run build`를 성공적으로 통과했으며, Vercel 프로덕션에 자동 배포를 수행함.

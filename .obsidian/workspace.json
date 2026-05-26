@@ -20,8 +20,19 @@
               "icon": "lucide-file",
               "title": "image"
             }
+          },
+          {
+            "id": "9effa781bba013b7",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "그래프 뷰"
+            }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -53,7 +64,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "tag:#rrggbbaa",
+                "query": "tag:#all",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -157,13 +168,12 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "node_modules/next/dist/docs/01-app/03-api-reference/02-components/image.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "image 의 개요"
+              "title": "개요"
             }
           }
         ],
@@ -184,8 +194,11 @@
       "bases:새 베이스 생성하기": false
     }
   },
-  "active": "e2ad6179daf0bf82",
+  "active": "9effa781bba013b7",
   "lastOpenFiles": [
+    "node_modules/next/dist/docs/01-app/02-guides/production-checklist.md",
+    "docs/app/api-reference/functions/cookies.md",
+    "node_modules/next/dist/docs/01-app/03-api-reference/02-components/image.md",
     "examples/private_key_jwt.diff.md",
     "examples",
     "docs/app/getting-started/caching.md",
