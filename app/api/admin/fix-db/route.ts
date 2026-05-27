@@ -42,11 +42,30 @@ export async function GET() {
       }
     }
 
+    // Ensure WebhookSubscription table exists in Turso DB
+    await libsql.execute(`
+      CREATE TABLE IF NOT EXISTS WebhookSubscription (
+        id TEXT PRIMARY KEY NOT NULL,
+        url TEXT NOT NULL,
+        event TEXT NOT NULL,
+        userId TEXT NOT NULL,
+        secret TEXT,
+        createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        active INTEGER NOT NULL DEFAULT 1,
+        FOREIGN KEY (userId) REFERENCES User (id) ON DELETE CASCADE
+      );
+    `);
+    
+    // Ensure index on WebhookSubscription(userId)
+    await libsql.execute(`
+      CREATE INDEX IF NOT EXISTS WebhookSubscription_userId_idx ON WebhookSubscription (userId);
+    `);
+
     return NextResponse.json({ 
       success: true, 
       existingColumns: columns,
       addedColumns: added,
-      message: added.length > 0 ? `Added: ${added.join(', ')}` : "All columns synced."
+      message: "Database tables and columns synchronized successfully."
     });
   } catch (error: any) {
     if (error.message.includes("duplicate column name")) {
