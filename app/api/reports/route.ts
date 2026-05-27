@@ -46,7 +46,10 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json(report, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.code === "P2002") {
+      return NextResponse.json({ error: "Already reported this comment" }, { status: 409 });
+    }
     console.error("Failed to submit report:", error);
     return NextResponse.json({ error: "Failed to submit report" }, { status: 500 });
   }

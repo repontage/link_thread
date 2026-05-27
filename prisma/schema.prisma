@@ -148,6 +148,7 @@ model Report {
   User       User     @relation(fields: [reporterId], references: [id], onDelete: Cascade)
   Comment    Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
 
+  @@unique([commentId, reporterId])
   @@index([status])
   @@index([reporterId])
   @@index([commentId])
