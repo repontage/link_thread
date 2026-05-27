@@ -61,6 +61,11 @@ export async function GET() {
       CREATE INDEX IF NOT EXISTS WebhookSubscription_userId_idx ON WebhookSubscription (userId);
     `);
 
+    // Ensure unique index on Report(commentId, reporterId) to prevent race condition duplicates
+    await libsql.execute(`
+      CREATE UNIQUE INDEX IF NOT EXISTS Report_commentId_reporterId_key ON Report (commentId, reporterId);
+    `);
+
     return NextResponse.json({ 
       success: true, 
       existingColumns: columns,
