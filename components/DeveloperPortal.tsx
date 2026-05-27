@@ -139,7 +139,7 @@ function verifyWebhook(payload, signature, secret) {
     "threadId": "sha256-hash-of-url",
     "url": "https://example.com/page",
     "parentId": null,
-    "author": "Yeonwoo",
+    "author": "John Doe",
     "content": "This platform is amazing! @developer",
     "userId": "user-id",
     "category": "Tech",
