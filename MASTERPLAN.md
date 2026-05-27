@@ -97,6 +97,12 @@
 - [ ] **Self-healing Infrastructure**: 에러 발생 시 자동 복구 및 로그 분석을 통한 선제적 대응 시스템.
 - [ ] **Automated Content Curations**: 양질의 콘텐츠를 자동으로 선별하여 메인에 노출하는 스마트 큐레이션.
 
+## Phase 21: Pro 구독 및 비즈니스 상용화 (Pro Subscription & Commercialization)
+- [ ] **Stripe Payment Gateway Integration**: 결제 관문(Stripe)을 연동하여 월 29달러($29/mo) 구독 모델 활성화.
+- [ ] **Ad-free Experience (광고 제거)**: Pro 구독 유저에게는 Sponsor UI 및 광고 요소 전면 비노출 처리.
+- [ ] **Developer Portal Access Restriction**: Developer 포털 관리 및 실시간 웹훅(Webhooks) 생성 권한을 Pro 및 Admin 등급으로 한정 잠금(Authorization Guard).
+- [ ] **User Model Extension**: Prisma DB `User` 스키마에 `isPro: Boolean` 또는 `subscriptionStatus` 필드 도입 및 결제 웹훅 연동.
+
 ## Tech Stack
 - Frontend: Next.js (App Router), Tailwind CSS
 - Backend: Next.js API Routes
