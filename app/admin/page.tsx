@@ -33,8 +33,10 @@ type Report = {
   reason: string;
   status: string;
   createdAt: string;
-  reporter: { id: string; name: string | null; email: string | null };
-  comment: { id: string; content: string; author: string };
+  reporter?: { id: string; name: string | null; email: string | null };
+  comment?: { id: string; content: string; author: string };
+  User?: { id: string; name: string | null; email: string | null };
+  Comment?: { id: string; content: string; author: string };
 };
 
 export default function AdminDashboard() {
@@ -331,11 +333,14 @@ export default function AdminDashboard() {
                     </div>
                     <div className="mb-2">
                       <p className="text-sm font-semibold">Reason: {report.reason}</p>
-                      <p className="text-sm text-gray-500">Reported by: {report.reporter?.name || 'Unknown'}</p>
+                      <p className="text-sm text-gray-500">
+                        Reported by: {report.User?.name || report.reporter?.name || 'Unknown'} 
+                        {(report.User?.email || report.reporter?.email) && ` (${report.User?.email || report.reporter?.email})`}
+                      </p>
                     </div>
                     <div className="bg-gray-50 p-3 rounded border text-sm">
                       <p className="font-medium mb-1">Comment content:</p>
-                      <p className="text-gray-700">{report.comment?.content}</p>
+                      <p className="text-gray-700">{report.Comment?.content || report.comment?.content || 'No content'}</p>
                     </div>
                   </div>
                   
