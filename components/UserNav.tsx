@@ -22,6 +22,9 @@ export default function UserNav() {
           <Link href="/profile" className="text-white/80 hover:text-white transition-colors">
             Profile
           </Link>
+          <Link href="/developer" className="text-white/80 hover:text-white transition-colors">
+            Developer
+          </Link>
           <button
             onClick={() => signOut({ callbackUrl: "/" })}
             className="btn-dark-utility"

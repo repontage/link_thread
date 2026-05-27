@@ -6,6 +6,7 @@ import { auth } from '@/auth';
 import { rateLimit } from '@/lib/rate-limit';
 import { reportErrorToMultica } from '@/lib/multica';
 import { logger } from '@/lib/logger';
+import { triggerWebhook } from '@/lib/webhooks';
 
 export const dynamic = 'force-dynamic';
 
@@ -180,6 +181,19 @@ export async function POST(req: NextRequest) {
       }
     });
 
+    // Trigger Webhook Event "comment.created"
+    triggerWebhook("comment.created", {
+      id: newComment.id,
+      threadId: newComment.threadId,
+      url: newComment.url,
+      parentId: newComment.parentId,
+      author: newComment.author,
+      content: newComment.content,
+      userId: newComment.userId,
+      category: newComment.category,
+      createdAt: newComment.createdAt,
+    });
+
     // Handle Badges
     const userCommentsCount = await prisma.comment.count({ where: { userId } });
     if (userCommentsCount === 1) {
@@ -283,8 +297,22 @@ export async function PATCH(req: NextRequest) {
         await prisma.reaction.delete({
           where: { id: existingReaction.id }
         });
+        
+        // Trigger Webhook Event "reaction.deleted"
+        triggerWebhook("reaction.deleted", {
+          commentId: id,
+          userId,
+          emoji,
+        });
       } else {
         await prisma.reaction.create({ data: { id: crypto.randomUUID(), commentId: id, userId, emoji }
+        });
+
+        // Trigger Webhook Event "reaction.created"
+        triggerWebhook("reaction.created", {
+          commentId: id,
+          userId,
+          emoji,
         });
         
         // Notify
@@ -306,6 +334,13 @@ export async function PATCH(req: NextRequest) {
     const updatedComment = await prisma.comment.update({
       where: { id },
       data: { upvotes: { increment: 1 } },
+    });
+
+    // Trigger Webhook Event "comment.liked"
+    triggerWebhook("comment.liked", {
+      commentId: id,
+      upvotes: updatedComment.upvotes,
+      userId,
     });
 
     if (existingComment.userId && existingComment.userId !== userId) {

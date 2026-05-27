@@ -181,6 +181,20 @@ model User {
   Report            Report[]
   Session           Session[]
   UserBadge         UserBadge[]
+  WebhookSubscription WebhookSubscription[]
+}
+
+model WebhookSubscription {
+  id        String   @id
+  url       String
+  event     String   // "comment.created", "reaction.created", or "*"
+  userId    String
+  secret    String?  // for validating payload signature (HMAC SHA256)
+  createdAt DateTime @default(now())
+  active    Boolean  @default(true)
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model UserBadge {
