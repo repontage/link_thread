@@ -46,10 +46,10 @@ export default function DeveloperPortal() {
       if (data.success) {
         setWebhooks(data.subscriptions);
       } else {
-        setError(data.error || "웹훅 목록을 불러오지 못했습니다.");
+        setError(data.error || "Failed to load webhooks.");
       }
     } catch {
-      setError("네트워크 오류로 웹훅 목록을 불러오지 못했습니다.");
+      setError("Network error. Failed to retrieve webhook list.");
     } finally {
       setLoading(false);
     }
@@ -61,7 +61,7 @@ export default function DeveloperPortal() {
     setSuccess(null);
 
     if (!url.startsWith("http://") && !url.startsWith("https://")) {
-      setError("올바른 URL 형식이어야 합니다. (http:// 또는 https://)");
+      setError("Invalid URL format. Must start with http:// or https://");
       return;
     }
 
@@ -74,21 +74,21 @@ export default function DeveloperPortal() {
       const data = await res.json();
 
       if (data.success) {
-        setSuccess("웹훅이 성공적으로 등록되었습니다!");
+        setSuccess("Webhook subscription registered successfully!");
         setUrl("");
         setSecret("");
         setEvent("*");
         fetchWebhooks();
       } else {
-        setError(data.error || "웹훅 등록에 실패했습니다.");
+        setError(data.error || "Failed to register webhook.");
       }
     } catch {
-      setError("네트워크 오류로 웹훅을 등록하지 못했습니다.");
+      setError("Network error. Failed to add webhook subscription.");
     }
   };
 
   const handleDeleteWebhook = async (id: string) => {
-    if (!confirm("정말로 이 웹훅 구독을 삭제하시겠습니까?")) return;
+    if (!confirm("Are you sure you want to delete this webhook subscription?")) return;
     setError(null);
     setSuccess(null);
 
@@ -99,13 +99,13 @@ export default function DeveloperPortal() {
       const data = await res.json();
 
       if (data.success) {
-        setSuccess("웹훅 구독이 삭제되었습니다.");
+        setSuccess("Webhook subscription deleted successfully.");
         fetchWebhooks();
       } else {
-        setError(data.error || "웹훅 삭제에 실패했습니다.");
+        setError(data.error || "Failed to delete webhook.");
       }
     } catch {
-      setError("네트워크 오류로 웹훅을 삭제하지 못했습니다.");
+      setError("Network error. Failed to delete webhook.");
     }
   };
 
@@ -139,8 +139,8 @@ function verifyWebhook(payload, signature, secret) {
     "threadId": "sha256-hash-of-url",
     "url": "https://example.com/page",
     "parentId": null,
-    "author": " Yeonwoo",
-    "content": "이 사이트 정말 유용하네요! @developer",
+    "author": "Yeonwoo",
+    "content": "This platform is amazing! @developer",
     "userId": "user-id",
     "category": "Tech",
     "createdAt": "2026-05-27T12:00:00.000Z"
@@ -153,19 +153,19 @@ function verifyWebhook(payload, signature, secret) {
         <h1 className="text-3xl font-extrabold text-zinc-900 tracking-tight mb-2">
           VoidSay Developer Portal
         </h1>
-        <p className="text-zinc-500 max-w-2xl">
-          VoidSay 공개 API와 실시간 웹훅을 사용하여 나만의 커스텀 클라이언트를 개발하거나, 알림 봇을 연동하고 커뮤니티 데이터를 분석해보세요.
+        <p className="text-zinc-500 max-w-2xl text-sm">
+          Develop custom clients, integrate notification bots, and analyze community data with VoidSay's public REST APIs and real-time Webhooks.
         </p>
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-6 text-sm">
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-6 text-sm font-medium">
           {error}
         </div>
       )}
 
       {success && (
-        <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl mb-6 text-sm">
+        <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl mb-6 text-sm font-medium">
           {success}
         </div>
       )}
@@ -176,7 +176,7 @@ function verifyWebhook(payload, signature, secret) {
         <div className="lg:col-span-1 bg-white rounded-2xl border border-zinc-100 p-6 shadow-sm">
           <h2 className="text-lg font-bold text-zinc-900 mb-4 flex items-center gap-2">
             <Plus className="h-5 w-5 text-blue-600" />
-            웹훅 구독 추가
+            Add Webhook
           </h2>
 
           <form onSubmit={handleAddWebhook} className="space-y-4">
@@ -203,23 +203,23 @@ function verifyWebhook(payload, signature, secret) {
                 onChange={(e) => setEvent(e.target.value)}
                 className="w-full text-sm px-3.5 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-zinc-50 focus:bg-white transition-all"
               >
-                <option value="*">모든 이벤트 (*)</option>
-                <option value="comment.created">댓글 생성 (comment.created)</option>
-                <option value="comment.liked">댓글 좋아요 (comment.liked)</option>
-                <option value="reaction.created">이모지 반응 생성 (reaction.created)</option>
-                <option value="reaction.deleted">이모지 반응 삭제 (reaction.deleted)</option>
+                <option value="*">All Events (*)</option>
+                <option value="comment.created">Comment Created (comment.created)</option>
+                <option value="comment.liked">Comment Liked (comment.liked)</option>
+                <option value="reaction.created">Emoji Reaction Created (reaction.created)</option>
+                <option value="reaction.deleted">Emoji Reaction Deleted (reaction.deleted)</option>
               </select>
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1.5">
-                Secret (선택)
+                Secret (Optional)
               </label>
               <input
                 type="text"
                 value={secret}
                 onChange={(e) => setSecret(e.target.value)}
-                placeholder="자동 생성하려면 비워두세요"
+                placeholder="Leave blank to auto-generate"
                 className="w-full text-sm px-3.5 py-2 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-zinc-50 focus:bg-white transition-all"
               />
             </div>
@@ -229,7 +229,7 @@ function verifyWebhook(payload, signature, secret) {
               className="w-full mt-2 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm rounded-lg transition-all flex items-center justify-center gap-1.5 shadow-sm"
             >
               <Webhook className="h-4 w-4" />
-              구독하기
+              Subscribe
             </button>
           </form>
         </div>
@@ -239,12 +239,12 @@ function verifyWebhook(payload, signature, secret) {
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-bold text-zinc-900 flex items-center gap-2">
               <Webhook className="h-5 w-5 text-blue-600" />
-              내 웹훅 목록
+              Active Webhooks
             </h2>
             <button
               onClick={fetchWebhooks}
               className="text-zinc-400 hover:text-zinc-600 p-1 rounded-lg transition-colors"
-              title="새로고침"
+              title="Refresh"
             >
               <RefreshCw className="h-4 w-4" />
             </button>
@@ -252,13 +252,13 @@ function verifyWebhook(payload, signature, secret) {
 
           {loading ? (
             <div className="py-12 text-center text-zinc-400 text-sm">
-              웹훅 정보를 불러오는 중입니다...
+              Loading webhook configurations...
             </div>
           ) : webhooks.length === 0 ? (
             <div className="py-16 text-center border border-dashed border-zinc-200 rounded-xl">
               <Webhook className="h-10 w-10 text-zinc-300 mx-auto mb-3" />
-              <p className="text-zinc-400 text-sm">등록된 웹훅 구독이 없습니다.</p>
-              <p className="text-zinc-400 text-xs mt-1">왼쪽 폼에서 첫 웹훅 구독을 만들어보세요.</p>
+              <p className="text-zinc-400 text-sm font-medium">No active webhook subscriptions found.</p>
+              <p className="text-zinc-400 text-xs mt-1">Configure your first webhook subscription on the left.</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -300,7 +300,7 @@ function verifyWebhook(payload, signature, secret) {
                   <button
                     onClick={() => handleDeleteWebhook(sub.id)}
                     className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-all shrink-0 self-end md:self-center border border-zinc-100 bg-white md:bg-transparent"
-                    title="웹훅 구독 삭제"
+                    title="Delete webhook subscription"
                   >
                     <Trash className="h-4 w-4" />
                   </button>
@@ -315,12 +315,12 @@ function verifyWebhook(payload, signature, secret) {
       <div className="space-y-8">
         <h2 className="text-xl font-bold text-zinc-900 border-b border-zinc-100 pb-3 flex items-center gap-2">
           <Code className="h-5 w-5 text-blue-600" />
-          API & 웹훅 연동 가이드
+          API & Webhooks Integration Guide
         </h2>
 
         {/* REST API Endpoints */}
         <div className="bg-white rounded-2xl border border-zinc-100 p-6 shadow-sm">
-          <h3 className="text-base font-bold text-zinc-900 mb-4">REST API 가이드</h3>
+          <h3 className="text-base font-bold text-zinc-900 mb-4">REST API Endpoints</h3>
           <div className="space-y-6">
             {/* Get Comments */}
             <div className="space-y-2">
@@ -333,7 +333,7 @@ function verifyWebhook(payload, signature, secret) {
                 </span>
               </div>
               <p className="text-xs text-zinc-500 pl-2">
-                특정 웹페이지 URL 스레드에 작성된 댓글 목록을 트리 구조로 가져옵니다. (Cursor 기반 페이징 지원)
+                Retrieve comment threads in a nested tree structure for any given webpage. Supports cursor-based pagination.
               </p>
             </div>
 
@@ -348,7 +348,7 @@ function verifyWebhook(payload, signature, secret) {
                 </span>
               </div>
               <p className="text-xs text-zinc-500 pl-2">
-                특정 URL 스레드에 새로운 댓글을 추가합니다. 로그인 세션(쿠키)이 필요합니다.
+                Post a new comment or nested reply to a specific link thread. Requires user authentication session cookies.
               </p>
             </div>
 
@@ -363,7 +363,7 @@ function verifyWebhook(payload, signature, secret) {
                 </span>
               </div>
               <p className="text-xs text-zinc-500 pl-2">
-                가장 핫한 급상승 인기 링크와 통계 랭킹을 기간별/지역별로 조회합니다.
+                Fetch trending link discussions and community analytics, filterable by time ranges and content regions.
               </p>
             </div>
           </div>
@@ -376,17 +376,17 @@ function verifyWebhook(payload, signature, secret) {
             <div>
               <h3 className="text-base font-bold text-zinc-900 mb-3 flex items-center gap-2">
                 <Shield className="h-4.5 w-4.5 text-blue-600" />
-                서명 검증 (Signature Verification)
+                Signature Verification
               </h3>
               <p className="text-xs text-zinc-500 mb-4 leading-relaxed">
-                VoidSay는 웹훅 전송 시 페이로드를 보호하기 위해 헤더에 <code className="bg-zinc-100 px-1 py-0.5 rounded text-zinc-800 font-mono">x-voidsay-signature</code>를 포함합니다. 발급받은 Secret 키와 HMAC SHA256 알고리즘을 사용해 전달받은 페이로드가 정당한지 검증할 수 있습니다.
+                VoidSay includes an <code className="bg-zinc-100 px-1 py-0.5 rounded text-zinc-800 font-mono">x-voidsay-signature</code> header in webhook dispatches to secure payloads. You can verify the authenticity of incoming payloads using your signing Secret and HMAC SHA256.
               </p>
             </div>
             <div className="relative">
               <button
                 onClick={() => handleCopyDocs(exampleSignatureCode, "signature")}
                 className="absolute right-3 top-3 text-zinc-400 hover:text-zinc-600 bg-white/80 p-1.5 rounded-lg border border-zinc-100 transition-colors"
-                title="코드 복사"
+                title="Copy code"
               >
                 {copiedText === "signature" ? (
                   <Check className="h-3.5 w-3.5 text-green-500" />
@@ -405,17 +405,17 @@ function verifyWebhook(payload, signature, secret) {
             <div>
               <h3 className="text-base font-bold text-zinc-900 mb-3 flex items-center gap-2">
                 <CornerDownRight className="h-4.5 w-4.5 text-blue-600" />
-                웹훅 페이로드 샘플 (comment.created)
+                Webhook Payload Sample (comment.created)
               </h3>
               <p className="text-xs text-zinc-500 mb-4 leading-relaxed">
-                웹훅 발송 시 수신하게 되는 표준 JSON 페이로드 규격입니다. 모든 이벤트는 고유의 <code className="bg-zinc-100 px-1 py-0.5 rounded text-zinc-800 font-mono">id</code>를 가지며, <code className="bg-zinc-100 px-1 py-0.5 rounded text-zinc-800 font-mono">data</code> 객체 내부에 구체적인 리소스 필드를 담고 있습니다.
+                Standard JSON payload schema received on your server on dispatch. All webhook events contain metadata envelopes with distinct event types and unique delivery IDs.
               </p>
             </div>
             <div className="relative">
               <button
                 onClick={() => handleCopyDocs(commentPayloadExample, "payload")}
                 className="absolute right-3 top-3 text-zinc-400 hover:text-zinc-600 bg-white/80 p-1.5 rounded-lg border border-zinc-100 transition-colors"
-                title="샘플 복사"
+                title="Copy payload"
               >
                 {copiedText === "payload" ? (
                   <Check className="h-3.5 w-3.5 text-green-500" />
