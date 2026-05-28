@@ -88,7 +88,7 @@
 - [ ] **Caching Layer**: Redis/Upstash를 활용한 빈번한 쿼리(Trending 등) 캐싱 도입.
 
 ## Phase 19: 공식 API 공개 및 생태계 구축 (Public API & Ecosystem)
-- [ ] **Developer API Docs**: 외부 개발자가 VoidSay 데이터를 활용할 수 있는 공개 API 및 문서 제공.
+- [x] **Developer API Docs**: 외부 개발자가 VoidSay 데이터를 활용할 수 있는 공개 API 및 문서 제공. (`/app/developer/docs` 엔드포인트 구현 완료)
 - [x] **Webhook Integration**: (Completed) 새로운 댓글이나 업보트 발생 시 외부로 알림을 보낼 수 있는 웹훅 시스템.
 - [ ] **Third-party Apps**: API를 활용한 서드파티 클라이언트 개발 지원.
 
@@ -163,3 +163,4 @@
 - **2026-05-26**: (Scheduled Cron) Phase 17 진입하여 `LanguageProvider` 및 `translations` 딕셔너리를 활용한 클라이언트 다국어(Multi-language Support) 기반을 구축함. `npm run lint` 및 `npm run build` 결과 0 warnings로 무결성 확보 후 Vercel 프로덕션 배포 진행.
 - **2026-05-27**: (Scheduled Cron) Phase 14 및 Phase 17 진행 상태를 재확인하고, 기존 구현된 다국어 지원 및 로컬라이징 기능의 안정성을 점검함. 코드베이스 무결성을 위해 빌드 및 린트를 실행하고, Vercel 프로덕션 배포를 수행함.
 - **2026-05-27**: (Scheduled Cron) Phase 14(커뮤니티 거버넌스 및 중재 시스템) 및 Phase 17(글로벌 지원) 관련 작업(Regional Trending) 완료 확인. 현재 시스템은 Turso를 연동하여 안정적으로 구동 중이므로 Phase 18의 Turso 마이그레이션 항목을 완료 처리함. 린트(lint) 및 빌드(build) 에러가 없는 것을 확인하고 Vercel에 배포(deploy)를 수행함.
+- **2026-05-28**: (Scheduled Cron) Phase 19 Public API & Ecosystem 진입. Developer API Docs 페이지(`/app/developer/docs`)를 구축하여 외부 개발자가 사용할 수 있는 VoidSay API (Comment, Analytics, Webhooks) 문서를 제공함. `npm run lint` 0 warnings 확인 및 `npm run build` 성공. Vercel 프로덕션으로 배포함.
