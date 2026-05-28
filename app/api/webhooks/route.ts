@@ -21,6 +21,13 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const userRole = (session.user as any).role;
+    const isPro = (session.user as any).isPro; // Prepared for Phase 21 schema extension
+
+    if (userRole !== "ADMIN" && !isPro) {
+      return NextResponse.json({ error: "Access Restricted. Pro subscription or Admin role required to manage Webhooks." }, { status: 403 });
+    }
+
     const userId = (session.user as any).id;
 
     const subscriptions = await prisma.webhookSubscription.findMany({
@@ -42,6 +49,13 @@ export async function POST(req: NextRequest) {
     const session = await auth();
     if (!session || !session.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const userRole = (session.user as any).role;
+    const isPro = (session.user as any).isPro; // Prepared for Phase 21 schema extension
+
+    if (userRole !== "ADMIN" && !isPro) {
+      return NextResponse.json({ error: "Access Restricted. Pro subscription or Admin role required to manage Webhooks." }, { status: 403 });
     }
 
     const userId = (session.user as any).id;
@@ -110,6 +124,13 @@ export async function DELETE(req: NextRequest) {
     const session = await auth();
     if (!session || !session.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const userRole = (session.user as any).role;
+    const isPro = (session.user as any).isPro; // Prepared for Phase 21 schema extension
+
+    if (userRole !== "ADMIN" && !isPro) {
+      return NextResponse.json({ error: "Access Restricted. Pro subscription or Admin role required to manage Webhooks." }, { status: 403 });
     }
 
     const userId = (session.user as any).id;

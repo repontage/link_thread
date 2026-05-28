@@ -89,7 +89,7 @@
 
 ## Phase 19: 공식 API 공개 및 생태계 구축 (Public API & Ecosystem)
 - [ ] **Developer API Docs**: 외부 개발자가 VoidSay 데이터를 활용할 수 있는 공개 API 및 문서 제공.
-- [ ] **Webhook Integration**: 새로운 댓글이나 업보트 발생 시 외부로 알림을 보낼 수 있는 웹훅 시스템.
+- [x] **Webhook Integration**: (Completed) 새로운 댓글이나 업보트 발생 시 외부로 알림을 보낼 수 있는 웹훅 시스템.
 - [ ] **Third-party Apps**: API를 활용한 서드파티 클라이언트 개발 지원.
 
 ## Phase 20: 미래 지향적 기술 통합 및 자동화 (Future-proofing & AI Ops)
@@ -100,7 +100,7 @@
 ## Phase 21: Pro 구독 및 비즈니스 상용화 (Pro Subscription & Commercialization)
 - [ ] **Stripe Payment Gateway Integration**: 결제 관문(Stripe)을 연동하여 월 29달러($29/mo) 구독 모델 활성화.
 - [ ] **Ad-free Experience (광고 제거)**: Pro 구독 유저에게는 Sponsor UI 및 광고 요소 전면 비노출 처리.
-- [ ] **Developer Portal Access Restriction**: Developer 포털 관리 및 실시간 웹훅(Webhooks) 생성 권한을 Pro 및 Admin 등급으로 한정 잠금(Authorization Guard).
+- [x] **Developer Portal Access Restriction**: (Completed) Developer 포털 관리 및 실시간 웹훅(Webhooks) 생성 권한을 Pro 및 Admin 등급으로 한정 잠금(Authorization Guard).
 - [ ] **User Model Extension**: Prisma DB `User` 스키마에 `isPro: Boolean` 또는 `subscriptionStatus` 필드 도입 및 결제 웹훅 연동.
 
 ## Tech Stack
