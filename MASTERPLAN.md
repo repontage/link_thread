@@ -99,9 +99,9 @@
 
 ## Phase 21: Pro 구독 및 비즈니스 상용화 (Pro Subscription & Commercialization)
 - [ ] **Stripe Payment Gateway Integration**: 결제 관문(Stripe)을 연동하여 월 29달러($29/mo) 구독 모델 활성화.
-- [ ] **Ad-free Experience (광고 제거)**: Pro 구독 유저에게는 Sponsor UI 및 광고 요소 전면 비노출 처리.
+- [x] **Ad-free Experience (광고 제거)**: Pro 구독 유저에게는 Sponsor UI 및 광고 요소 전면 비노출 처리.
 - [x] **Developer Portal Access Restriction**: (Completed) Developer 포털 관리 및 실시간 웹훅(Webhooks) 생성 권한을 Pro 및 Admin 등급으로 한정 잠금(Authorization Guard).
-- [ ] **User Model Extension**: Prisma DB `User` 스키마에 `isPro: Boolean` 또는 `subscriptionStatus` 필드 도입 및 결제 웹훅 연동.
+- [x] **User Model Extension**: Prisma DB `User` 스키마에 `isPro: Boolean` 또는 `subscriptionStatus` 필드 도입 및 결제 웹훅 연동.
 
 ## Tech Stack
 - Frontend: Next.js (App Router), Tailwind CSS
@@ -164,3 +164,4 @@
 - **2026-05-27**: (Scheduled Cron) Phase 14 및 Phase 17 진행 상태를 재확인하고, 기존 구현된 다국어 지원 및 로컬라이징 기능의 안정성을 점검함. 코드베이스 무결성을 위해 빌드 및 린트를 실행하고, Vercel 프로덕션 배포를 수행함.
 - **2026-05-27**: (Scheduled Cron) Phase 14(커뮤니티 거버넌스 및 중재 시스템) 및 Phase 17(글로벌 지원) 관련 작업(Regional Trending) 완료 확인. 현재 시스템은 Turso를 연동하여 안정적으로 구동 중이므로 Phase 18의 Turso 마이그레이션 항목을 완료 처리함. 린트(lint) 및 빌드(build) 에러가 없는 것을 확인하고 Vercel에 배포(deploy)를 수행함.
 - **2026-05-28**: (Scheduled Cron) Phase 19 Public API & Ecosystem 진입. Developer API Docs 페이지(`/app/developer/docs`)를 구축하여 외부 개발자가 사용할 수 있는 VoidSay API (Comment, Analytics, Webhooks) 문서를 제공함. `npm run lint` 0 warnings 확인 및 `npm run build` 성공. Vercel 프로덕션으로 배포함.
+- **2026-05-29**: (Atlas Run) Phase 21 "Ad-free Experience" 및 "User Model Extension" 기능 구현 완료. `types/next-auth.d.ts` 인터페이스에 `isPro` 필드 추가, `auth.ts` JWT/Session 콜백 최적화(DB 실시간 조회 추가), `SponsorUI.tsx` 클라이언트 컴포넌트 전환 및 `useSession()` 조건별 UI 비노출(`null` 반환) 처리 완료. `npm run lint` 및 빌드 무결성 검증 완료.

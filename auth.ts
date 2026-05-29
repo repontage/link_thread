@@ -30,11 +30,22 @@ export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
         token.id = u.id
         token.role = u.role
         token.isBanned = u.isBanned
+        token.isPro = u.isPro
+      } else if (token?.id) {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.id as string },
+          select: { isPro: true, role: true, isBanned: true }
+        });
+        if (dbUser) {
+          token.isPro = dbUser.isPro;
+          token.role = dbUser.role;
+          token.isBanned = dbUser.isBanned;
+        }
       }
       if (trigger === "update" && session) {
         token.role = session.role ?? token.role
         token.isBanned = session.isBanned ?? token.isBanned
-        // Allow updating other fields as needed
+        token.isPro = session.isPro ?? token.isPro
       }
       return token
     },
@@ -43,6 +54,7 @@ export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
         ;(session.user as any).id = token.id
         ;(session.user as any).role = token.role
         ;(session.user as any).isBanned = token.isBanned
+        ;(session.user as any).isPro = token.isPro
       }
       return session
     }

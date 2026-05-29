@@ -1,6 +1,15 @@
-import React from 'react';
+"use client";
+
+import React from "react";
+import { useSession } from "next-auth/react";
 
 export default function SponsorUI() {
+  const { data: session } = useSession();
+
+  if (session?.user?.isPro) {
+    return null;
+  }
+
   return (
     <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-6 mb-6 shadow-sm">
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -13,7 +22,7 @@ export default function SponsorUI() {
           </p>
         </div>
         <button 
-          onClick={() => alert('Sponsor feature coming soon!')}
+          onClick={() => alert("Sponsor feature coming soon!")}
           className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold rounded-lg shadow-sm transition-colors whitespace-nowrap"
         >
           ☕ Support Creator

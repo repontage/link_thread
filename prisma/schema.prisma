@@ -174,6 +174,8 @@ model User {
   role              String          @default("USER")
   isBanned          Boolean         @default(false)
   isShadowBanned    Boolean         @default(false)
+  isPro             Boolean         @default(false)
+  subscriptionStatus String?
   Account           Account[]
   Authenticator     Authenticator[]
   Comment           Comment[]
