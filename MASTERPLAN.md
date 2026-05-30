@@ -95,13 +95,21 @@
 ## Phase 20: 미래 지향적 기술 통합 및 자동화 (Future-proofing & AI Ops) (Completed)
 - [ ] **Fediverse Integration**: ActivityPub 프로토콜 연동을 통한 탈중앙화 소셜 네트워크 참여 검토.
 - [x] **Self-healing Infrastructure**: (Completed) 에러 발생 시 자동 감지 및 텔레그램 연동, 누락된 테이블/컬럼의 자동 마이그레이션을 지원하는 인프라 헬스 진단 시스템 구축 (`/api/admin/self-healing`).
-- [ ] **Automated Content Curations**: 양질의 콘텐츠를 자동으로 선별하여 메인에 노출하는 스마트 큐레이션.
+- [x] **Automated Content Curations**: (Completed) 5-dimension quality scoring (Engagement, Quality, Recency, Diversity, Velocity) + `/api/curated` API + CuratedPicks UI 컴포넌트를 메인 페이지에 배치.
 
 ## Phase 21: Pro 구독 및 비즈니스 상용화 (Pro Subscription & Commercialization) (Completed)
 - [x] **Stripe Payment Gateway Integration**: (Completed) Stripe 결제 연동 완료 및 환경변수 부재 시 로컬 테스트용 Mock 샌드박스 지원 (`/pro`, `/pro/mock-checkout`, `/pro/success`, `/api/stripe/checkout`, `/api/stripe/mock-success`).
 - [x] **Ad-free Experience (광고 제거)**: Pro 구독 유저에게는 Sponsor UI 및 광고 요소 전면 비노출 처리.
 - [x] **Developer Portal Access Restriction**: (Completed) Developer 포털 관리 및 실시간 웹훅(Webhooks) 생성 권한을 Pro 및 Admin 등급으로 한정 잠금(Authorization Guard).
 - [x] **User Model Extension**: Prisma DB `User` 스키마에 `isPro: Boolean` 또는 `subscriptionStatus` 필드 도입 및 결제 웹훅 연동.
+
+## Phase 22: 지능형 피드 및 개인화 (Intelligent Feed & Personalization)
+- [ ] **Personalized Feed**: 사용자 관심사(댓글 단 URL 카테고리, upvote 패턴) 기반 개인화 피드 생성.
+- [ ] **AI Comment Moderation**: 댓글 자동 독성 감지 및 스팸 필터링 강화 (기존 isToxic 필드 활용).
+- [ ] **Smart Notifications**: 사용자 활동 패턴 기반 중요 알림 우선순위화 및 다이제스트 발송.
+- [ ] **Fediverse Integration**: ActivityPub 프로토콜 연동을 통한 탈중앙화 소셜 네트워크 참여 (Mastodon, Pleroma 등과 상호운용).
+- [ ] **Advanced Analytics Dashboard**: 관리자용 고급 통계 대시보드 (retention, churn, cohort 분석).
+- [ ] **A/B Testing Framework**: UI 변경사항에 대한 A/B 테스트 인프라 구축.
 
 ## Tech Stack
 - Frontend: Next.js (App Router), Tailwind CSS
@@ -172,3 +180,10 @@
   - **Phase 18 (Database Scaling)**: 읽기/쓰기 분리를 대비한 dynamic multi-client wrapper `lib/db-split.ts` 구축 완료.
   - **Phase 20 (AI Ops & Self-healing)**: 자동 테이블 무결성 확인 및 스키마 싱크 자가 치유 API `/api/admin/self-healing` 및 텔레그램 경보 연동 개발 완료.
   - 빌드(0 warnings, 0 errors) 성공 후 Vercel 프로덕션 배포 및 `voidsay.com` 도메인 알리아스 적용 및 최종 라이브 사이트 검증 완료.
+- **2026-05-30**: (DeepSeek Cron) Phase 20 Automated Content Curations 완료. 
+  - **스마트 큐레이션 알고리즘**: 5차원 품질 점수(Engagement 35%, Quality 25%, Recency 20%, Diversity 10%, Velocity 10%) 기반 `lib/content-curator.ts` 구축.
+  - **API 엔드포인트**: `/api/curated` (10분 캐싱, `unstable_cache` 적용).
+  - **UI 컴포넌트**: `CuratedPicks.tsx` — 점수 바, 랭킹 배지, 카테고리 태그 포함한 Apple-style 카드 레이아웃, 메인 페이지에 배치.
+  - **Phase 22 정의**: 지능형 피드, AI 중재, 스마트 알림, Fediverse, 고급 분석, A/B 테스트를 다음 개발 목표로 설정.
+  - 크론 기본 모델을 DeepSeek V4 Reasoning Max로 전환 완료. MASTERPLAN.md 기반 동적 모델 라우팅 적용.
+  - 빌드(0 warnings, 0 errors) 성공 후 Vercel 프로덕션 배포 및 `voidsay.com` 라이브 검증 완료.

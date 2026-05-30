@@ -5,6 +5,8 @@ import UserNav from '@/components/UserNav';
 import ProductHeroVisual from '@/components/ProductHeroVisual';
 import { useRef } from 'react';
 
+import CuratedPicks from '@/components/CuratedPicks';
+
 export default function Home() {
   const discussionRef = useRef<HTMLDivElement>(null);
 
@@ -78,6 +80,9 @@ export default function Home() {
           <ThreadUI />
         </div>
       </section>
+
+      {/* Curated Picks */}
+      <CuratedPicks />
 
       {/* About Section */}
       <section id="about" className="product-tile-dark py-section w-full">
