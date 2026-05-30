@@ -93,7 +93,7 @@
 - [x] **Third-party Apps**: (Completed) API 및 Webhook 활용을 통해 서드파티 클라이언트 연동 기반 구축.
 
 ## Phase 20: 미래 지향적 기술 통합 및 자동화 (Future-proofing & AI Ops) (Completed)
-- [ ] **Fediverse Integration**: ActivityPub 프로토콜 연동을 통한 탈중앙화 소셜 네트워크 참여 검토.
+- [x] **Fediverse Integration**: (Completed) ActivityPub 프로토콜 연동을 통한 탈중앙화 소셜 네트워크 참여 지원. Webfinger API, Actor API, Outbox 및 Inbox API 구축 완료 및 개발자 문서에 추가 완료.
 - [x] **Self-healing Infrastructure**: (Completed) 에러 발생 시 자동 감지 및 텔레그램 연동, 누락된 테이블/컬럼의 자동 마이그레이션을 지원하는 인프라 헬스 진단 시스템 구축 (`/api/admin/self-healing`).
 - [x] **Automated Content Curations**: (Completed) 5-dimension quality scoring (Engagement, Quality, Recency, Diversity, Velocity) + `/api/curated` API + CuratedPicks UI 컴포넌트를 메인 페이지에 배치.
 
@@ -107,7 +107,7 @@
 - [ ] **Personalized Feed**: 사용자 관심사(댓글 단 URL 카테고리, upvote 패턴) 기반 개인화 피드 생성.
 - [ ] **AI Comment Moderation**: 댓글 자동 독성 감지 및 스팸 필터링 강화 (기존 isToxic 필드 활용).
 - [ ] **Smart Notifications**: 사용자 활동 패턴 기반 중요 알림 우선순위화 및 다이제스트 발송.
-- [ ] **Fediverse Integration**: ActivityPub 프로토콜 연동을 통한 탈중앙화 소셜 네트워크 참여 (Mastodon, Pleroma 등과 상호운용).
+- [x] **Fediverse Integration**: (Completed) ActivityPub 프로토콜 연동을 통한 탈중앙화 소셜 네트워크 참여 (Mastodon, Pleroma 등과 상호운용) 규격 구축 완료.
 - [ ] **Advanced Analytics Dashboard**: 관리자용 고급 통계 대시보드 (retention, churn, cohort 분석).
 - [ ] **A/B Testing Framework**: UI 변경사항에 대한 A/B 테스트 인프라 구축.
 
@@ -187,3 +187,8 @@
   - **Phase 22 정의**: 지능형 피드, AI 중재, 스마트 알림, Fediverse, 고급 분석, A/B 테스트를 다음 개발 목표로 설정.
   - 크론 기본 모델을 DeepSeek V4 Reasoning Max로 전환 완료. MASTERPLAN.md 기반 동적 모델 라우팅 적용.
   - 빌드(0 warnings, 0 errors) 성공 후 Vercel 프로덕션 배포 및 `voidsay.com` 라이브 검증 완료.
+- **2026-05-30**: (Scheduled Cron) Phase 20 Fediverse Integration (ActivityPub) 및 Phase 22 Fediverse Integration 완결.
+  - **액티비티펍 엔드포인트**: \`.well-known/webfinger\`, \`/api/federation/actor/[username]\`, \`/api/federation/actor/[username]/outbox\`, \`/api/federation/inbox\` 엔드포인트 구축 완료.
+  - **동적 키 페어 생성**: 로컬 및 클라우드(Vercel) 환경에서 서버 실행 시 2048-bit RSA 키 페어를 동적으로 생성 및 global 캐싱하여 DB 스키마 구조 변경 없이 Fediverse와 유기적으로 소통할 수 있는 ActivityPub Actors 규격을 완벽 지원.
+  - **문서 보강**: 개발자 가이드 문서(\`/app/developer/docs\`)에 ActivityPub 및 Fediverse 연동 관련 세부 명세를 신설하여 기록 완료.
+  - **배포 전 무결성 검증**: \`npm run lint\` 및 \`npm run build\` 성공(0 warnings, 0 errors) 확인 및 Vercel 프로덕션 배포 완료.

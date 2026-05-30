@@ -96,6 +96,35 @@ export default async function ApiDocsPage() {
                 </pre>
               </div>
             </div>
+
+            <hr className="border-zinc-200 dark:border-zinc-800" />
+
+            {/* Fediverse (ActivityPub) */}
+            <div>
+              <div className="flex items-center gap-3 mb-2">
+                <span className="px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 text-xs font-mono rounded font-semibold">GET</span>
+                <code className="text-sm font-mono text-zinc-800 dark:text-zinc-200">Fediverse Integration (ActivityPub)</code>
+              </div>
+              <p className="text-zinc-600 dark:text-zinc-400 mb-4">
+                VoidSay supports the ActivityPub protocol, allowing standard Fediverse servers (such as Mastodon and Pleroma) to discover and display user profiles and comment activities.
+              </p>
+              <div className="space-y-4">
+                <div>
+                  <h4 className="text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1">Webfinger Endpoint</h4>
+                  <p className="text-xs text-zinc-500 mb-2">Used by Fediverse instances to resolve user handles.</p>
+                  <div className="bg-zinc-50 dark:bg-black rounded-lg p-3 font-mono text-xs overflow-x-auto border border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200">
+                    GET /.well-known/webfinger?resource=acct:username@voidsay.com
+                  </div>
+                </div>
+                <div>
+                  <h4 className="text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1">ActivityPub Actor Endpoint</h4>
+                  <p className="text-xs text-zinc-500 mb-2">Returns Actor profile data conforming to the ActivityPub spec.</p>
+                  <div className="bg-zinc-50 dark:bg-black rounded-lg p-3 font-mono text-xs overflow-x-auto border border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200">
+                    GET /api/federation/actor/username
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
       </div>
