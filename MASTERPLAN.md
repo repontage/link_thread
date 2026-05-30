@@ -114,7 +114,7 @@
 ## Tech Stack
 - Frontend: Next.js (App Router), Tailwind CSS
 - Backend: Next.js API Routes
-- DB: SQLite (Local) via Prisma
+- DB: SQLite (Local) via Prisma , turso
 - Hosting: Vercel
 - Security: Cloudflare (Proxied)
 
