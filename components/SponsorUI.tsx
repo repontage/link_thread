@@ -4,9 +4,9 @@ import React from "react";
 import { useSession } from "next-auth/react";
 
 export default function SponsorUI() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
 
-  if (session?.user?.isPro) {
+  if (status === "loading" || session?.user?.isPro) {
     return null;
   }
 
