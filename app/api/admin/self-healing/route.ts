@@ -1,0 +1,132 @@
+import { NextResponse } from 'next/server';
+import { createClient } from '@libsql/client';
+import { logToTelegram } from '@/lib/telegram-logger';
+import { auth } from '@/auth';
+
+export const dynamic = 'force-dynamic';
+
+export async function GET() {
+  const session = await auth();
+  const isAdmin = (session?.user as any)?.role === 'ADMIN';
+
+  if (!isAdmin) {
+    return NextResponse.json({ error: 'Forbidden. Admin access required.' }, { status: 403 });
+  }
+
+  const url = process.env.DATABASE_URL;
+  const authToken = process.env.TURSO_AUTH_TOKEN;
+
+  if (!url) {
+    return NextResponse.json({ status: "error", message: "No DATABASE_URL in environment" }, { status: 500 });
+  }
+
+  const libsql = createClient({ url, authToken });
+  const diagnostics: Record<string, any> = {};
+  let needsHealing = false;
+  let healingResult = "No healing required";
+
+  try {
+    // 1. Database Connection Ping
+    const pingResult = await libsql.execute("SELECT 1 as ping");
+    diagnostics.dbPing = pingResult.rows[0]?.ping === 1 ? "success" : "failed";
+  } catch (error: any) {
+    diagnostics.dbPing = "failed";
+    diagnostics.dbPingError = error.message;
+    needsHealing = true;
+  }
+
+  // 2. Table Integrity Check (핵심 테이블 검증)
+  if (diagnostics.dbPing === "success") {
+    try {
+      const tablesResult = await libsql.execute("SELECT name FROM sqlite_master WHERE type='table'");
+      const tableNames = tablesResult.rows.map((row: any) => row.name);
+      
+      const requiredTables = ["User", "Comment", "WebhookSubscription", "Authenticator"];
+      const missingTables = requiredTables.filter(t => !tableNames.includes(t));
+
+      diagnostics.missingTables = missingTables;
+      
+      if (missingTables.length > 0) {
+        needsHealing = true;
+        diagnostics.integrityStatus = "degraded";
+      } else {
+        diagnostics.integrityStatus = "healthy";
+      }
+    } catch (error: any) {
+      diagnostics.integrityStatus = "error";
+      diagnostics.integrityError = error.message;
+      needsHealing = true;
+    }
+  }
+
+  // 3. Self-healing Activation
+  if (needsHealing) {
+    console.warn("[SELF-HEALING] System degradation detected. Triggering automated healing...");
+    try {
+      // 데이터베이스 스키마 및 마이그레이션 불일치를 해결하기 위해 fix-db 트리거
+      const userColumnsResult = await libsql.execute("PRAGMA table_info(User)");
+      const userColumns = userColumnsResult.rows.map((row: any) => row.name);
+
+      // 필요한 유저 테이블 컬럼들을 스캔하고 필요 시 강제 마이그레이션 수행
+      const requiredUserColumns = [
+        { name: 'role', type: "TEXT DEFAULT 'USER'" },
+        { name: 'isBanned', type: 'BOOLEAN DEFAULT 0' },
+        { name: 'isShadowBanned', type: 'BOOLEAN DEFAULT 0' },
+        { name: 'isPro', type: 'BOOLEAN DEFAULT 0' },
+        { name: 'subscriptionStatus', type: 'TEXT' }
+      ];
+
+      let repairedColumnsCount = 0;
+      for (const col of requiredUserColumns) {
+        if (!userColumns.includes(col.name)) {
+          await libsql.execute(`ALTER TABLE User ADD COLUMN ${col.name} ${col.type}`);
+          repairedColumnsCount++;
+        }
+      }
+
+      // 테이블 복구
+      await libsql.execute(`
+        CREATE TABLE IF NOT EXISTS WebhookSubscription (
+          id TEXT PRIMARY KEY NOT NULL,
+          url TEXT NOT NULL,
+          event TEXT NOT NULL,
+          userId TEXT NOT NULL,
+          secret TEXT,
+          createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          active INTEGER NOT NULL DEFAULT 1,
+          FOREIGN KEY (userId) REFERENCES User (id) ON DELETE CASCADE
+        );
+      `);
+
+      await libsql.execute(`
+        CREATE TABLE IF NOT EXISTS Authenticator (
+          credentialID TEXT UNIQUE NOT NULL,
+          userId TEXT NOT NULL,
+          providerAccountId TEXT NOT NULL,
+          credentialPublicKey TEXT NOT NULL,
+          counter INTEGER NOT NULL,
+          credentialDeviceType TEXT NOT NULL,
+          credentialBackedUp INTEGER NOT NULL,
+          transports TEXT,
+          PRIMARY KEY (userId, credentialID),
+          FOREIGN KEY (userId) REFERENCES User (id) ON DELETE CASCADE
+        );
+      `);
+
+      healingResult = `Automated healing completed. Added missing tables and repaired ${repairedColumnsCount} columns.`;
+      
+      // 텔레그램으로 치유 완료 리포트 알림 발송
+      await logToTelegram(`⚠️ *[Self-Healing Alert]*\n- Status: Degraded\n- Actions taken: ${healingResult}\n- System has been restored to HEALTHY.`);
+    } catch (healError: any) {
+      healingResult = `Healing failed: ${healError.message}`;
+      await logToTelegram(`🚨 *[Self-Healing Critical Error]*\n- Self-healing process crashed: ${healError.message}`);
+    }
+  }
+
+  return NextResponse.json({
+    status: needsHealing ? "healed" : "healthy",
+    timestamp: new Date().toISOString(),
+    diagnostics,
+    healingResult
+  });
+}

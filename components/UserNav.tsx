@@ -17,6 +17,9 @@ export default function UserNav() {
       <Link href="/" className="text-white/80 hover:text-white transition-colors">
         Home
       </Link>
+      <Link href="/pro" className="text-white/80 hover:text-white transition-colors flex items-center gap-1">
+        Pro <span className="text-[10px] bg-[#0066cc] text-white px-1 py-0.2 rounded-full font-bold">New</span>
+      </Link>
       {session ? (
         <>
           <Link href="/profile" className="text-white/80 hover:text-white transition-colors">

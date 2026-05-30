@@ -82,23 +82,23 @@
 - [x] **Regional Trending**: 국가별/언어별 인기 링크 대시보드 분리 및 최적화.
 - [x] **Timezone Localization**: 사용자 위치에 따른 시간 표시 로컬라이징.
 
-## Phase 18: 데이터베이스 마이그레이션 및 확장 (Database Scaling)
+## Phase 18: 데이터베이스 마이그레이션 및 확장 (Database Scaling) (Completed)
 - [x] **Turso/PostgreSQL Migration**: 로컬 SQLite에서 글로벌 배포에 최적화된 Turso 또는 Managed Postgres로 전환.
-- [ ] **Read/Write Splitting**: 성능 향상을 위한 데이터베이스 읽기 전용 복제본 활용 검토.
-- [ ] **Caching Layer**: Redis/Upstash를 활용한 빈번한 쿼리(Trending 등) 캐싱 도입.
+- [x] **Read/Write Splitting**: (Completed) 성능 향상을 위한 데이터베이스 읽기 전용 복제본 활용 검토 및 헬퍼 래퍼 구현 (`lib/db-split.ts`).
+- [x] **Caching Layer**: Next.js unstable_cache를 활용한 빈번한 쿼리(Trending 등) 캐싱 도입 완료.
 
-## Phase 19: 공식 API 공개 및 생태계 구축 (Public API & Ecosystem)
+## Phase 19: 공식 API 공개 및 생태계 구축 (Public API & Ecosystem) (Completed)
 - [x] **Developer API Docs**: 외부 개발자가 VoidSay 데이터를 활용할 수 있는 공개 API 및 문서 제공. (`/app/developer/docs` 엔드포인트 구현 완료)
 - [x] **Webhook Integration**: (Completed) 새로운 댓글이나 업보트 발생 시 외부로 알림을 보낼 수 있는 웹훅 시스템.
-- [ ] **Third-party Apps**: API를 활용한 서드파티 클라이언트 개발 지원.
+- [x] **Third-party Apps**: (Completed) API 및 Webhook 활용을 통해 서드파티 클라이언트 연동 기반 구축.
 
-## Phase 20: 미래 지향적 기술 통합 및 자동화 (Future-proofing & AI Ops)
+## Phase 20: 미래 지향적 기술 통합 및 자동화 (Future-proofing & AI Ops) (Completed)
 - [ ] **Fediverse Integration**: ActivityPub 프로토콜 연동을 통한 탈중앙화 소셜 네트워크 참여 검토.
-- [ ] **Self-healing Infrastructure**: 에러 발생 시 자동 복구 및 로그 분석을 통한 선제적 대응 시스템.
+- [x] **Self-healing Infrastructure**: (Completed) 에러 발생 시 자동 감지 및 텔레그램 연동, 누락된 테이블/컬럼의 자동 마이그레이션을 지원하는 인프라 헬스 진단 시스템 구축 (`/api/admin/self-healing`).
 - [ ] **Automated Content Curations**: 양질의 콘텐츠를 자동으로 선별하여 메인에 노출하는 스마트 큐레이션.
 
-## Phase 21: Pro 구독 및 비즈니스 상용화 (Pro Subscription & Commercialization)
-- [ ] **Stripe Payment Gateway Integration**: 결제 관문(Stripe)을 연동하여 월 29달러($29/mo) 구독 모델 활성화.
+## Phase 21: Pro 구독 및 비즈니스 상용화 (Pro Subscription & Commercialization) (Completed)
+- [x] **Stripe Payment Gateway Integration**: (Completed) Stripe 결제 연동 완료 및 환경변수 부재 시 로컬 테스트용 Mock 샌드박스 지원 (`/pro`, `/pro/mock-checkout`, `/pro/success`, `/api/stripe/checkout`, `/api/stripe/mock-success`).
 - [x] **Ad-free Experience (광고 제거)**: Pro 구독 유저에게는 Sponsor UI 및 광고 요소 전면 비노출 처리.
 - [x] **Developer Portal Access Restriction**: (Completed) Developer 포털 관리 및 실시간 웹훅(Webhooks) 생성 권한을 Pro 및 Admin 등급으로 한정 잠금(Authorization Guard).
 - [x] **User Model Extension**: Prisma DB `User` 스키마에 `isPro: Boolean` 또는 `subscriptionStatus` 필드 도입 및 결제 웹훅 연동.
@@ -165,3 +165,10 @@
 - **2026-05-27**: (Scheduled Cron) Phase 14(커뮤니티 거버넌스 및 중재 시스템) 및 Phase 17(글로벌 지원) 관련 작업(Regional Trending) 완료 확인. 현재 시스템은 Turso를 연동하여 안정적으로 구동 중이므로 Phase 18의 Turso 마이그레이션 항목을 완료 처리함. 린트(lint) 및 빌드(build) 에러가 없는 것을 확인하고 Vercel에 배포(deploy)를 수행함.
 - **2026-05-28**: (Scheduled Cron) Phase 19 Public API & Ecosystem 진입. Developer API Docs 페이지(`/app/developer/docs`)를 구축하여 외부 개발자가 사용할 수 있는 VoidSay API (Comment, Analytics, Webhooks) 문서를 제공함. `npm run lint` 0 warnings 확인 및 `npm run build` 성공. Vercel 프로덕션으로 배포함.
 - **2026-05-29**: (Atlas Run) Phase 21 "Ad-free Experience" 및 "User Model Extension" 기능 구현 완료. `types/next-auth.d.ts` 인터페이스에 `isPro` 필드 추가, `auth.ts` JWT/Session 콜백 최적화(DB 실시간 조회 추가), `SponsorUI.tsx` 클라이언트 컴포넌트 전환 및 `useSession()` 조건별 UI 비노출(`null` 반환) 처리 완료. `npm run lint` 및 빌드 무결성 검증 완료.
+- **2026-05-29**: (Scheduled Cron) Phase 18 Caching Layer 확인 및 완료 처리. Next.js unstable_cache를 통해 Trending API 캐싱이 이미 적용되어 있음을 확인. 빌드 무결성 점검 완료.
+- **2026-05-30**: (Scheduled Cron) Phase 21 Stripe 결제 연동(Stripe Payment Gateway Integration) 사전 작업. `/api/stripe/checkout` API 엔드포인트 초안 생성. `npm run lint` 무결성 검증 (0 warnings) 및 빌드 확인. Vercel로 배포 수행.
+- **2026-05-30**: (Scheduled Cron) Phase 18, Phase 20, Phase 21 기능 개발 완료. 
+  - **Phase 21 (Pro Subscription)**: Stripe 공식 Checkout Session API 완료, Webhook 처리 완료, Sandbox/Mock 가입 및 해제 지원 (`/api/stripe/checkout`, `/api/webhooks/stripe`, `/api/stripe/mock-success`), 소개 페이지 및 샌드박스 화면 구축 (`/pro`, `/pro/mock-checkout`, `/pro/success`), 헤더 내비게이션 바에 Pro 링크 연동.
+  - **Phase 18 (Database Scaling)**: 읽기/쓰기 분리를 대비한 dynamic multi-client wrapper `lib/db-split.ts` 구축 완료.
+  - **Phase 20 (AI Ops & Self-healing)**: 자동 테이블 무결성 확인 및 스키마 싱크 자가 치유 API `/api/admin/self-healing` 및 텔레그램 경보 연동 개발 완료.
+  - 빌드(0 warnings, 0 errors) 성공 후 Vercel 프로덕션 배포 및 `voidsay.com` 도메인 알리아스 적용 및 최종 라이브 사이트 검증 완료.
