@@ -70,10 +70,10 @@ export async function getPersonalizedFeed(
     }
 
     // 4. Find threads matching user interests
-    const maxCategory = [...categoryWeights.entries()].sort(
+    const maxCategory = Array.from(categoryWeights.entries()).sort(
       (a, b) => b[1] - a[1]
     )[0][0];
-    const topCategories = [...categoryWeights.entries()]
+    const topCategories = Array.from(categoryWeights.entries())
       .sort((a, b) => b[1] - a[1])
       .slice(0, 3)
       .map(([cat]) => cat);
@@ -87,7 +87,7 @@ export async function getPersonalizedFeed(
           ? {
               NOT: {
                 url: {
-                  in: [...seenUrls],
+                  in: Array.from(seenUrls),
                 },
               },
             }
@@ -143,7 +143,7 @@ export async function getPersonalizedFeed(
       }
     }
 
-    const sorted = [...urlMap.values()]
+    const sorted = Array.from(urlMap.values())
       .sort((a, b) => b.bestScore - a.bestScore)
       .slice(0, limit);
 
@@ -231,7 +231,7 @@ async function getTrendingFallback(limit: number): Promise<FeedItem[]> {
     }
   }
 
-  return [...urlMap.values()]
+  return Array.from(urlMap.values())
     .sort((a, b) => b.count * 10 + b.upvotes * 5 - (a.count * 10 + a.upvotes * 5))
     .slice(0, limit)
     .map((item) => ({
