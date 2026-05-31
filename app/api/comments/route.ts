@@ -223,9 +223,10 @@ export async function POST(req: NextRequest) {
     if (parentId) {
       const parentComment = await prisma.comment.findUnique({ where: { id: parentId } });
       if (parentComment && parentComment.userId && parentComment.userId !== userId) {
+        const parentUserId = parentComment.userId;
         await import("@/lib/smart-notifications").then(({ createSmartNotification }) =>
           createSmartNotification({
-            userId: parentComment.userId,
+            userId: parentUserId,
             type: "reply",
             message: `${authorName}님이 회원님의 댓글에 답글을 남겼습니다: "${content.substring(0, 30)}..."`,
           })
