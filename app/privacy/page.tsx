@@ -183,7 +183,7 @@ export default function PrivacyPage() {
       <section className="mb-8">
         <h2 className="text-xl font-semibold mb-4">10. Privacy Officer / 개인정보 보호책임자</h2>
         <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-          <p><strong>Name:</strong> Seonghoon Jung (정성훈)</p>
+          <p><strong>Name:</strong> Yeonwoo Jung (정연우)</p>
           <p><strong>Email:</strong> repontage@gmail.com</p>
           <p><strong>Role:</strong> Developer & Privacy Officer</p>
         </div>
