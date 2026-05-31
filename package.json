@@ -19,6 +19,7 @@
     "@simplewebauthn/browser": "^9.0.1",
     "@simplewebauthn/server": "^9.0.3",
     "@vercel/analytics": "^2.0.1",
+    "@vercel/speed-insights": "^2.0.0",
     "cheerio": "^1.0.0-rc.12",
     "clsx": "^2.1.0",
     "date-fns": "^4.3.0",

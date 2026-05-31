@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import AuthProvider from "@/components/AuthProvider";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { LanguageProvider } from "@/components/i18n/LanguageProvider";
+import { ABTestProvider } from "@/lib/ab-testing";
 import Navbar from "@/components/Navbar";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -50,11 +52,14 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <LanguageProvider>
             <AuthProvider>
-              <Navbar />
-              {children}
+              <ABTestProvider>
+                <Navbar />
+                {children}
+              </ABTestProvider>
             </AuthProvider>
           </LanguageProvider>
         </ThemeProvider>
+        <SpeedInsights />
       </body>
     </html>
   );

@@ -12,9 +12,9 @@ export default function UserNav() {
   }
 
   return (
-    <div className="flex items-center gap-xl text-nav-link font-text">
+    <div className="flex items-center gap-sm md:gap-xl text-nav-link font-text">
       <ThemeToggle />
-      <Link href="/" className="text-white/80 hover:text-white transition-colors">
+      <Link href="/" className="hidden sm:inline text-white/80 hover:text-white transition-colors">
         Home
       </Link>
       <Link href="/pro" className="text-white/80 hover:text-white transition-colors flex items-center gap-1">

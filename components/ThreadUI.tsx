@@ -326,28 +326,34 @@ export default function ThreadUI() {
 
   return (
     <section className="w-full flex flex-col items-center">
-      <form id="search-form" onSubmit={handleSearch} aria-label="URL 검색 폼" className="w-full relative max-w-2xl mb-8 group">
-        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-          <Search className="h-5 w-5 text-zinc-400 group-focus-within:text-blue-500 transition-colors" aria-hidden="true" />
+      <form id="search-form" onSubmit={handleSearch} aria-label="URL 검색 폼" className="w-full max-w-2xl mb-8 px-sm sm:px-0">
+        <div className="flex items-center border border-zinc-200 rounded-md sm:rounded-full bg-white sm:shadow-sm focus-within:border-blue-500 transition-colors overflow-hidden">
+          <div className="pl-4 pr-2 flex items-center pointer-events-none">
+            <Search className="h-5 w-5 text-zinc-400 shrink-0" aria-hidden="true" />
+          </div>
+          <input
+            type="url"
+            aria-label="분석할 웹사이트 URL 입력"
+            className="flex-1 min-w-0 py-3 sm:py-4 text-sm sm:text-base bg-transparent outline-none text-ink placeholder:text-zinc-400"
+            placeholder="Paste any website URL here..."
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            required
+          />
+          <button
+            type="submit"
+            disabled={isLoading}
+            aria-label="스레드 보기"
+            className="shrink-0 btn-primary disabled:opacity-70 flex items-center gap-1.5 sm:gap-2 text-xs sm:text-base mr-1.5 my-1.5 px-4 sm:px-6 py-2 sm:py-2.5"
+          >
+            {isLoading ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : (
+              <>
+                <Search className="h-4 w-4 sm:hidden" />
+                <span className="hidden sm:inline">View Threads</span>
+              </>
+            )}
+          </button>
         </div>
-        <input
-          type="url"
-          aria-label="분석할 웹사이트 URL 입력"
-          className="block w-full pl-12 pr-32 py-4 text-base border border-zinc-200 rounded-full bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-          placeholder="Paste any website URL here..."
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          required
-        />
-        <button
-          type="submit"
-          disabled={isLoading}
-          aria-label="스레드 보기"
-          className="absolute right-2 top-2 bottom-2 px-6 btn-primary disabled:opacity-70 flex items-center gap-2"
-        >
-          {isLoading ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : null}
-          {isLoading ? 'Loading' : 'View Threads'}
-        </button>
       </form>
 
       {!showComments && !isLoading && (

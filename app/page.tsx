@@ -6,6 +6,7 @@ import ProductHeroVisual from '@/components/ProductHeroVisual';
 import { useRef } from 'react';
 
 import CuratedPicks from '@/components/CuratedPicks';
+import PersonalizedFeed from '@/components/PersonalizedFeed';
 
 export default function Home() {
   const discussionRef = useRef<HTMLDivElement>(null);
@@ -19,8 +20,8 @@ export default function Home() {
     <main className="min-h-screen flex flex-col items-center">
       {/* Global Nav */}
       <nav className="global-nav">
-        <div className="max-w-[1440px] w-full flex items-center justify-between px-lg">
-          <div className="flex items-center gap-xl">
+        <div className="max-w-[1440px] w-full flex items-center justify-between px-sm md:px-lg">
+          <div className="flex items-center gap-sm md:gap-xl">
             <span className="font-display font-semibold text-[14px] tracking-tight">Voidsay</span>
             <div className="hidden md:flex gap-xl">
               <button 
@@ -83,6 +84,9 @@ export default function Home() {
 
       {/* Curated Picks */}
       <CuratedPicks />
+
+      {/* Personalized Feed */}
+      <PersonalizedFeed />
 
       {/* About Section */}
       <section id="about" className="product-tile-dark py-section w-full">

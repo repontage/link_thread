@@ -151,6 +151,9 @@ export async function POST(req: NextRequest) {
 
     const threadId = getThreadId(url);
 
+    // Run toxicity auto-detection on comment content
+    const tox = await import("@/lib/toxicity-detector");
+    const toxResult = tox.analyzeToxicity(content);
 
     let validImageUrls: string[] = [];
     if (body.imageUrls && Array.isArray(body.imageUrls)) {
@@ -175,11 +178,17 @@ export async function POST(req: NextRequest) {
         author: authorName,
         content,
         userId: userId,
+        isToxic: toxResult.isToxic,
         timestamp: body.timestamp || null,
         category: category || null,
         imageUrls: validImageUrls.length > 0 ? validImageUrls.join(',') : null,
       }
     });
+
+    // Log toxicity auto-detection result for admin monitoring
+    if (toxResult.isToxic) {
+      logger.warn(`[Toxicity Auto-Detection] Comment ${newComment.id} flagged (score: ${toxResult.score}, severity: ${toxResult.severity}). Reasons: ${toxResult.reasons.join(", ")}`);
+    }
 
     // Trigger Webhook Event "comment.created"
     triggerWebhook("comment.created", {
@@ -210,36 +219,38 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Handle Reply Notification
+    // Handle Reply Notification (using Smart Notifications with priority)
     if (parentId) {
       const parentComment = await prisma.comment.findUnique({ where: { id: parentId } });
       if (parentComment && parentComment.userId && parentComment.userId !== userId) {
-        await prisma.notification.create({ data: { id: crypto.randomUUID(),
+        await import("@/lib/smart-notifications").then(({ createSmartNotification }) =>
+          createSmartNotification({
             userId: parentComment.userId,
-            type: 'reply',
-            message: `${authorName}님이 회원님의 댓글에 답글을 남겼습니다: "${content.substring(0, 30)}..."`
-          }
-        });
+            type: "reply",
+            message: `${authorName}님이 회원님의 댓글에 답글을 남겼습니다: "${content.substring(0, 30)}..."`,
+          })
+        );
       }
     }
 
-    // Handle Mention Notifications
+    // Handle Mention Notifications (using Smart Notifications with priority)
     const mentionRegex = /@([a-zA-Z0-9_]+)/g;
     const mentions = Array.from(new Set(Array.from(content.matchAll(mentionRegex), (m: any) => m[1])));
     if (mentions.length > 0) {
       const mentionedUsers = await prisma.user.findMany({
         where: { username: { in: mentions } }
       });
-      const notificationsData = mentionedUsers
+      const notificationInputs = mentionedUsers
         .filter(u => u.id !== userId)
         .map(u => ({
-          id: crypto.randomUUID(),
           userId: u.id,
-          type: 'mention',
-          message: `${authorName}님이 댓글에서 회원님을 멘션했습니다: "${content.substring(0, 30)}..."`
+          type: 'mention' as const,
+          message: `${authorName}님이 댓글에서 회원님을 멘션했습니다: "${content.substring(0, 30)}..."`,
         }));
-      if (notificationsData.length > 0) {
-        await prisma.notification.createMany({ data: notificationsData });
+      if (notificationInputs.length > 0) {
+        await import("@/lib/smart-notifications").then(({ createBatchSmartNotifications }) =>
+          createBatchSmartNotifications(notificationInputs)
+        );
       }
     }
 
@@ -315,14 +326,15 @@ export async function PATCH(req: NextRequest) {
           emoji,
         });
         
-        // Notify
+        // Notify (using Smart Notifications with priority)
         if (existingComment.userId && existingComment.userId !== userId) {
-          await prisma.notification.create({ data: { id: crypto.randomUUID(),
-              userId: existingComment.userId,
-              type: 'reaction',
-              message: `${authorName}님이 회원님의 댓글에 ${emoji} 반응을 남겼습니다.`
-            }
-          });
+          await import("@/lib/smart-notifications").then(({ createSmartNotification }) =>
+            createSmartNotification({
+              userId: existingComment.userId!,
+              type: "reaction",
+              message: `${authorName}님이 회원님의 댓글에 ${emoji} 반응을 남겼습니다.`,
+            })
+          );
         }
       }
 
@@ -344,12 +356,13 @@ export async function PATCH(req: NextRequest) {
     });
 
     if (existingComment.userId && existingComment.userId !== userId) {
-      await prisma.notification.create({ data: { id: crypto.randomUUID(),
-          userId: existingComment.userId,
-          type: 'like',
-          message: `누군가 회원님의 댓글을 좋아합니다.`
-        }
-      });
+      await import("@/lib/smart-notifications").then(({ createSmartNotification }) =>
+        createSmartNotification({
+          userId: existingComment.userId!,
+          type: "like",
+          message: `누군가 회원님의 댓글을 좋아합니다.`,
+        })
+      );
     }
 
     return NextResponse.json({ success: true, data: updatedComment }, { status: 200 });

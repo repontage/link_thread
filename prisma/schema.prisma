@@ -113,15 +113,17 @@ model LinkStats {
 }
 
 model Notification {
-  id        String   @id
+  id        String    @id
   userId    String
   type      String
   message   String
-  isRead    Boolean  @default(false)
-  createdAt DateTime @default(now())
-  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  isRead    Boolean   @default(false)
+  priority  Int       @default(0)  // 0=normal, 1=high, 2=critical
+  createdAt DateTime  @default(now())
+  User      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, isRead])
+  @@index([userId, priority, createdAt])
 }
 
 model Reaction {
