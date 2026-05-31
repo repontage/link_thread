@@ -1,5 +1,4 @@
 import prisma from "./prisma";
-import { logger } from "./logger";
 import crypto from "crypto";
 
 export type NotificationPriority = 0 | 1 | 2;

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
 import {
   Sparkles,
   MessageCircle,
@@ -23,7 +22,6 @@ interface FeedItem {
 }
 
 export default function PersonalizedFeed() {
-  const { data: session, status } = useSession();
   const [feed, setFeed] = useState<FeedItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [isPersonalized, setIsPersonalized] = useState(false);
@@ -124,7 +122,7 @@ export default function PersonalizedFeed() {
         )}
 
         <div className="grid md:grid-cols-2 gap-lg">
-          {feed.map((item, idx) => (
+          {feed.map((item, _idx) => (
             <a
               key={item.threadId}
               href={`/?url=${encodeURIComponent(item.url)}`}

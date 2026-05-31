@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Shield, Users, Flag, Ban, CheckCircle, EyeOff, Eye, TrendingUp } from 'lucide-react';
+import { Shield, Users, Flag, Ban, CheckCircle, EyeOff, Eye, TrendingUp, BarChart3 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import LocalizedDate from '@/components/LocalizedDate';
 
@@ -123,6 +123,15 @@ export default function AdminDashboard() {
         <Shield className="w-8 h-8 mr-3 text-indigo-600" />
         <h1 className="text-3xl font-bold">Admin Dashboard</h1>
       </div>
+
+      {/* Navigation link to analytics */}
+      <a
+        href="/admin/analytics"
+        className="inline-flex items-center gap-2 mb-4 px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-sm font-medium transition-colors"
+      >
+        <BarChart3 className="w-4 h-4" />
+        Advanced Analytics (Retention, Churn, Cohorts)
+      </a>
 
       {stats && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">

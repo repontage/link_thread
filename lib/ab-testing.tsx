@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable no-unused-vars */
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 

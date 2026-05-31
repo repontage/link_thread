@@ -70,9 +70,6 @@ export async function getPersonalizedFeed(
     }
 
     // 4. Find threads matching user interests
-    const maxCategory = Array.from(categoryWeights.entries()).sort(
-      (a, b) => b[1] - a[1]
-    )[0][0];
     const topCategories = Array.from(categoryWeights.entries())
       .sort((a, b) => b[1] - a[1])
       .slice(0, 3)
