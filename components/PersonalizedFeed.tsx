@@ -76,7 +76,7 @@ export default function PersonalizedFeed() {
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="h-24 bg-white/50 rounded-2xl border border-white/20"
+                className="h-24 bg-white/50 dark:bg-white/10 rounded-2xl border border-white/20"
               />
             ))}
           </div>
@@ -126,7 +126,7 @@ export default function PersonalizedFeed() {
             <a
               key={item.threadId}
               href={`/?url=${encodeURIComponent(item.url)}`}
-              className="group block bg-white/50 backdrop-blur-sm rounded-2xl p-lg 
+              className="group block bg-white/50 dark:bg-white/10 backdrop-blur-sm rounded-2xl p-lg 
                          border border-white/20 hover:border-purple-400/30 
                          hover:shadow-lg hover:shadow-purple-500/5
                          transition-all duration-300"

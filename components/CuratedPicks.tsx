@@ -69,7 +69,7 @@ export default function CuratedPicks() {
             <a
               key={thread.threadId}
               href={`/?url=${encodeURIComponent(thread.url)}`}
-              className="group block bg-white/50 backdrop-blur-sm rounded-2xl p-lg 
+              className="group block bg-white/50 dark:bg-white/10 backdrop-blur-sm rounded-2xl p-lg 
                          border border-white/20 hover:border-action-blue/30 
                          hover:shadow-lg hover:shadow-action-blue/5
                          transition-all duration-300"
