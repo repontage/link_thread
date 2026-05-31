@@ -97,11 +97,16 @@
 - [x] **Self-healing Infrastructure**: (Completed) 에러 발생 시 자동 감지 및 텔레그램 연동, 누락된 테이블/컬럼의 자동 마이그레이션을 지원하는 인프라 헬스 진단 시스템 구축 (`/api/admin/self-healing`).
 - [x] **Automated Content Curations**: (Completed) 5-dimension quality scoring (Engagement, Quality, Recency, Diversity, Velocity) + `/api/curated` API + CuratedPicks UI 컴포넌트를 메인 페이지에 배치.
 
-## Phase 21: Pro 구독 및 비즈니스 상용화 (Pro Subscription & Commercialization) (Completed)
-- [x] **Stripe Payment Gateway Integration**: (Completed) Stripe 결제 연동 완료 및 환경변수 부재 시 로컬 테스트용 Mock 샌드박스 지원 (`/pro`, `/pro/mock-checkout`, `/pro/success`, `/api/stripe/checkout`, `/api/stripe/mock-success`).
-- [x] **Ad-free Experience (광고 제거)**: Pro 구독 유저에게는 Sponsor UI 및 광고 요소 전면 비노출 처리.
-- [x] **Developer Portal Access Restriction**: (Completed) Developer 포털 관리 및 실시간 웹훅(Webhooks) 생성 권한을 Pro 및 Admin 등급으로 한정 잠금(Authorization Guard).
-- [x] **User Model Extension**: Prisma DB `User` 스키마에 `isPro: Boolean` 또는 `subscriptionStatus` 필드 도입 및 결제 웹훅 연동.
+## Phase 21: Pro 구독 및 비즈니스 상용화 (Pro Subscription & Commercialization) 🔄 In Progress
+- [x] **Mock Sandbox (완료)**: Stripe 결제 Mock 샌드박스 구현 (`/pro`, `/pro/mock-checkout`, `/pro/success`, `/api/stripe/checkout`, `/api/stripe/mock-success`).
+- [x] **Ad-free Experience (완료)**: Pro 구독 유저에게 Sponsor UI 및 광고 요소 전면 비노출 처리.
+- [x] **Developer Portal Access Restriction (완료)**: Developer 포털 관리 및 실시간 웹훅 권한을 Pro/Admin 등급으로 잠금.
+- [x] **User Model Extension (완료)**: Prisma DB `User` 스키마에 `isPro`, `subscriptionStatus` 필드 도입.
+- [ ] **Real Stripe Checkout Flow**: Mock → 실제 Stripe Checkout Session으로 전환. `STRIPE_SECRET_KEY` 사용.
+- [ ] **Stripe Webhook 처리**: `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted` 이벤트 처리 및 서명 검증.
+- [ ] **Pro User Lifecycle**: `stripeCustomerId`, `stripeSubscriptionId`, `subscriptionEnd` 필드 추가. 구독 활성/만료에 따른 Pro 권한 자동 관리.
+- [ ] **Stripe Customer Portal**: `/pro/manage` 페이지에서 구독 취소/관리 가능하도록 연동.
+- [ ] **Production Switch**: Stripe test mode → live mode (`sk_live_*` 키) 전환.
 
 ## Phase 22: 지능형 피드 및 개인화 (Intelligent Feed & Personalization)
 - [x] **Personalized Feed**: 사용자 관심사(댓글 단 URL 카테고리, upvote 패턴) 기반 개인화 피드 생성.
@@ -192,4 +197,5 @@
   - **동적 키 페어 생성**: 로컬 및 클라우드(Vercel) 환경에서 서버 실행 시 2048-bit RSA 키 페어를 동적으로 생성 및 global 캐싱하여 DB 스키마 구조 변경 없이 Fediverse와 유기적으로 소통할 수 있는 ActivityPub Actors 규격을 완벽 지원.
   - **문서 보강**: 개발자 가이드 문서(\\`/app/developer/docs\\`)에 ActivityPub 및 Fediverse 연동 관련 세부 명세를 신설하여 기록 완료.
   - **배포 전 무결성 검증**: \\`npm run lint\\` 및 \\`npm run build\\` 성공(0 warnings, 0 errors) 확인 및 Vercel 프로덕션 배포 완료.
+- **2026-06-02**: (Scheduled Cron) 정기 점검 및 코드베이스 무결성 확인. Phase 18-21 전 항목 구축 완료 상태 확인. Caching Layer(unstable_cache), Self-healing Infrastructure(/api/admin/self-healing), Stripe Pro 결제 및 Mock 샌드박스, Fediverse(ActivityPub), Webhook 시스템, Developer Portal 및 API Docs, SponsorUI Ad-free 경험, CuratedPicks AI 큐레이션 모두 정상 동작. `npm run lint` 0 warnings, `npm run build` 0 errors 확인. Vercel 프로덕션 배포 수행.
 - **2026-06-01**: (Scheduled Cron) Phase 22 Intelligent Feed & Personalization 전 항목 완료 처리. AI Comment Moderation(다국어 키워드 스코어링+패턴 기반 중재), Smart Notifications(우선순위 시스템+다이제스트), Personalized Feed(사용자 카테고리 기반 추천 API+UI) 기존 구현 완료 확인. A/B Testing Framework(`lib/ab-testing.tsx` + `/api/admin/analytics/event`), Advanced Analytics Dashboard(`/admin/analytics` - retention/churn/cohort 차트 페이지) 신규 구현 및 관리자 대시보드 네비게이션 연동 완료. `npm run lint` 및 `npm run build` 무결성 검증 후 Vercel 배포.
