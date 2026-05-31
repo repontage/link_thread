@@ -98,15 +98,16 @@
 - [x] **Automated Content Curations**: (Completed) 5-dimension quality scoring (Engagement, Quality, Recency, Diversity, Velocity) + `/api/curated` API + CuratedPicks UI 컴포넌트를 메인 페이지에 배치.
 
 ## Phase 21: Pro 구독 및 비즈니스 상용화 (Pro Subscription & Commercialization) 🔄 In Progress
-- [x] **Mock Sandbox (완료)**: Stripe 결제 Mock 샌드박스 구현 (`/pro`, `/pro/mock-checkout`, `/pro/success`, `/api/stripe/checkout`, `/api/stripe/mock-success`).
+- [x] **Mock Sandbox (완료)**: Stripe 결제 Mock 샌드박스 구현 → Paddle로 마이그레이션 예정.
 - [x] **Ad-free Experience (완료)**: Pro 구독 유저에게 Sponsor UI 및 광고 요소 전면 비노출 처리.
 - [x] **Developer Portal Access Restriction (완료)**: Developer 포털 관리 및 실시간 웹훅 권한을 Pro/Admin 등급으로 잠금.
 - [x] **User Model Extension (완료)**: Prisma DB `User` 스키마에 `isPro`, `subscriptionStatus` 필드 도입.
-- [ ] **Real Stripe Checkout Flow**: Mock → 실제 Stripe Checkout Session으로 전환. `STRIPE_SECRET_KEY` 사용.
-- [ ] **Stripe Webhook 처리**: `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted` 이벤트 처리 및 서명 검증.
-- [ ] **Pro User Lifecycle**: `stripeCustomerId`, `stripeSubscriptionId`, `subscriptionEnd` 필드 추가. 구독 활성/만료에 따른 Pro 권한 자동 관리.
-- [ ] **Stripe Customer Portal**: `/pro/manage` 페이지에서 구독 취소/관리 가능하도록 연동.
-- [ ] **Production Switch**: Stripe test mode → live mode (`sk_live_*` 키) 전환.
+- [ ] **Stripe → Paddle 마이그레이션**: Stripe SDK 제거, Paddle.js + `@paddle/paddle-node-sdk` 도입.
+- [ ] **Paddle Checkout Flow**: Paddle Checkout overlay 연동 (`PADDLE_API_KEY`, `PADDLE_CLIENT_TOKEN`). $29/mo 구독.
+- [ ] **Paddle Webhook 처리**: `subscription.created`, `subscription.updated`, `subscription.canceled` 이벤트 처리 및 서명 검증.
+- [ ] **Pro User Lifecycle**: `paddleCustomerId`, `paddleSubscriptionId`, `subscriptionEnd` 필드 추가. 구독 활성/만료에 따른 Pro 권한 자동 관리.
+- [ ] **Paddle Customer Portal**: `/pro/manage` → 구독 취소/업데이트 가능한 Paddle 셀프서비스 포털 연동.
+- [ ] **Production Switch**: Paddle sandbox → live mode 전환.
 
 ## Phase 22: 지능형 피드 및 개인화 (Intelligent Feed & Personalization)
 - [x] **Personalized Feed**: 사용자 관심사(댓글 단 URL 카테고리, upvote 패턴) 기반 개인화 피드 생성.
