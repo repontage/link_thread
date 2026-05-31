@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import ThreadUI from '@/components/ThreadUI';
 import UserNav from '@/components/UserNav';
 import ProductHeroVisual from '@/components/ProductHeroVisual';
@@ -113,6 +114,16 @@ export default function Home() {
         </div>
       </section>
 
+
+      {/* Footer */}
+      <footer className="w-full border-t border-white/10 py-8 mt-16">
+        <div className="max-w-[980px] mx-auto px-lg flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-white/50">
+          <span>&copy; {new Date().getFullYear()} VoidSay</span>
+          <Link href="/terms" className="hover:text-white/80 transition-colors">Terms of Service</Link>
+          <Link href="/privacy" className="hover:text-white/80 transition-colors">Privacy Policy</Link>
+          <Link href="/refund" className="hover:text-white/80 transition-colors">Refund Policy</Link>
+        </div>
+      </footer>
 
     </main>
   );
