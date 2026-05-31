@@ -44,8 +44,8 @@ export default function AdminAnalyticsPage() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  const fetchData = useCallback(async () => {
-    setLoading(true);
+  const fetchData = useCallback(async (isRefresh?: boolean) => {
+    if (!isRefresh) setLoading(true);
     try {
       const [retRes, churnRes, cohortRes] = await Promise.all([
         fetch("/api/admin/analytics/retention"),
@@ -81,7 +81,7 @@ export default function AdminAnalyticsPage() {
 
   const handleRefresh = async () => {
     setRefreshing(true);
-    await fetchData();
+    await fetchData(true);
     setRefreshing(false);
   };
 
