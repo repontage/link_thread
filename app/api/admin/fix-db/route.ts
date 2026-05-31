@@ -125,12 +125,30 @@ export async function GET() {
       CREATE UNIQUE INDEX IF NOT EXISTS Report_commentId_reporterId_key ON Report (commentId, reporterId);
     `);
 
+    // 6. Sync Notification table columns
+    const notifColumnsResult = await libsql.execute("PRAGMA table_info(Notification)");
+    const notifColumns = notifColumnsResult.rows.map((row: any) => row.name);
+
+    const requiredNotifColumns = [
+      { name: 'priority', type: 'INTEGER DEFAULT 0' }
+    ];
+
+    const notifAdded = [];
+    for (const col of requiredNotifColumns) {
+      if (!notifColumns.includes(col.name)) {
+        await libsql.execute(`ALTER TABLE Notification ADD COLUMN ${col.name} ${col.type}`);
+        notifAdded.push(col.name);
+      }
+    }
+
     return NextResponse.json({ 
       success: true, 
       existingUserColumns: userColumns,
       addedUserColumns: userAdded,
       existingCommentColumns: columns,
       addedCommentColumns: commentAdded,
+      existingNotificationColumns: notifColumns,
+      addedNotificationColumns: notifAdded,
       message: "Database tables and columns synchronized successfully."
     });
   } catch (error: any) {
@@ -165,4 +183,3 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
-
