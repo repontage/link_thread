@@ -42,7 +42,7 @@ export class PaddleSDK {
  */
 export function verifyPaddleWebhook(
   payload: string,
-  signature: string,
+  signatureHeader: string,
 ): boolean {
   const secret = process.env.PADDLE_WEBHOOK_SECRET;
   if (!secret) {
@@ -50,14 +50,32 @@ export function verifyPaddleWebhook(
     return false;
   }
 
-  const crypto = require("crypto");
-  const expected = crypto
-    .createHmac("sha256", secret)
-    .update(payload)
-    .digest("hex");
+  try {
+    // Paddle sends header format: "ts=TIMESTAMP;h1=HEX_HASH"
+    const sigParts = Object.fromEntries(
+      signatureHeader.split(";").map((p) => p.split("=")),
+    );
+    const ts = sigParts["ts"];
+    const h1 = sigParts["h1"];
 
-  return crypto.timingSafeEqual(
-    Buffer.from(expected, "hex"),
-    Buffer.from(signature, "hex"),
-  );
+    if (!ts || !h1) {
+      console.error("[PADDLE_WEBHOOK] Missing ts or h1 in signature header");
+      return false;
+    }
+
+    const crypto = require("crypto");
+    const payloadToSign = `${ts}:${payload}`;
+    const expected = crypto
+      .createHmac("sha256", secret)
+      .update(payloadToSign)
+      .digest("hex");
+
+    return crypto.timingSafeEqual(
+      Buffer.from(expected, "hex"),
+      Buffer.from(h1, "hex"),
+    );
+  } catch (e) {
+    console.error("[PADDLE_WEBHOOK] Signature verification error:", e);
+    return false;
+  }
 }

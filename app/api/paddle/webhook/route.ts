@@ -9,23 +9,36 @@ export async function POST(req: Request) {
     const secret = process.env.PADDLE_WEBHOOK_SECRET;
 
     // Verify webhook signature
+    // Paddle sends header format: "ts=TIMESTAMP;h1=HEX_HASH"
     if (secret) {
-      const expected = crypto
-        .createHmac("sha256", secret)
-        .update(rawBody)
-        .digest("hex");
-
       try {
+        const sigParts = Object.fromEntries(
+          signature.split(";").map((p) => p.split("=")),
+        );
+        const ts = sigParts["ts"];
+        const h1 = sigParts["h1"];
+
+        if (!ts || !h1) {
+          console.error("[PADDLE_WEBHOOK] Missing ts or h1 in signature header");
+          return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
+        }
+
+        const payload = `${ts}:${rawBody}`;
+        const expected = crypto
+          .createHmac("sha256", secret)
+          .update(payload)
+          .digest("hex");
+
         const isValid = crypto.timingSafeEqual(
           Buffer.from(expected, "hex"),
-          Buffer.from(signature, "hex"),
+          Buffer.from(h1, "hex"),
         );
         if (!isValid) {
           console.error("[PADDLE_WEBHOOK] Invalid signature");
           return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
         }
-      } catch {
-        console.error("[PADDLE_WEBHOOK] Signature verification failed");
+      } catch (e) {
+        console.error("[PADDLE_WEBHOOK] Signature verification failed:", e);
         return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
       }
     } else {

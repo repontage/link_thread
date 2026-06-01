@@ -8,12 +8,12 @@ export async function POST() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // If Paddle is not configured, return mock checkout fallback
+    // If Paddle is not configured, return error
     if (!process.env.PADDLE_CLIENT_TOKEN || !process.env.PADDLE_PRICE_ID) {
-      return NextResponse.json({
-        checkoutUrl: `${process.env.NEXT_PUBLIC_APP_URL || "https://voidsay.com"}/pro/mock-checkout`,
-        isMock: true,
-      });
+      return NextResponse.json(
+        { error: "Paddle is not configured. Please set PADDLE_CLIENT_TOKEN and PADDLE_PRICE_ID environment variables." },
+        { status: 503 },
+      );
     }
 
     // Return Paddle client token and price ID so the frontend can open the overlay
