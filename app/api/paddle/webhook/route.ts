@@ -42,7 +42,8 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
       }
     } else {
-      console.warn("[PADDLE_WEBHOOK] PADDLE_WEBHOOK_SECRET not set — skipping verification");
+      console.error("[PADDLE_WEBHOOK] PADDLE_WEBHOOK_SECRET not configured — rejecting all webhooks");
+      return NextResponse.json({ error: "Webhook secret not configured" }, { status: 500 });
     }
 
     const event = JSON.parse(rawBody);

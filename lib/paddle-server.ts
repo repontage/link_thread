@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import { Paddle as PaddleSDKClient } from "@paddle/paddle-node-sdk";
 import { Environment } from "@paddle/paddle-node-sdk";
 
@@ -63,7 +64,6 @@ export function verifyPaddleWebhook(
       return false;
     }
 
-    const crypto = require("crypto");
     const payloadToSign = `${ts}:${payload}`;
     const expected = crypto
       .createHmac("sha256", secret)
