@@ -33,6 +33,9 @@ export async function GET() {
       { name: 'isShadowBanned', type: 'BOOLEAN DEFAULT 0' },
       { name: 'isPro', type: 'BOOLEAN DEFAULT 0' },
       { name: 'subscriptionStatus', type: 'TEXT' },
+      { name: 'paddleCustomerId', type: 'TEXT' },
+      { name: 'paddleSubscriptionId', type: 'TEXT' },
+      { name: 'subscriptionEnd', type: 'DATETIME' },
       { name: 'profileBackground', type: 'TEXT' },
       { name: 'username', type: 'TEXT' },
       { name: 'bio', type: 'TEXT' }
@@ -172,6 +175,9 @@ export async function POST(req: Request) {
         data: {
           isPro: false,
           subscriptionStatus: null,
+          paddleCustomerId: null,
+          paddleSubscriptionId: null,
+          subscriptionEnd: null,
         },
       });
       return NextResponse.json({ success: true, message: "Pro membership removed successfully." });

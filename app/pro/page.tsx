@@ -1,36 +1,83 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { Check, Shield, Zap, Sparkles, Loader2 } from "lucide-react";
+import type { Paddle as PaddleType } from "@paddle/paddle-js";
 
 export default function ProPage() {
-  const { data: session, status, update } = useSession();
+  const { data: session, status } = useSession();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [paddle, setPaddle] = useState<PaddleType | null>(null);
 
   const isPro = (session?.user as any)?.isPro;
 
-  const handleUpgrade = async () => {
+  useEffect(() => {
+    if (process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN) {
+      // Dynamically import Paddle.js
+      import("@paddle/paddle-js").then(({ initializePaddle }) => {
+        const isProduction = process.env.NEXT_PUBLIC_PADDLE_ENV === "production";
+        initializePaddle({
+          environment: isProduction ? "production" : "sandbox",
+          token: process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN!,
+        }).then((paddleInstance) => {
+          if (paddleInstance) {
+            setPaddle(paddleInstance);
+          }
+        });
+      });
+    }
+  }, []);
+
+  const handleUpgrade = useCallback(async () => {
     setLoading(true);
     setError(null);
+
     try {
-      const response = await fetch("/api/stripe/checkout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("결제 세션 생성에 실패했습니다.");
-      }
-
-      const data = await response.json();
-      if (data.url) {
-        window.location.href = data.url;
+      // If Paddle is initialized, use checkout overlay
+      if (paddle && process.env.NEXT_PUBLIC_PADDLE_PRICE_ID) {
+        paddle.Checkout.open({
+          items: [{ priceId: process.env.NEXT_PUBLIC_PADDLE_PRICE_ID!, quantity: 1 }],
+          settings: {
+            displayMode: "overlay",
+            successUrl: `${window.location.origin}/pro/success`,
+          },
+        });
       } else {
-        throw new Error("결제 URL이 유효하지 않습니다.");
+        // Fallback: use server-side checkout or mock
+        const response = await fetch("/api/paddle/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+        });
+
+        if (!response.ok) {
+          throw new Error("결제 세션 생성에 실패했습니다.");
+        }
+
+        const data = await response.json();
+
+        if (data.isMock) {
+          window.location.href = data.checkoutUrl;
+        } else if (paddle && data.clientToken && data.priceId) {
+          // Re-initialize with the returned credentials
+          const { initializePaddle } = await import("@paddle/paddle-js");
+          const paddleInstance = await initializePaddle({
+            environment: process.env.NEXT_PUBLIC_PADDLE_ENV === "production" ? "production" : "sandbox",
+            token: data.clientToken,
+          });
+          if (paddleInstance) {
+            paddleInstance.Checkout.open({
+              items: [{ priceId: data.priceId, quantity: 1 }],
+              settings: {
+                displayMode: "overlay",
+                successUrl: `${window.location.origin}/pro/success`,
+              },
+            });
+          }
+        } else {
+          throw new Error("결제 URL이 유효하지 않습니다.");
+        }
       }
     } catch (err: any) {
       console.error(err);
@@ -38,31 +85,11 @@ export default function ProPage() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleDowngradeMock = async () => {
-    // 테스트용 등급 초기화 버튼 (Pro 해제)
-    setLoading(true);
-    try {
-      const res = await fetch("/api/admin/fix-db", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "removePro" }),
-      });
-      if (res.ok) {
-        await update();
-        window.location.reload();
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [paddle]);
 
   if (status === "loading") {
     return (
-      <div className="flex min-height-[60vh] items-center justify-center">
+      <div className="flex min-h-[60vh] items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-[#0066cc]" />
       </div>
     );
@@ -121,7 +148,7 @@ export default function ProPage() {
           </div>
           <div>
             <h3 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              Pro <span className="text-xs bg-[#0066cc]/10 text-[#0066cc] px-2 py-0.5 rounded">Special</span>
+              Pro <span className="text-xs bg-[#0066cc]/10 text-[#0066cc] px-2 py-0.5 rounded">Powered by Paddle</span>
             </h3>
             <p className="mt-2 text-slate-500 dark:text-slate-400 text-sm">전문가와 파워 유저를 위한 최상의 도구</p>
             <div className="mt-4 flex items-baseline text-slate-900 dark:text-white">
@@ -160,13 +187,12 @@ export default function ProPage() {
                 <div className="w-full py-3 px-4 rounded-xl text-center font-semibold text-sm bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
                   Pro 구독 활성화 중 ✨
                 </div>
-                <button
-                  onClick={handleDowngradeMock}
-                  disabled={loading}
-                  className="w-full py-2 px-4 text-xs text-center text-slate-400 hover:text-red-500 transition-colors"
+                <a
+                  href="/pro/manage"
+                  className="block w-full py-2 px-4 text-xs text-center text-slate-400 hover:text-[#0066cc] transition-colors"
                 >
-                  [테스트] Pro 구독 해제하기
-                </button>
+                  구독 관리하기
+                </a>
               </div>
             ) : (
               <button
