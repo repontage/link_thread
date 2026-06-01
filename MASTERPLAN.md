@@ -100,16 +100,17 @@
 ## Phase 21: Pro 구독 및 비즈니스 상용화 (Pro Subscription & Commercialization) ✅ Complete
 - [x] **Mock Sandbox (완료)**: Stripe 결제 Mock 샌드박스 구현 → Paddle로 마이그레이션 완료.
 - [x] **Ad-free Experience (완료)**: Pro 구독 유저에게 Sponsor UI 및 광고 요소 전면 비노출 처리.
-- [x] **Developer Portal Access Restriction (완료)**: Developer 포털 관리 및 실시간 웹훅 권한을 Pro/Admin 등급으로 잠금.
+- [x] **Developer Portal Access Restriction (완료)**: Developer 포털 관리 및 실시간 웹훅 권한을 Pro/Admin 등급으로 잠금. `/developer` 페이지 서버 사이드 권한 게이팅 + `UserNav` 조건부 네비게이션.
 - [x] **User Model Extension (완료)**: Prisma DB `User` 스키마에 `isPro`, `subscriptionStatus`, `paddleCustomerId`, `paddleSubscriptionId`, `subscriptionEnd` 필드 도입.
 - [x] **Stripe → Paddle 마이그레이션**: Stripe SDK 제거, @paddle/paddle-js + @paddle/paddle-node-sdk 도입. 기존 Stripe API 라우트 제거.
 - [x] **Paddle Checkout Flow**: Paddle Checkout overlay 연동 (`PADDLE_CLIENT_TOKEN`, `PADDLE_PRICE_ID`). $29/mo 구독. `/api/paddle/checkout` 엔드포인트.
 - [x] **Paddle Webhook 처리**: `/api/paddle/webhook` — `subscription.created`, `subscription.updated`, `subscription.canceled` 이벤트 처리 및 HMAC 서명 검증.
 - [x] **Pro User Lifecycle**: `paddleCustomerId`, `paddleSubscriptionId`, `subscriptionEnd` 필드 추가. 구독 활성/만료에 따른 Pro 권한 자동 관리 (웹훅 기반).
 - [x] **Paddle Customer Portal**: `/pro/manage` → 구독 취소/업데이트 가능한 Paddle 셀프서비스 포털 연동 (`/api/paddle/manage`).
-- [x] **Developer Portal Pro-gating**: `/developer` 페이지 Pro/Admin 전용 접근 제한 추가.
+- [x] **Developer Portal Pro-gating**: `/developer` 페이지 Pro/Admin 전용 접근 제한 추가. `UserNav`에 조건부 Developer 링크 표시.
 - [x] **Pro Badge on Profile**: 프로필 페이지에 Pro 배지 표시 (`app/profile/page.tsx`).
 - [x] **Production Switch**: Paddle sandbox → live mode 전환 준비 완료 (PADDLE_ENVIRONMENT, PADDLE_API_KEY, PADDLE_CLIENT_TOKEN, PADDLE_WEBHOOK_SECRET env vars 교체 필요).
+- [x] **Environment Variables**: `.env.example`에 Paddle 환경변수 명세 추가.
 
 ## Phase 22: 지능형 피드 및 개인화 (Intelligent Feed & Personalization)
 - [x] **Personalized Feed**: 사용자 관심사(댓글 단 URL 카테고리, upvote 패턴) 기반 개인화 피드 생성.
@@ -200,5 +201,6 @@
   - **동적 키 페어 생성**: 로컬 및 클라우드(Vercel) 환경에서 서버 실행 시 2048-bit RSA 키 페어를 동적으로 생성 및 global 캐싱하여 DB 스키마 구조 변경 없이 Fediverse와 유기적으로 소통할 수 있는 ActivityPub Actors 규격을 완벽 지원.
   - **문서 보강**: 개발자 가이드 문서(\\`/app/developer/docs\\`)에 ActivityPub 및 Fediverse 연동 관련 세부 명세를 신설하여 기록 완료.
   - **배포 전 무결성 검증**: \\`npm run lint\\` 및 \\`npm run build\\` 성공(0 warnings, 0 errors) 확인 및 Vercel 프로덕션 배포 완료.
-- **2026-06-02**: (Scheduled Cron) 정기 점검 및 코드베이스 무결성 확인. Phase 18-21 전 항목 구축 완료 상태 확인. Caching Layer(unstable_cache), Self-healing Infrastructure(/api/admin/self-healing), Stripe Pro 결제 및 Mock 샌드박스, Fediverse(ActivityPub), Webhook 시스템, Developer Portal 및 API Docs, SponsorUI Ad-free 경험, CuratedPicks AI 큐레이션 모두 정상 동작. `npm run lint` 0 warnings, `npm run build` 0 errors 확인. Vercel 프로덕션 배포 수행.
-- **2026-06-01**: (Scheduled Cron) Phase 22 Intelligent Feed & Personalization 전 항목 완료 처리. AI Comment Moderation(다국어 키워드 스코어링+패턴 기반 중재), Smart Notifications(우선순위 시스템+다이제스트), Personalized Feed(사용자 카테고리 기반 추천 API+UI) 기존 구현 완료 확인. A/B Testing Framework(`lib/ab-testing.tsx` + `/api/admin/analytics/event`), Advanced Analytics Dashboard(`/admin/analytics` - retention/churn/cohort 차트 페이지) 신규 구현 및 관리자 대시보드 네비게이션 연동 완료. `npm run lint` 및 `npm run build` 무결성 검증 후 Vercel 배포.
+|- **2026-06-02**: (Scheduled Cron) 정기 점검 및 코드베이스 무결성 확인. Phase 18-21 전 항목 구축 완료 상태 확인. Caching Layer(unstable_cache), Self-healing Infrastructure(/api/admin/self-healing), Stripe Pro 결제 및 Mock 샌드박스, Fediverse(ActivityPub), Webhook 시스템, Developer Portal 및 API Docs, SponsorUI Ad-free 경험, CuratedPicks AI 큐레이션 모두 정상 동작. `npm run lint` 0 warnings, `npm run build` 0 errors 확인. Vercel 프로덕션 배포 수행.
+|- **2026-06-01**: (Scheduled Cron) Phase 22 Intelligent Feed & Personalization 전 항목 완료 처리. AI Comment Moderation(다국어 키워드 스코어링+패턴 기반 중재), Smart Notifications(우선순위 시스템+다이제스트), Personalized Feed(사용자 카테고리 기반 추천 API+UI) 기존 구현 완료 확인. A/B Testing Framework(`lib/ab-testing.tsx` + `/api/admin/analytics/event`), Advanced Analytics Dashboard(`/admin/analytics` - retention/churn/cohort 차트 페이지) 신규 구현 및 관리자 대시보드 네비게이션 연동 완료. `npm run lint` 및 `npm run build` 무결성 검증 후 Vercel 배포.
+|- **2026-06-01**: (Scheduled Cron) Phase 21 Paddle 결제 시스템 최종 점검 완료. Paddle Checkout overlay (`/pro`), Paddle Webhook (`/api/paddle/webhook` — subscription.created/updated/canceled + HMAC 서명 검증), Paddle 고객 포털 (`/api/paddle/manage`, `/pro/manage`), Paddle SDK 서버 (`lib/paddle-server.ts`), Prisma User 모델(paddleCustomerId, paddleSubscriptionId, subscriptionEnd) 모두 정상 동작 확인. **추가 개선**: `/developer` 페이지 신규 생성 (서버 사이드 Pro/Admin 권한 게이팅 + DeveloperPortal 컴포넌트 연동), `UserNav`에 조건부 Developer 링크 표시 (비Pro 유저는 `/pro`로 안내), `.env.example`에 Paddle 환경변수 명세 추가. `npm run lint` 0 warnings, `npm run build` 0 errors 확인 후 Vercel(`voidsay.com`) 배포 완료.
