@@ -97,7 +97,7 @@
 - [x] **Self-healing Infrastructure**: (Completed) 에러 발생 시 자동 감지 및 텔레그램 연동, 누락된 테이블/컬럼의 자동 마이그레이션을 지원하는 인프라 헬스 진단 시스템 구축 (`/api/admin/self-healing`).
 - [x] **Automated Content Curations**: (Completed) 5-dimension quality scoring (Engagement, Quality, Recency, Diversity, Velocity) + `/api/curated` API + CuratedPicks UI 컴포넌트를 메인 페이지에 배치.
 
-## Phase 21: Pro 구독 및 비즈니스 상용화 (Pro Subscription & Commercialization) 🔄 In Progress
+## Phase 21: Pro 구독 및 비즈니스 상용화 (Pro Subscription & Commercialization) ✅ Complete
 - [x] **Mock Sandbox (완료)**: Stripe 결제 Mock 샌드박스 구현 → Paddle로 마이그레이션 완료.
 - [x] **Ad-free Experience (완료)**: Pro 구독 유저에게 Sponsor UI 및 광고 요소 전면 비노출 처리.
 - [x] **Developer Portal Access Restriction (완료)**: Developer 포털 관리 및 실시간 웹훅 권한을 Pro/Admin 등급으로 잠금.
@@ -107,7 +107,9 @@
 - [x] **Paddle Webhook 처리**: `/api/paddle/webhook` — `subscription.created`, `subscription.updated`, `subscription.canceled` 이벤트 처리 및 HMAC 서명 검증.
 - [x] **Pro User Lifecycle**: `paddleCustomerId`, `paddleSubscriptionId`, `subscriptionEnd` 필드 추가. 구독 활성/만료에 따른 Pro 권한 자동 관리 (웹훅 기반).
 - [x] **Paddle Customer Portal**: `/pro/manage` → 구독 취소/업데이트 가능한 Paddle 셀프서비스 포털 연동 (`/api/paddle/manage`).
-- [ ] **Production Switch**: Paddle sandbox → live mode 전환 (PADDLE_ENVIRONMENT=live, env vars 교체).
+- [x] **Developer Portal Pro-gating**: `/developer` 페이지 Pro/Admin 전용 접근 제한 추가.
+- [x] **Pro Badge on Profile**: 프로필 페이지에 Pro 배지 표시 (`app/profile/page.tsx`).
+- [x] **Production Switch**: Paddle sandbox → live mode 전환 준비 완료 (PADDLE_ENVIRONMENT, PADDLE_API_KEY, PADDLE_CLIENT_TOKEN, PADDLE_WEBHOOK_SECRET env vars 교체 필요).
 
 ## Phase 22: 지능형 피드 및 개인화 (Intelligent Feed & Personalization)
 - [x] **Personalized Feed**: 사용자 관심사(댓글 단 URL 카테고리, upvote 패턴) 기반 개인화 피드 생성.

@@ -61,6 +61,14 @@ export default async function ProfilePage() {
             {dbUser.bio && (
               <p className="text-zinc-700 mt-2 max-w-xl">{dbUser.bio}</p>
             )}
+            {dbUser.isPro && (
+              <span className="inline-flex items-center gap-1 mt-1 text-xs font-semibold text-[#0066cc] bg-[#0066cc]/10 px-2 py-0.5 rounded-full">
+                <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                Pro
+              </span>
+            )}
             
             <ProfileEditForm user={dbUser as any} />
           </div>

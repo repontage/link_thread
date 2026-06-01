@@ -10,9 +10,16 @@ export const metadata = {
 export default async function DeveloperPage() {
   const session = await auth();
 
-  // Protect the route: must be logged in to manage webhooks
+  // Protect the route: must be logged in AND be Pro or Admin
   if (!session?.user) {
     redirect("/");
+  }
+
+  const isPro = (session.user as any)?.isPro ?? false;
+  const isAdmin = (session.user as any)?.role === "ADMIN";
+
+  if (!isPro && !isAdmin) {
+    redirect("/pro");
   }
 
   return (
