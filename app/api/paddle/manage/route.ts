@@ -21,14 +21,21 @@ export async function POST() {
     }
 
     if (!process.env.PADDLE_API_KEY) {
-      // Fallback: return a static Paddle customer portal URL if in sandbox
-      return NextResponse.json({
-        url: "https://sandbox-vendors.paddle.com/subscription-portal",
-      });
+      return NextResponse.json(
+        { error: "Paddle is not configured" },
+        { status: 503 },
+      );
+    }
+
+    if (!user.paddleCustomerId) {
+      return NextResponse.json(
+        { error: "Paddle customer record not found" },
+        { status: 400 },
+      );
     }
 
     const paddle = new PaddleSDK();
-    const portal = await paddle.createCustomerPortalSession(user.paddleCustomerId!);
+    const portal = await paddle.createCustomerPortalSession(user.paddleCustomerId);
 
     return NextResponse.json({ url: portal.url });
   } catch (error) {
