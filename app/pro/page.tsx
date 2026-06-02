@@ -59,8 +59,8 @@ export default function ProPage() {
 
         if (data.isMock) {
           window.location.href = data.checkoutUrl;
-        } else if (paddle && data.clientToken && data.priceId) {
-          // Re-initialize with the returned credentials
+        } else if (data.clientToken && data.priceId) {
+          // Re-initialize Paddle with the returned credentials (handles missing env vars)
           const { initializePaddle } = await import("@paddle/paddle-js");
           const paddleInstance = await initializePaddle({
             environment: process.env.NEXT_PUBLIC_PADDLE_ENV === "production" ? "production" : "sandbox",
@@ -74,6 +74,8 @@ export default function ProPage() {
                 successUrl: `${window.location.origin}/pro/success`,
               },
             });
+          } else {
+            throw new Error("Paddle init failed");
           }
         } else {
           throw new Error("결제 URL이 유효하지 않습니다.");
