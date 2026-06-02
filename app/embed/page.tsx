@@ -16,8 +16,6 @@ export default function EmbedPage({
     );
   }
 
-  // Next.js 16 (App router) allows async components, but for a simple embed UI we can just link to it.
-  // In a real app we'd fetch the thread ID and show top comments. For now, we guide them.
   return (
     <div className="p-4 font-sans bg-white border border-gray-200 rounded-lg shadow-sm">
       <div className="flex items-center justify-between mb-4">
@@ -38,6 +36,18 @@ export default function EmbedPage({
         >
           View Comments on VoidSay
         </Link>
+      </div>
+      {/* Powered by badge */}
+      <div className="mt-4 pt-3 border-t border-gray-100 text-center">
+        <a
+          href="https://voidsay.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 text-xs text-gray-400 hover:text-blue-600 transition-colors"
+        >
+          <span className="text-base">💬</span>
+          <span>Powered by VoidSay</span>
+        </a>
       </div>
     </div>
   );

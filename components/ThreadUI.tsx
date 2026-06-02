@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useSession, signIn } from 'next-auth/react';
 import dynamic from 'next/dynamic';
 import { Search, MessageSquare, Loader2, Send } from 'lucide-react';
@@ -70,6 +70,15 @@ export default function ThreadUI() {
   const [category, setCategory] = useState('');
   const [isSubmittingNew, setIsSubmittingNew] = useState(false);
   const [includeTimestamp, setIncludeTimestamp] = useState(false);
+
+  // Extract domain for site owner discovery
+  const currentDomain = useMemo(() => {
+    try {
+      return new URL(currentUrl).hostname.replace('www.', '');
+    } catch {
+      return currentUrl || 'your site';
+    }
+  }, [currentUrl]);
 
   const categories = [
     { value: '', label: 'None' },
@@ -407,6 +416,29 @@ export default function ThreadUI() {
               <SponsorUI />
             </div>
 
+            {/* Site Owner Discovery Banner */}
+            <div className="px-6 pb-4 pt-6 border-b border-zinc-100">
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 rounded-lg px-4 py-3 flex items-center justify-between flex-wrap gap-3 border border-blue-100 dark:border-blue-900/50">
+                <div className="flex items-center gap-2">
+                  <span className="text-base">👋</span>
+                  <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                    Are you the owner of{' '}
+                    <span className="font-mono text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-900/50 px-1.5 py-0.5 rounded text-xs">
+                      {currentDomain}
+                    </span>
+                    ?
+                  </p>
+                </div>
+                <a
+                  href="/api/auth/signin"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white text-xs font-semibold rounded-full hover:bg-blue-700 transition-colors shrink-0"
+                >
+                  <span>Claim Your Site</span>
+                  <span>→</span>
+                </a>
+              </div>
+            </div>
+
             <div className="p-6 border-b border-zinc-100 bg-zinc-50 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <MessageSquare className="h-5 w-5 text-blue-600" />
@@ -570,6 +602,21 @@ export default function ThreadUI() {
           </div>
         )}
       </div>
+
+      {/* Powered by VoidSay */}
+      {showComments && (
+        <div className="w-full max-w-2xl mt-6 mb-12 text-center">
+          <a
+            href="https://voidsay.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-blue-600 dark:text-zinc-500 dark:hover:text-blue-400 transition-colors"
+          >
+            <span className="text-base">💬</span>
+            <span>Powered by VoidSay — Universal Commenting for the Web</span>
+          </a>
+        </div>
+      )}
     </section>
   );
 }
