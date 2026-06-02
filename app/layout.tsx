@@ -8,20 +8,30 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"),
-  title: "VoidSay - Universal Commenting",
-  description: "Comment on any URL on the internet.",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://voidsay.com"),
+  title: {
+    default: "VoidSay — Universal Commenting for Any Website",
+    template: "%s | VoidSay",
+  },
+  description: "Comment on any website, YouTube video, or X thread. Free, privacy-first universal commenting with Markdown, dark mode, and rich media embeds. No ads, no tracking.",
+  keywords: ["commenting platform", "universal comments", "Disqus alternative", "website comments", "YouTube comments", "blog comments", "Commento alternative"],
   openGraph: {
-    title: "VoidSay",
-    description: "Comment on any URL on the internet.",
+    title: "VoidSay — Comment on Any Website",
+    description: "Free, privacy-first universal commenting. Markdown, dark mode, YouTube/X embeds. No ads, no tracking.",
     url: "/",
     siteName: "VoidSay",
     type: "website",
+    images: [{ url: "/og-image.png", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "VoidSay",
-    description: "Comment on any URL on the internet.",
+    title: "VoidSay — Universal Commenting",
+    description: "Comment on any URL. Free, private, modern. No ads.",
+    images: ["/og-image.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
   manifest: "/manifest.json",
   appleWebApp: {
