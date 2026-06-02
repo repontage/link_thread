@@ -188,6 +188,7 @@ export default function DisqusComparisonPage() {
           <Link href="/alternatives/commento" className="hover:text-zinc-700 dark:hover:text-zinc-300">vs Commento</Link>
           <Link href="/alternatives/giscus" className="hover:text-zinc-700 dark:hover:text-zinc-300">vs Giscus</Link>
           <Link href="/" className="hover:text-zinc-700 dark:hover:text-zinc-300">VoidSay Home</Link>
+          <a href="https://x.com/voidsay_" target="_blank" rel="noopener noreferrer" className="hover:text-zinc-700 dark:hover:text-zinc-300">𝕏 @voidsay_</a>
         </div>
       </footer>
     </main>

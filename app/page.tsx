@@ -122,6 +122,7 @@ export default function Home() {
           <Link href="/terms" className="hover:text-white/80 transition-colors">Terms of Service</Link>
           <Link href="/privacy" className="hover:text-white/80 transition-colors">Privacy Policy</Link>
           <Link href="/refund" className="hover:text-white/80 transition-colors">Refund Policy</Link>
+          <a href="https://x.com/voidsay_" target="_blank" rel="noopener noreferrer" className="hover:text-white/80 transition-colors">𝕏 @voidsay_</a>
         </div>
       </footer>
 
