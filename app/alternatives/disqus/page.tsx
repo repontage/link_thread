@@ -12,7 +12,6 @@ export const metadata: Metadata = {
 
 const features = [
   { feature: 'Free Plan', voidsay: '✅ Free forever', disqus: '✅ Free (with ads)' },
-  { feature: 'Ad-Free', voidsay: '✅ Completely ad-free', disqus: '❌ Shows ads on free plan' },
   { feature: 'Privacy', voidsay: '✅ No tracking, no data selling', disqus: '⚠️ Tracks users, sells data' },
   { feature: 'Markdown', voidsay: '✅ Full Markdown + GFM', disqus: '❌ Limited formatting' },
   { feature: 'Dark Mode', voidsay: '✅ Built-in dark/light', disqus: '⚠️ Limited theme options' },
