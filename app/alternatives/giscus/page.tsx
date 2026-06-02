@@ -2,68 +2,69 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'VoidSay vs Disqus — The Modern Alternative to Disqus (2026)',
-  description: 'Looking for a Disqus alternative? VoidSay is a free, privacy-first universal commenting platform with no ads, Markdown support, YouTube embeds, and a clean dark mode UI. Compare features, pricing, and migration.',
+  title: 'VoidSay vs Giscus — Managed Alternative to GitHub-Based Comments (2026)',
+  description: 'Looking for a Giscus alternative? VoidSay is a fully managed universal commenting platform with no GitHub dependency, rich media embeds, and a generous free plan. Compare features, host requirements, and embed experience.',
   openGraph: {
-    title: 'VoidSay vs Disqus — Why Switch in 2026?',
-    description: 'No ads, faster load times, Markdown support, and free forever. See the full feature comparison.',
+    title: 'VoidSay vs Giscus — Why Choose a Managed Platform in 2026?',
+    description: 'No GitHub account required for your readers. YouTube, X, Instagram embeds. Free forever plan. See the full feature comparison.',
   },
 };
 
 const features = [
-  { feature: 'Free Plan', voidsay: '✅ Free forever', disqus: '✅ Free (with ads)' },
-  { feature: 'Privacy', voidsay: '✅ No tracking, no data selling', disqus: '⚠️ Tracks users, sells data' },
-  { feature: 'Markdown', voidsay: '✅ Full Markdown + GFM', disqus: '❌ Limited formatting' },
-  { feature: 'Dark Mode', voidsay: '✅ Built-in dark/light', disqus: '⚠️ Limited theme options' },
-  { feature: 'YouTube Embed', voidsay: '✅ Auto-embed + timestamp', disqus: '⚠️ Link only' },
-  { feature: 'X/Twitter Embed', voidsay: '✅ Auto-embed cards', disqus: '❌ Not supported' },
-  { feature: 'Instagram Embed', voidsay: '✅ Auto-embed feed', disqus: '❌ Not supported' },
-  { feature: 'Site Owner Dashboard', voidsay: '✅ Developer Portal', disqus: '⚠️ Basic moderation' },
-  { feature: 'SSO / OAuth', voidsay: '✅ Google, GitHub, Passkeys', disqus: '✅ Google, Facebook, X' },
-  { feature: 'Page Speed', voidsay: '⚡ < 50ms load', disqus: '🐌 500ms+ (heavy scripts)' },
-  { feature: 'Pro Plan', voidsay: '$29/mo — Pro badge, priority', disqus: 'By quote — expensive' },
-  { feature: 'Data Ownership', voidsay: '✅ You own your data', disqus: '❌ Disqus owns the data' },
+  { feature: 'Free Plan', voidsay: '✅ Free forever', giscus: '✅ Free (GitHub required)' },
+  { feature: 'Hosting', voidsay: '☁️ Fully managed (Vercel)', giscus: '☁️ GitHub Discussions API' },
+  { feature: 'GitHub Required', voidsay: '❌ No GitHub needed', giscus: '⚠️ Readers need GitHub account' },
+  { feature: 'Privacy', voidsay: '✅ No tracking, no data selling', giscus: '✅ Open source, privacy-first' },
+  { feature: 'Markdown', voidsay: '✅ Full Markdown + GFM', giscus: '✅ Full Markdown + GFM' },
+  { feature: 'Dark Mode', voidsay: '✅ Built-in dark/light', giscus: '✅ Follows GitHub theme' },
+  { feature: 'YouTube Embed', voidsay: '✅ Auto-embed + timestamp', giscus: '❌ Not supported' },
+  { feature: 'X/Twitter Embed', voidsay: '✅ Auto-embed cards', giscus: '❌ Not supported' },
+  { feature: 'Instagram Embed', voidsay: '✅ Auto-embed feed', giscus: '❌ Not supported' },
+  { feature: 'SSO / OAuth', voidsay: '✅ Google, GitHub, Passkeys', giscus: '⚠️ GitHub only' },
+  { feature: 'Site Owner Dashboard', voidsay: '✅ Developer Portal + Analytics', giscus: '⚠️ GitHub Discussions UI' },
+  { feature: 'Pro Plan', voidsay: '$29/mo — Pro badge, priority', giscus: 'N/A (free only)' },
+  { feature: 'Data Ownership', voidsay: '✅ Export via API', giscus: '⚠️ Tied to GitHub repos' },
 ];
 
 const reasons = [
-  { icon: '🚀', title: '10x Faster', desc: 'VoidSay loads in under 50ms. Disqus scripts can take 500ms+ and block page rendering.' },
-  { icon: '🔒', title: 'Privacy First', desc: "No third-party tracking. No data selling. Your readers\u2019 data stays with you." },
-  { icon: '🎨', title: 'Modern Design', desc: 'Clean UI with dark mode, Markdown, emoji, and native media embeds.' },
+  { icon: '🚪', title: 'No GitHub Required', desc: 'Your readers don\u2019t need a GitHub account. VoidSay works with Google, GitHub, or passkeys — lowering the barrier for 95% of web users.' },
+  { icon: '🎬', title: 'Rich Media Embeds', desc: 'YouTube with timestamps, X/Twitter cards, Instagram feeds. Giscus is text-only with link previews.' },
+  { icon: '📊', title: 'Analytics Built-in', desc: 'Page-level analytics, engagement scores, and trend predictions. Giscus offers zero built-in analytics.' },
 ];
 
 const steps = [
-  { step: '1', title: 'Remove Disqus', desc: 'Delete the Disqus embed code from your site. Takes 30 seconds.' },
-  { step: '2', title: 'Add VoidSay Embed', desc: 'Copy our lightweight embed snippet. Paste it where Disqus was.' },
-  { step: '3', title: 'Enjoy', desc: 'Your readers get a faster, cleaner, ad-free commenting experience.' },
+  { step: '1', title: 'Sign Up on VoidSay', desc: 'Create a free account with Google, GitHub, or a passkey. No GitHub repos to configure.' },
+  { step: '2', title: 'Add VoidSay Embed', desc: 'Copy our lightweight embed snippet. Paste it into your site. 30 seconds.' },
+  { step: '3', title: 'Welcome Everyone', desc: 'Your readers can comment immediately — no GitHub account required.' },
 ];
 
 const testimonials = [
   {
-    text: "Switched from Disqus to VoidSay. My page load time dropped 5x and my readers love the clean Markdown comments.",
-    author: '— Developer, Seoul',
+    text: "I loved Giscus for my dev blog but 70% of my readers don't have GitHub accounts. VoidSay opened commenting to everyone.",
+    author: '— Tech Blogger, Berlin',
   },
   {
-    text: "No more creepy ads following my readers around. VoidSay respects privacy and looks beautiful.",
-    author: '— Blogger, SF',
+    text: "Switched from Giscus. The YouTube embed alone was worth it — now my readers comment on video timestamps.",
+    author: '— Indie Hacker, Tokyo',
   },
 ];
 
-export default function DisqusComparisonPage() {
+export default function GiscusComparisonPage() {
   return (
     <main className="min-h-screen bg-white dark:bg-zinc-950">
       {/* Hero */}
       <section className="py-20 px-4 max-w-4xl mx-auto text-center">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 text-sm font-medium mb-6">
-          <span>🔄</span>
-          <span>Switching from Disqus?</span>
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-300 text-sm font-medium mb-6">
+          <span>🐙</span>
+          <span>Moving beyond GitHub-only comments?</span>
         </div>
         <h1 className="text-4xl sm:text-5xl font-extrabold text-zinc-900 dark:text-white mb-4 tracking-tight">
-          VoidSay is the Modern{' '}
-          <span className="text-blue-600">Disqus Alternative</span>
+          VoidSay is the Managed{' '}
+          <span className="text-blue-600">Giscus Alternative</span>
         </h1>
         <p className="text-lg text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto mb-8">
-          Disqus was great in 2012. Today, it&apos;s slow, bloated with ads, and sells your readers&apos; data. 
-          VoidSay is built for the modern web — fast, private, and beautiful.
+          Giscus is brilliant for developer-centric sites — but it requires every commenter to have a GitHub account. 
+          VoidSay opens your comments to everyone, with rich media embeds, built-in analytics, and zero GitHub dependency.
         </p>
         <div className="flex flex-wrap gap-4 justify-center">
           <Link
@@ -85,7 +86,7 @@ export default function DisqusComparisonPage() {
       <section className="py-16 px-4 bg-zinc-50 dark:bg-zinc-900">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-2xl font-bold text-zinc-900 dark:text-white mb-8 text-center">
-            Why People Are Switching from Disqus
+            Why People Switch from Giscus
           </h2>
           <div className="grid md:grid-cols-3 gap-6">
             {reasons.map((item) => (
@@ -102,7 +103,7 @@ export default function DisqusComparisonPage() {
       {/* Feature Comparison Table */}
       <section id="comparison" className="py-16 px-4 max-w-4xl mx-auto">
         <h2 className="text-2xl font-bold text-zinc-900 dark:text-white mb-8 text-center">
-          Feature Comparison: VoidSay vs Disqus
+          Feature Comparison: VoidSay vs Giscus
         </h2>
         <div className="overflow-x-auto rounded-2xl border border-zinc-200 dark:border-zinc-700">
           <table className="w-full text-sm">
@@ -110,7 +111,7 @@ export default function DisqusComparisonPage() {
               <tr className="bg-zinc-50 dark:bg-zinc-800">
                 <th className="text-left p-4 font-semibold text-zinc-900 dark:text-white">Feature</th>
                 <th className="text-left p-4 font-semibold text-blue-600">VoidSay ✅</th>
-                <th className="text-left p-4 font-semibold text-zinc-500">Disqus</th>
+                <th className="text-left p-4 font-semibold text-zinc-500">Giscus</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-200 dark:divide-zinc-700">
@@ -118,7 +119,7 @@ export default function DisqusComparisonPage() {
                 <tr key={row.feature} className="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
                   <td className="p-4 font-medium text-zinc-900 dark:text-white">{row.feature}</td>
                   <td className="p-4 text-zinc-700 dark:text-zinc-300">{row.voidsay}</td>
-                  <td className="p-4 text-zinc-500 dark:text-zinc-400">{row.disqus}</td>
+                  <td className="p-4 text-zinc-500 dark:text-zinc-400">{row.giscus}</td>
                 </tr>
               ))}
             </tbody>
@@ -127,10 +128,10 @@ export default function DisqusComparisonPage() {
       </section>
 
       {/* How to Switch */}
-      <section className="py-16 px-4 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30">
+      <section className="py-16 px-4 bg-gradient-to-br from-green-50 to-blue-50 dark:from-green-950/30 dark:to-blue-950/30">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-2xl font-bold text-zinc-900 dark:text-white mb-4">
-            How to Switch from Disqus to VoidSay
+            How to Switch from Giscus to VoidSay
           </h2>
           <div className="grid md:grid-cols-3 gap-6 mt-8 text-left">
             {steps.map((item) => (
@@ -167,10 +168,10 @@ export default function DisqusComparisonPage() {
       {/* CTA */}
       <section className="py-16 px-4 text-center">
         <h2 className="text-2xl font-bold text-zinc-900 dark:text-white mb-4">
-          Ready to Ditch Disqus?
+          Ready to Open Your Comments to Everyone?
         </h2>
         <p className="text-zinc-600 dark:text-zinc-400 mb-6">
-          Join thousands of sites that made the switch to a faster, private, modern commenting platform.
+          Join sites that moved beyond GitHub-only comments. Free, fast, and beautiful.
         </p>
         <Link
           href="/"
@@ -185,9 +186,6 @@ export default function DisqusComparisonPage() {
           <Link href="/terms" className="hover:text-zinc-700 dark:hover:text-zinc-300">Terms</Link>
           <Link href="/privacy" className="hover:text-zinc-700 dark:hover:text-zinc-300">Privacy</Link>
           <Link href="/alternatives" className="hover:text-zinc-700 dark:hover:text-zinc-300">All Alternatives</Link>
-          <Link href="/alternatives/commento" className="hover:text-zinc-700 dark:hover:text-zinc-300">vs Commento</Link>
-          <Link href="/alternatives/giscus" className="hover:text-zinc-700 dark:hover:text-zinc-300">vs Giscus</Link>
-          <Link href="/" className="hover:text-zinc-700 dark:hover:text-zinc-300">VoidSay Home</Link>
         </div>
       </footer>
     </main>

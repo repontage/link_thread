@@ -25,6 +25,24 @@ const alternatives = [
     tagline: 'Feature-rich but pricey. VoidSay Pro at 1/3 the cost.',
     badge: '💰',
   },
+  {
+    slug: 'giscus',
+    name: 'Giscus',
+    tagline: 'GitHub-based comments. VoidSay opens commenting to everyone.',
+    badge: '🐙',
+  },
+  {
+    slug: 'fastcomments',
+    name: 'FastComments',
+    tagline: 'Solid but expensive. VoidSay Pro at $29/mo vs $49/mo.',
+    badge: '⚡',
+  },
+  {
+    slug: 'utterances',
+    name: 'utterances',
+    tagline: 'GitHub Issues comments. VoidSay: no GitHub required, richer features.',
+    badge: '💬',
+  },
 ];
 
 export default function AlternativesIndex() {

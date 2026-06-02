@@ -205,3 +205,16 @@
 |- **2026-06-01**: (Scheduled Cron) Phase 22 Intelligent Feed & Personalization 전 항목 완료 처리. AI Comment Moderation(다국어 키워드 스코어링+패턴 기반 중재), Smart Notifications(우선순위 시스템+다이제스트), Personalized Feed(사용자 카테고리 기반 추천 API+UI) 기존 구현 완료 확인. A/B Testing Framework(`lib/ab-testing.tsx` + `/api/admin/analytics/event`), Advanced Analytics Dashboard(`/admin/analytics` - retention/churn/cohort 차트 페이지) 신규 구현 및 관리자 대시보드 네비게이션 연동 완료. `npm run lint` 및 `npm run build` 무결성 검증 후 Vercel 배포.
 |- **2026-06-01**: (Scheduled Cron) Phase 21 Paddle 결제 시스템 최종 점검 완료. Paddle Checkout overlay (`/pro`), Paddle Webhook (`/api/paddle/webhook` — subscription.created/updated/canceled + HMAC 서명 검증), Paddle 고객 포털 (`/api/paddle/manage`, `/pro/manage`), Paddle SDK 서버 (`lib/paddle-server.ts`), Prisma User 모델(paddleCustomerId, paddleSubscriptionId, subscriptionEnd) 모두 정상 동작 확인. **추가 개선**: `/developer` 페이지 신규 생성 (서버 사이드 Pro/Admin 권한 게이팅 + DeveloperPortal 컴포넌트 연동), `UserNav`에 조건부 Developer 링크 표시 (비Pro 유저는 `/pro`로 안내), `.env.example`에 Paddle 환경변수 명세 추가. `npm run lint` 0 warnings, `npm run build` 0 errors 확인 후 Vercel(`voidsay.com`) 배포 완료.
 - **2026-06-02**: (Scheduled Cron) Phase 21 Paddle 시스템 전면 점검 및 재배포. Stripe SDK 완전 제거 확인 (0 remnant files), Paddle SDK (@paddle/paddle-js, @paddle/paddle-node-sdk) 정상 설치 확인. `/api/paddle/checkout`, `/api/paddle/webhook`, `/api/paddle/manage` 엔드포인트 정상 빌드. `/pro`, `/pro/success`, `/pro/manage` 페이지 HTTP 200 응답 확인. `/developer` Pro/Admin 권한 게이팅 정상 작동. Auth.js JWT/Session 콜백 `isPro` 필드 전파 확인. `lib/paddle-server.ts` HMAC 서명 검증 및 Customer Portal 세션 생성 로직 검토 완료. `fix-db` API Paddle 컬럼 (`isPro`, `subscriptionStatus`, `paddleCustomerId`, `paddleSubscriptionId`, `subscriptionEnd`) 동기화 로직 포함 확인. `npm run lint` 0 warnings, `npm run build` 0 errors — Vercel 프로덕션(`voidsay.com`) 배포 완료. ⚠️ Paddle env vars (`PADDLE_API_KEY`, `PADDLE_CLIENT_TOKEN`, `PADDLE_WEBHOOK_SECRET`, `PADDLE_PRICE_ID` 등)은 Vercel에 미설정 상태 — Paddle Sandbox 계정 생성 후 추가 필요.
+
+## Phase 23: SEO 경쟁사 비교 페이지 확장 (SEO Competitor Comparison Pages) 🚀 In Progress
+- [x] **Giscus 비교 페이지**: `/alternatives/giscus` — GitHub 계정 불필요, 리치 미디어 임베드, 분석 기능 강조. 개발자 블로그 대상.
+- [x] **FastComments 비교 페이지**: `/alternatives/fastcomments` — $29/mo vs $49/mo 가격 우위, 무료 플랜 무제한 강조.
+- [x] **utterances 비교 페이지**: `/alternatives/utterances` — GitHub Issues 의존성 탈피, 알림 시스템, 분석 기능 강조.
+- [x] **사이트맵 업데이트**: 7개 대안 페이지 (`/alternatives`, `/alternatives/disqus`, `/commento`, `/hyvor`, `/giscus`, `/fastcomments`, `/utterances`) 추가.
+- [x] **인덱스 페이지 업데이트**: `/alternatives` 페이지에 3개 신규 카드 추가 (총 6개 비교 페이지).
+- [x] **푸터 크로스링크**: Disqus 페이지 푸터에 다른 비교 페이지 링크 추가.
+- [ ] **Livere (라이브리) 비교 페이지**: 국내 최대 댓글 플랫폼 대상 한국어 SEO 페이지 제작 필요.
+- [ ] **Remark42, Isso 비교 페이지**: 자체 호스팅 솔루션 대안으로 추가 검토.
+- [ ] **구글 서치 콘솔 등록**: 신규 페이지 인덱싱 요청.
+
+- **2026-06-02**: (Scheduled Cron) Phase 23 SEO 비교 페이지 확장. 사이트 건강 점검 (voidsay.com 메인, /pro, /alternatives/disqus, /embed HTTP 200 확인, 콘솔 에러 0건). 신규 비교 페이지 3건 생성: `/alternatives/giscus` (GitHub 없이 댓글 가능 + 리치 미디어), `/alternatives/fastcomments` ($29/mo vs $49/mo 가격 비교), `/alternatives/utterances` (GitHub 계정 불필요 + 알림 시스템). 사이트맵에 7개 대안 URL 추가. `/alternatives` 인덱스 페이지에 신규 카드 3건 추가. `npm run lint` 0 warnings, `npm run build` 46/46 pages 0 errors — Vercel(`voidsay.com`) 배포 완료. HN/Reddit 홍보 기회 탐색했으나 최근 7일/30일 내 관련 스레드 0건 발견.

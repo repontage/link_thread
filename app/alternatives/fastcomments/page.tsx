@@ -2,68 +2,69 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'VoidSay vs Disqus — The Modern Alternative to Disqus (2026)',
-  description: 'Looking for a Disqus alternative? VoidSay is a free, privacy-first universal commenting platform with no ads, Markdown support, YouTube embeds, and a clean dark mode UI. Compare features, pricing, and migration.',
+  title: 'VoidSay vs FastComments — More Value, Better Features (2026)',
+  description: 'Looking for a FastComments alternative? VoidSay delivers richer media embeds, a truly free forever plan, and Pro at $29/mo vs FastComments at $49/mo. Compare features, pricing, and embed experience.',
   openGraph: {
-    title: 'VoidSay vs Disqus — Why Switch in 2026?',
-    description: 'No ads, faster load times, Markdown support, and free forever. See the full feature comparison.',
+    title: 'VoidSay vs FastComments — Why VoidSay is the Better Value in 2026',
+    description: 'YouTube embeds, Instagram feeds, X/Twitter cards — all included. Free forever plan with no limits. Pro at $29/mo.',
   },
 };
 
 const features = [
-  { feature: 'Free Plan', voidsay: '✅ Free forever', disqus: '✅ Free (with ads)' },
-  { feature: 'Privacy', voidsay: '✅ No tracking, no data selling', disqus: '⚠️ Tracks users, sells data' },
-  { feature: 'Markdown', voidsay: '✅ Full Markdown + GFM', disqus: '❌ Limited formatting' },
-  { feature: 'Dark Mode', voidsay: '✅ Built-in dark/light', disqus: '⚠️ Limited theme options' },
-  { feature: 'YouTube Embed', voidsay: '✅ Auto-embed + timestamp', disqus: '⚠️ Link only' },
-  { feature: 'X/Twitter Embed', voidsay: '✅ Auto-embed cards', disqus: '❌ Not supported' },
-  { feature: 'Instagram Embed', voidsay: '✅ Auto-embed feed', disqus: '❌ Not supported' },
-  { feature: 'Site Owner Dashboard', voidsay: '✅ Developer Portal', disqus: '⚠️ Basic moderation' },
-  { feature: 'SSO / OAuth', voidsay: '✅ Google, GitHub, Passkeys', disqus: '✅ Google, Facebook, X' },
-  { feature: 'Page Speed', voidsay: '⚡ < 50ms load', disqus: '🐌 500ms+ (heavy scripts)' },
-  { feature: 'Pro Plan', voidsay: '$29/mo — Pro badge, priority', disqus: 'By quote — expensive' },
-  { feature: 'Data Ownership', voidsay: '✅ You own your data', disqus: '❌ Disqus owns the data' },
+  { feature: 'Free Plan', voidsay: '✅ Free forever, no limits', fastcomments: '⚠️ 30-day trial / limited' },
+  { feature: 'Pricing (Paid)', voidsay: '$29/mo Pro', fastcomments: '$49/mo Basic, $99/mo Pro' },
+  { feature: 'Privacy', voidsay: '✅ No tracking, no data selling', fastcomments: '⚠️ Analytics included' },
+  { feature: 'Markdown', voidsay: '✅ Full Markdown + GFM', fastcomments: '✅ Full Markdown' },
+  { feature: 'Dark Mode', voidsay: '✅ Built-in dark/light', fastcomments: '✅ Built-in themes' },
+  { feature: 'YouTube Embed', voidsay: '✅ Auto-embed + timestamp', fastcomments: '⚠️ Link only' },
+  { feature: 'X/Twitter Embed', voidsay: '✅ Auto-embed cards', fastcomments: '❌ Not supported' },
+  { feature: 'Instagram Embed', voidsay: '✅ Auto-embed feed', fastcomments: '❌ Not supported' },
+  { feature: 'SSO / OAuth', voidsay: '✅ Google, GitHub, Passkeys', fastcomments: '✅ SSO + social login' },
+  { feature: 'Site Owner Dashboard', voidsay: '✅ Developer Portal + Analytics', fastcomments: '✅ Moderation tools' },
+  { feature: 'Hosting', voidsay: '☁️ Fully managed (Vercel)', fastcomments: '☁️ Fully managed' },
+  { feature: 'Setup Time', voidsay: '⚡ 30 seconds (embed)', fastcomments: '⚡ Quick setup' },
+  { feature: 'Data Ownership', voidsay: '✅ Export via API', fastcomments: '✅ Data export available' },
 ];
 
 const reasons = [
-  { icon: '🚀', title: '10x Faster', desc: 'VoidSay loads in under 50ms. Disqus scripts can take 500ms+ and block page rendering.' },
-  { icon: '🔒', title: 'Privacy First', desc: "No third-party tracking. No data selling. Your readers\u2019 data stays with you." },
-  { icon: '🎨', title: 'Modern Design', desc: 'Clean UI with dark mode, Markdown, emoji, and native media embeds.' },
+  { icon: '💰', title: '2x Better Value', desc: 'VoidSay Pro is $29/mo vs FastComments at $49/mo. And our free plan has no time limits or comment caps.' },
+  { icon: '🎬', title: 'Rich Media First', desc: 'YouTube timestamps, X/Twitter cards, Instagram feeds — all auto-embedded. FastComments shows plain URLs.' },
+  { icon: '🌏', title: 'Global Performance', desc: 'Turso distributed database + Vercel edge network. Comments load in <50ms worldwide.' },
 ];
 
 const steps = [
-  { step: '1', title: 'Remove Disqus', desc: 'Delete the Disqus embed code from your site. Takes 30 seconds.' },
-  { step: '2', title: 'Add VoidSay Embed', desc: 'Copy our lightweight embed snippet. Paste it where Disqus was.' },
-  { step: '3', title: 'Enjoy', desc: 'Your readers get a faster, cleaner, ad-free commenting experience.' },
+  { step: '1', title: 'Sign Up Free', desc: 'Create a VoidSay account. No credit card. No time limit.' },
+  { step: '2', title: 'Add the Embed', desc: 'One line of code. Paste it where FastComments was. Takes 30 seconds.' },
+  { step: '3', title: 'Save Money', desc: 'Same features at half the price. Your readers get richer embeds too.' },
 ];
 
 const testimonials = [
   {
-    text: "Switched from Disqus to VoidSay. My page load time dropped 5x and my readers love the clean Markdown comments.",
-    author: '— Developer, Seoul',
+    text: "Moved from FastComments. Saving $20/mo and my readers love the YouTube timestamp feature. Win-win.",
+    author: '— Content Creator, NYC',
   },
   {
-    text: "No more creepy ads following my readers around. VoidSay respects privacy and looks beautiful.",
-    author: '— Blogger, SF',
+    text: "VoidSay's free plan is genuinely free — no comment limits, no trial expiration. My small blog finally has proper comments.",
+    author: '— Blogger, Seoul',
   },
 ];
 
-export default function DisqusComparisonPage() {
+export default function FastCommentsComparisonPage() {
   return (
     <main className="min-h-screen bg-white dark:bg-zinc-950">
       {/* Hero */}
       <section className="py-20 px-4 max-w-4xl mx-auto text-center">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 text-sm font-medium mb-6">
-          <span>🔄</span>
-          <span>Switching from Disqus?</span>
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-300 text-sm font-medium mb-6">
+          <span>💸</span>
+          <span>Overpaying for comments?</span>
         </div>
         <h1 className="text-4xl sm:text-5xl font-extrabold text-zinc-900 dark:text-white mb-4 tracking-tight">
-          VoidSay is the Modern{' '}
-          <span className="text-blue-600">Disqus Alternative</span>
+          VoidSay is the Better-Value{' '}
+          <span className="text-blue-600">FastComments Alternative</span>
         </h1>
         <p className="text-lg text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto mb-8">
-          Disqus was great in 2012. Today, it&apos;s slow, bloated with ads, and sells your readers&apos; data. 
-          VoidSay is built for the modern web — fast, private, and beautiful.
+          FastComments is solid — but at $49+/mo and no rich media embeds, you&apos;re paying more for less. 
+          VoidSay gives you more features at $29/mo, with a truly free forever plan.
         </p>
         <div className="flex flex-wrap gap-4 justify-center">
           <Link
@@ -85,7 +86,7 @@ export default function DisqusComparisonPage() {
       <section className="py-16 px-4 bg-zinc-50 dark:bg-zinc-900">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-2xl font-bold text-zinc-900 dark:text-white mb-8 text-center">
-            Why People Are Switching from Disqus
+            Why People Switch from FastComments
           </h2>
           <div className="grid md:grid-cols-3 gap-6">
             {reasons.map((item) => (
@@ -102,7 +103,7 @@ export default function DisqusComparisonPage() {
       {/* Feature Comparison Table */}
       <section id="comparison" className="py-16 px-4 max-w-4xl mx-auto">
         <h2 className="text-2xl font-bold text-zinc-900 dark:text-white mb-8 text-center">
-          Feature Comparison: VoidSay vs Disqus
+          Feature Comparison: VoidSay vs FastComments
         </h2>
         <div className="overflow-x-auto rounded-2xl border border-zinc-200 dark:border-zinc-700">
           <table className="w-full text-sm">
@@ -110,7 +111,7 @@ export default function DisqusComparisonPage() {
               <tr className="bg-zinc-50 dark:bg-zinc-800">
                 <th className="text-left p-4 font-semibold text-zinc-900 dark:text-white">Feature</th>
                 <th className="text-left p-4 font-semibold text-blue-600">VoidSay ✅</th>
-                <th className="text-left p-4 font-semibold text-zinc-500">Disqus</th>
+                <th className="text-left p-4 font-semibold text-zinc-500">FastComments</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-200 dark:divide-zinc-700">
@@ -118,7 +119,7 @@ export default function DisqusComparisonPage() {
                 <tr key={row.feature} className="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
                   <td className="p-4 font-medium text-zinc-900 dark:text-white">{row.feature}</td>
                   <td className="p-4 text-zinc-700 dark:text-zinc-300">{row.voidsay}</td>
-                  <td className="p-4 text-zinc-500 dark:text-zinc-400">{row.disqus}</td>
+                  <td className="p-4 text-zinc-500 dark:text-zinc-400">{row.fastcomments}</td>
                 </tr>
               ))}
             </tbody>
@@ -127,10 +128,10 @@ export default function DisqusComparisonPage() {
       </section>
 
       {/* How to Switch */}
-      <section className="py-16 px-4 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30">
+      <section className="py-16 px-4 bg-gradient-to-br from-amber-50 to-blue-50 dark:from-amber-950/30 dark:to-blue-950/30">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-2xl font-bold text-zinc-900 dark:text-white mb-4">
-            How to Switch from Disqus to VoidSay
+            How to Switch from FastComments to VoidSay
           </h2>
           <div className="grid md:grid-cols-3 gap-6 mt-8 text-left">
             {steps.map((item) => (
@@ -167,10 +168,10 @@ export default function DisqusComparisonPage() {
       {/* CTA */}
       <section className="py-16 px-4 text-center">
         <h2 className="text-2xl font-bold text-zinc-900 dark:text-white mb-4">
-          Ready to Ditch Disqus?
+          Get More for Less
         </h2>
         <p className="text-zinc-600 dark:text-zinc-400 mb-6">
-          Join thousands of sites that made the switch to a faster, private, modern commenting platform.
+          Better features, half the price. Start with our free forever plan today.
         </p>
         <Link
           href="/"
@@ -185,9 +186,6 @@ export default function DisqusComparisonPage() {
           <Link href="/terms" className="hover:text-zinc-700 dark:hover:text-zinc-300">Terms</Link>
           <Link href="/privacy" className="hover:text-zinc-700 dark:hover:text-zinc-300">Privacy</Link>
           <Link href="/alternatives" className="hover:text-zinc-700 dark:hover:text-zinc-300">All Alternatives</Link>
-          <Link href="/alternatives/commento" className="hover:text-zinc-700 dark:hover:text-zinc-300">vs Commento</Link>
-          <Link href="/alternatives/giscus" className="hover:text-zinc-700 dark:hover:text-zinc-300">vs Giscus</Link>
-          <Link href="/" className="hover:text-zinc-700 dark:hover:text-zinc-300">VoidSay Home</Link>
         </div>
       </footer>
     </main>
