@@ -1,12 +1,13 @@
 import React from 'react';
 import Link from 'next/link';
 
-export default function EmbedPage({
+export default async function EmbedPage({
   searchParams,
 }: {
-  searchParams: { url?: string };
+  searchParams: Promise<{ url?: string }>;
 }) {
-  const url = searchParams.url;
+  const params = await searchParams;
+  const url = params.url;
 
   if (!url) {
     return (
