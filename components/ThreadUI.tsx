@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useSession, signIn } from 'next-auth/react';
 import dynamic from 'next/dynamic';
-import { Search, MessageSquare, Loader2, Send } from 'lucide-react';
+import { Search, MessageSquare, Loader2, Send, Share2, Copy, Check } from 'lucide-react';
 import { useInView } from 'react-intersection-observer';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -70,6 +70,20 @@ export default function ThreadUI() {
   const [category, setCategory] = useState('');
   const [isSubmittingNew, setIsSubmittingNew] = useState(false);
   const [includeTimestamp, setIncludeTimestamp] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyLink = () => {
+    const shareUrl = `${window.location.origin}/?url=${encodeURIComponent(currentUrl)}`;
+    navigator.clipboard.writeText(shareUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleShareX = () => {
+    const text = encodeURIComponent(`Join the discussion on VoidSay! 💬`);
+    const shareUrl = encodeURIComponent(`${window.location.origin}/?url=${encodeURIComponent(currentUrl)}`);
+    window.open(`https://x.com/intent/tweet?text=${text}&url=${shareUrl}`, '_blank');
+  };
 
   // Extract domain for site owner discovery
   const currentDomain = useMemo(() => {
@@ -457,6 +471,21 @@ export default function ThreadUI() {
                   <option value="newest">Newest First</option>
                   <option value="popular">Most Popular</option>
                 </select>
+                <div className="h-4 w-px bg-zinc-300 mx-1" />
+                <button
+                  onClick={handleCopyLink}
+                  className="p-1.5 rounded-md hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors text-zinc-500 hover:text-blue-600"
+                  title="Copy link"
+                >
+                  {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+                </button>
+                <button
+                  onClick={handleShareX}
+                  className="p-1.5 rounded-md hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors text-zinc-500 hover:text-blue-600"
+                  title="Share on X"
+                >
+                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                </button>
               </div>
             </div>
             
