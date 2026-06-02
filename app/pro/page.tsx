@@ -52,7 +52,7 @@ export default function ProPage() {
         });
 
         if (!response.ok) {
-          throw new Error("결제 세션 생성에 실패했습니다.");
+          throw new Error("Failed to create checkout session.");
         }
 
         const data = await response.json();
@@ -76,7 +76,7 @@ export default function ProPage() {
             });
           }
         } else {
-          throw new Error("결제 URL이 유효하지 않습니다.");
+          throw new Error("Invalid checkout URL.");
         }
       }
     } catch (err: any) {
@@ -102,7 +102,7 @@ export default function ProPage() {
           VoidSay <span className="text-[#0066cc]">Pro</span>
         </h1>
         <p className="mt-4 text-lg text-slate-500 dark:text-slate-400 max-w-xl mx-auto">
-          더 강력한 기능과 광고 없는 깔끔한 경험으로 무제한의 댓글 소통 플랫폼을 완성해보세요.
+          Unlock powerful features and an ad-free experience on the ultimate comment platform.
         </p>
       </div>
 
@@ -111,7 +111,7 @@ export default function ProPage() {
         <div className="border border-slate-200 dark:border-slate-800 rounded-2xl p-8 flex flex-col justify-between bg-white dark:bg-slate-900 shadow-sm">
           <div>
             <h3 className="text-xl font-bold text-slate-900 dark:text-white">Free</h3>
-            <p className="mt-2 text-slate-500 dark:text-slate-400 text-sm">소소한 링크 소통을 위한 기본 요금제</p>
+            <p className="mt-2 text-slate-500 dark:text-slate-400 text-sm">Basic plan for casual discussions</p>
             <div className="mt-4 flex items-baseline text-slate-900 dark:text-white">
               <span className="text-3xl font-extrabold tracking-tight">$0</span>
               <span className="ml-1 text-xl font-semibold text-slate-500">/mo</span>
@@ -119,15 +119,15 @@ export default function ProPage() {
             <ul className="mt-8 space-y-4">
               <li className="flex items-center text-sm text-slate-600 dark:text-slate-300">
                 <Check className="h-5 w-5 text-emerald-500 mr-2 flex-shrink-0" />
-                댓글 무제한 작성 및 조회
+                Unlimited comments & viewing
               </li>
               <li className="flex items-center text-sm text-slate-600 dark:text-slate-300">
                 <Check className="h-5 w-5 text-emerald-500 mr-2 flex-shrink-0" />
-                기본 트렌딩 보드 이용
+                Basic trending board access
               </li>
               <li className="flex items-center text-sm text-slate-600 dark:text-slate-300">
                 <Check className="h-5 w-5 text-emerald-500 mr-2 flex-shrink-0" />
-                브라우저 확장 프로그램 및 위젯 연동
+                Browser extension & widget integration
               </li>
             </ul>
           </div>
@@ -136,7 +136,7 @@ export default function ProPage() {
               disabled
               className="w-full py-3 px-4 rounded-xl text-center font-semibold text-sm bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 cursor-not-allowed"
             >
-              {isPro ? "기본 플랜 사용 중" : "현재 사용 중"}
+              {isPro ? "Already on Free plan" : "Current Plan"}
             </button>
           </div>
         </div>
@@ -150,7 +150,7 @@ export default function ProPage() {
             <h3 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
               Pro <span className="text-xs bg-[#0066cc]/10 text-[#0066cc] px-2 py-0.5 rounded">Powered by Paddle</span>
             </h3>
-            <p className="mt-2 text-slate-500 dark:text-slate-400 text-sm">전문가와 파워 유저를 위한 최상의 도구</p>
+            <p className="mt-2 text-slate-500 dark:text-slate-400 text-sm">Premium tools for pros and power users</p>
             <div className="mt-4 flex items-baseline text-slate-900 dark:text-white">
               <span className="text-3xl font-extrabold tracking-tight">$29</span>
               <span className="ml-1 text-xl font-semibold text-slate-500">/mo</span>
@@ -158,19 +158,19 @@ export default function ProPage() {
             <ul className="mt-8 space-y-4">
               <li className="flex items-center text-sm text-slate-600 dark:text-slate-300">
                 <Zap className="h-5 w-5 text-[#0066cc] mr-2 flex-shrink-0" />
-                <strong>Ad-free Experience</strong> (광고 및 스폰서 UI 완벽 비노출)
+                <strong>Ad-free Experience</strong> (sponsor UI completely hidden)
               </li>
               <li className="flex items-center text-sm text-slate-600 dark:text-slate-300">
                 <Shield className="h-5 w-5 text-[#0066cc] mr-2 flex-shrink-0" />
-                <strong>Developer Webhooks</strong> (새 댓글/리액션 발생 시 실시간 연동)
+                <strong>Developer Webhooks</strong> (real-time comment & reaction events)
               </li>
               <li className="flex items-center text-sm text-slate-600 dark:text-slate-300">
                 <Sparkles className="h-5 w-5 text-[#0066cc] mr-2 flex-shrink-0" />
-                <strong>Developer Portal</strong> (API 생성 및 관리 권한 획득)
+                <strong>Developer Portal</strong> (create and manage API access)
               </li>
               <li className="flex items-center text-sm text-slate-600 dark:text-slate-300">
                 <Check className="h-5 w-5 text-emerald-500 mr-2 flex-shrink-0" />
-                특별한 <strong>Pro 배지</strong> 프로필 자동 부여
+                Exclusive <strong>Pro badge</strong> on your profile
               </li>
             </ul>
           </div>
@@ -180,18 +180,18 @@ export default function ProPage() {
                 onClick={() => (window.location.href = "/api/auth/signin")}
                 className="w-full py-3 px-4 rounded-xl text-center font-semibold text-sm bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 transition-colors"
               >
-                로그인 후 구독 시작하기
+                Sign in to Subscribe
               </button>
             ) : isPro ? (
               <div className="space-y-2">
                 <div className="w-full py-3 px-4 rounded-xl text-center font-semibold text-sm bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                  Pro 구독 활성화 중 ✨
+                  Pro Active ✨
                 </div>
                 <a
                   href="/pro/manage"
                   className="block w-full py-2 px-4 text-xs text-center text-slate-400 hover:text-[#0066cc] transition-colors"
                 >
-                  구독 관리하기
+                  Manage Subscription
                 </a>
               </div>
             ) : (
