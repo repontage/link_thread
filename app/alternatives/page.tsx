@@ -43,6 +43,12 @@ const alternatives = [
     tagline: 'GitHub Issues comments. VoidSay: no GitHub required, richer features.',
     badge: '💬',
   },
+  {
+    slug: 'cusdis',
+    name: 'Cusdis',
+    tagline: 'Lightweight but self-hosted. VoidSay: managed, richer features, same privacy.',
+    badge: '🪶',
+  },
 ];
 
 export default function AlternativesIndex() {

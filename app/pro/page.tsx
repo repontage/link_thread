@@ -1,91 +1,62 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { Check, Shield, Zap, Sparkles, Loader2 } from "lucide-react";
-import type { Paddle as PaddleType } from "@paddle/paddle-js";
 
 export default function ProPage() {
   const { data: session, status } = useSession();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [paddle, setPaddle] = useState<PaddleType | null>(null);
 
   const isPro = (session?.user as any)?.isPro;
-
-  useEffect(() => {
-    if (process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN) {
-      // Dynamically import Paddle.js
-      import("@paddle/paddle-js").then(({ initializePaddle }) => {
-        const isProduction = process.env.NEXT_PUBLIC_PADDLE_ENV === "production";
-        initializePaddle({
-          environment: isProduction ? "production" : "sandbox",
-          token: process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN!,
-        }).then((paddleInstance) => {
-          if (paddleInstance) {
-            setPaddle(paddleInstance);
-          }
-        });
-      });
-    }
-  }, []);
 
   const handleUpgrade = useCallback(async () => {
     setLoading(true);
     setError(null);
 
     try {
-      // If Paddle is initialized, use checkout overlay
-      if (paddle && process.env.NEXT_PUBLIC_PADDLE_PRICE_ID) {
-        paddle.Checkout.open({
-          items: [{ priceId: process.env.NEXT_PUBLIC_PADDLE_PRICE_ID!, quantity: 1 }],
-          settings: {
-            displayMode: "overlay",
-            successUrl: `${window.location.origin}/pro/success`,
-          },
-        });
-      } else {
-        // Fallback: use server-side checkout or mock
-        const response = await fetch("/api/paddle/checkout", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-        });
+      // Fetch transaction from server-side Paddle API
+      const response = await fetch("/api/paddle/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
 
-        if (!response.ok) {
-          throw new Error("Failed to create checkout session.");
-        }
-
-        const data = await response.json();
-
-        if (data.isMock) {
-          window.location.href = data.checkoutUrl;
-        } else if (data.clientToken && data.priceId) {
-          // Re-initialize with the returned credentials
-          const { initializePaddle } = await import("@paddle/paddle-js");
-          const paddleInstance = await initializePaddle({
-            environment: process.env.NEXT_PUBLIC_PADDLE_ENV === "production" ? "production" : "sandbox",
-            token: data.clientToken,
-          });
-          if (paddleInstance) {
-            paddleInstance.Checkout.open({
-              items: [{ priceId: data.priceId, quantity: 1 }],
-              settings: {
-                displayMode: "overlay",
-                successUrl: `${window.location.origin}/pro/success`,
-              },
-            });
-          }
-        } else {
-          throw new Error("Invalid checkout URL.");
-        }
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.error || "Failed to create checkout session.");
       }
+
+      const { transactionId, environment } = await response.json();
+
+      // Initialize Paddle.js if not already initialized
+      const { initializePaddle } = await import("@paddle/paddle-js");
+      const paddleInstance = await initializePaddle({
+        environment: environment === "production" ? "production" : "sandbox",
+        token: process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN!,
+      });
+
+      if (!paddleInstance) {
+        throw new Error("Failed to initialize Paddle checkout.");
+      }
+
+      // Open Paddle Checkout overlay with transaction ID
+      paddleInstance.Checkout.open({
+        transactionId,
+        settings: {
+          displayMode: "overlay",
+          showAddDiscounts: true,
+          showAddTaxId: true,
+          successUrl: `${window.location.origin}/pro/success`,
+        },
+      });
     } catch (err: any) {
-      console.error(err);
+      console.error("[PRO_UPGRADE_ERROR]", err);
       setError(err.message || "An error occurred");
     } finally {
       setLoading(false);
     }
-  }, [paddle]);
+  }, []);
 
   if (status === "loading") {
     return (

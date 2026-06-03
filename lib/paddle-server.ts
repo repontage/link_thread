@@ -1,38 +1,131 @@
-import crypto from "crypto";
-import { Paddle as PaddleSDKClient } from "@paddle/paddle-node-sdk";
-import { Environment } from "@paddle/paddle-node-sdk";
+import { Paddle as PaddleSDKClient, Environment, type EventEntity } from "@paddle/paddle-node-sdk";
 
+/**
+ * Paddle SDK wrapper for VoidSay Pro subscription management.
+ * Handles customers, transactions, subscriptions, and webhooks.
+ */
 export class PaddleSDK {
   private client: PaddleSDKClient;
+  private isSandbox: boolean;
 
   constructor() {
     const apiKey = process.env.PADDLE_API_KEY;
     if (!apiKey) {
       throw new Error("PADDLE_API_KEY is not set");
     }
-    const isSandbox = process.env.PADDLE_ENVIRONMENT !== "live";
+    this.isSandbox = process.env.PADDLE_ENVIRONMENT !== "live";
     this.client = new PaddleSDKClient(apiKey, {
-      environment: isSandbox ? Environment.sandbox : Environment.production,
+      environment: this.isSandbox ? Environment.sandbox : Environment.production,
     });
   }
 
-  async getCustomerByEmail(email: string): Promise<{ id: string } | null> {
-    const collection = await this.client.customers.list({ email: [email] });
+  get environment(): string {
+    return this.isSandbox ? "sandbox" : "production";
+  }
+
+  /**
+   * Find or create a Paddle customer for the given user.
+   * Uses paddleCustomerId from DB first, then falls back to email lookup.
+   */
+  async findOrCreateCustomer(params: {
+    userId: string;
+    email: string;
+    name?: string;
+    paddleCustomerId?: string | null;
+  }): Promise<{ id: string }> {
+    // If user already has a paddleCustomerId, verify it exists
+    if (params.paddleCustomerId) {
+      try {
+        const customer = await this.client.customers.get(params.paddleCustomerId);
+        if (customer) return { id: customer.id };
+      } catch {
+        // Customer not found — create a new one below
+      }
+    }
+
+    // Look up by email
+    const collection = await this.client.customers.list({ email: [params.email] });
     const customers = await collection.next();
-    return customers[0] || null;
-  }
+    if (customers.length > 0) {
+      return { id: customers[0].id };
+    }
 
-  async createCustomer(email: string, name?: string) {
-    return await this.client.customers.create({
-      email,
-      name,
+    // Create new customer
+    const newCustomer = await this.client.customers.create({
+      email: params.email,
+      name: params.name || params.email,
     });
+    return { id: newCustomer.id };
   }
 
-  async createCustomerPortalSession(customerId: string) {
+  /**
+   * Create a Paddle transaction for the checkout flow.
+   * Returns the transaction ID for Paddle.js Checkout.open().
+   */
+  async createCheckoutTransaction(params: {
+    priceId: string;
+    customerId: string;
+    userId: string;
+    successUrl: string;
+  }): Promise<{ id: string }> {
+    const transaction = await this.client.transactions.create({
+      items: [
+        {
+          priceId: params.priceId,
+          quantity: 1,
+        },
+      ],
+      customerId: params.customerId,
+      customData: { userId: params.userId },
+      checkout: {
+        url: params.successUrl,
+      },
+    });
+
+    return { id: transaction.id };
+  }
+
+  /**
+   * Verify and unmarshal a Paddle webhook event.
+   */
+  async verifyWebhook(
+    rawBody: string,
+    signature: string,
+  ): Promise<EventEntity | null> {
+    const secret = process.env.PADDLE_WEBHOOK_SECRET;
+    if (!secret) return null;
+
+    try {
+      const event = await this.client.webhooks.unmarshal(
+        rawBody,
+        secret,
+        signature,
+      );
+      return event;
+    } catch (error) {
+      console.error("[PADDLE_WEBHOOK] Signature verification failed:", error);
+      return null;
+    }
+  }
+
+  /**
+   * Create a customer portal session for subscription management.
+   */
+  async createCustomerPortalSession(customerId: string): Promise<{ url: string }> {
     const session = await this.client.customerPortalSessions.create(customerId, []);
     return {
       url: session.urls.general.overview,
     };
+  }
+
+  /**
+   * Get subscription details by ID.
+   */
+  async getSubscription(subscriptionId: string) {
+    try {
+      return await this.client.subscriptions.get(subscriptionId);
+    } catch {
+      return null;
+    }
   }
 }

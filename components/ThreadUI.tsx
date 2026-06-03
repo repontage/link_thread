@@ -427,7 +427,8 @@ export default function ThreadUI() {
             })()}
 
             <div className="p-6">
-              <SponsorUI />
+              {/* Ad-free for Pro subscribers */}
+              {!(session?.user as any)?.isPro && <SponsorUI />}
             </div>
 
             {/* Site Owner Discovery Banner */}

@@ -1,29 +1,75 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
+import prisma from "@/lib/prisma";
+import { PaddleSDK } from "@/lib/paddle-server";
 
 export async function POST() {
   try {
     const session = await auth();
-    if (!session || !session.user) {
+    if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // If Paddle is not configured, return error
-    if (!process.env.PADDLE_CLIENT_TOKEN || !process.env.PADDLE_PRICE_ID) {
+    const userId = (session.user as any).id;
+    const userEmail = session.user.email;
+    const userName = session.user.name;
+
+    if (!userEmail) {
       return NextResponse.json(
-        { error: "Paddle is not configured. Please set PADDLE_CLIENT_TOKEN and PADDLE_PRICE_ID environment variables." },
+        { error: "Account requires an email address" },
+        { status: 400 },
+      );
+    }
+
+    // Require Paddle configuration
+    if (!process.env.PADDLE_API_KEY || !process.env.PADDLE_PRICE_ID) {
+      return NextResponse.json(
+        { error: "Paddle is not configured" },
         { status: 503 },
       );
     }
 
-    // Return Paddle client token and price ID so the frontend can open the overlay
+    // Fetch user's Paddle customer ID from DB
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { paddleCustomerId: true },
+    });
+
+    const paddle = new PaddleSDK();
+
+    // Find or create Paddle customer
+    const customer = await paddle.findOrCreateCustomer({
+      userId,
+      email: userEmail,
+      name: userName || undefined,
+      paddleCustomerId: user?.paddleCustomerId,
+    });
+
+    // Save customer ID to DB if new
+    if (!user?.paddleCustomerId || user.paddleCustomerId !== customer.id) {
+      await prisma.user.update({
+        where: { id: userId },
+        data: { paddleCustomerId: customer.id },
+      });
+    }
+
+    // Create Paddle transaction with custom_data containing userId
+    const successUrl = `${process.env.AUTH_URL || process.env.NEXT_PUBLIC_APP_URL || "https://voidsay.com"}/pro/success`;
+    const transaction = await paddle.createCheckoutTransaction({
+      priceId: process.env.PADDLE_PRICE_ID!,
+      customerId: customer.id,
+      userId,
+      successUrl,
+    });
+
     return NextResponse.json({
-      clientToken: process.env.PADDLE_CLIENT_TOKEN,
-      priceId: process.env.PADDLE_PRICE_ID,
-      isMock: false,
+      transactionId: transaction.id,
+      environment: paddle.environment,
     });
   } catch (error) {
     console.error("[PADDLE_CHECKOUT_ERROR]", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    const message =
+      error instanceof Error ? error.message : "Internal Server Error";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

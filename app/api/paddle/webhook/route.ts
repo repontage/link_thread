@@ -1,144 +1,166 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import crypto from "crypto";
+import { PaddleSDK } from "@/lib/paddle-server";
+
+export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
   try {
     const rawBody = await req.text();
     const signature = req.headers.get("paddle-signature") || "";
-    const secret = process.env.PADDLE_WEBHOOK_SECRET;
 
-    // Verify webhook signature
-    // Paddle sends header format: "ts=TIMESTAMP;h1=HEX_HASH"
-    if (secret) {
-      try {
-        const sigParts = Object.fromEntries(
-          signature.split(";").map((p) => p.split("=")),
-        );
-        const ts = sigParts["ts"];
-        const h1 = sigParts["h1"];
+    // Verify webhook signature using Paddle SDK
+    const paddle = new PaddleSDK();
+    const event = await paddle.verifyWebhook(rawBody, signature);
 
-        if (!ts || !h1) {
-          console.error("[PADDLE_WEBHOOK] Missing ts or h1 in signature header");
-          return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
-        }
-
-        const payload = `${ts}:${rawBody}`;
-        const expected = crypto
-          .createHmac("sha256", secret)
-          .update(payload)
-          .digest("hex");
-
-        const isValid = crypto.timingSafeEqual(
-          Buffer.from(expected, "hex"),
-          Buffer.from(h1, "hex"),
-        );
-        if (!isValid) {
-          console.error("[PADDLE_WEBHOOK] Invalid signature");
-          return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
-        }
-      } catch (e) {
-        console.error("[PADDLE_WEBHOOK] Signature verification failed:", e);
-        return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
-      }
-    } else {
-      console.error("[PADDLE_WEBHOOK] PADDLE_WEBHOOK_SECRET not configured — rejecting all webhooks");
-      return NextResponse.json({ error: "Webhook secret not configured" }, { status: 500 });
+    if (!event) {
+      console.error("[PADDLE_WEBHOOK] Signature verification failed");
+      return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
     }
 
-    const event = JSON.parse(rawBody);
-    const eventType = event.event_type;
+    console.log(`[PADDLE_WEBHOOK] Received event: ${event.eventType}`);
 
-    // Handle Paddle subscription events
-    switch (eventType) {
+    // Handle subscription lifecycle events
+    switch (event.eventType) {
+      case "subscription.activated":
       case "subscription.created": {
         const subscription = event.data;
-        const customData = subscription.custom_data || {};
+        const customData = (subscription as any).customData || (subscription as any).custom_data || {};
         const userId = customData.userId;
 
-        if (userId) {
-          await prisma.user.update({
-            where: { id: userId },
-            data: {
-              isPro: true,
-              subscriptionStatus: "active",
-              paddleCustomerId: subscription.customer_id,
-              paddleSubscriptionId: subscription.id,
-              subscriptionEnd: subscription.current_billing_period?.ends_at
-                ? new Date(subscription.current_billing_period.ends_at)
-                : null,
-            },
-          });
-          console.log(`[PADDLE_WEBHOOK] User ${userId} upgraded to Pro (sub: ${subscription.id})`);
+        if (!userId) {
+          console.warn("[PADDLE_WEBHOOK] No userId in custom_data — cannot link subscription");
+          break;
         }
+
+        const subscriptionId = (subscription as any).id;
+        const customerId = (subscription as any).customerId || (subscription as any).customer_id;
+
+        await prisma.user.update({
+          where: { id: userId },
+          data: {
+            isPro: true,
+            subscriptionStatus: "active",
+            paddleCustomerId: customerId || undefined,
+            paddleSubscriptionId: subscriptionId || undefined,
+            subscriptionEnd: (subscription as any).currentBillingPeriod?.endsAt
+              ? new Date((subscription as any).currentBillingPeriod.endsAt)
+              : null,
+          },
+        });
+        console.log(`[PADDLE_WEBHOOK] User ${userId} upgraded to Pro (sub: ${subscriptionId})`);
         break;
       }
 
       case "subscription.updated": {
         const sub = event.data;
-        const status = sub.status;
-        const customData = sub.custom_data || {};
+        const customData = (sub as any).customData || (sub as any).custom_data || {};
         const userId = customData.userId;
+        const status = (sub as any).status;
 
-        if (userId) {
-          await prisma.user.update({
-            where: { id: userId },
-            data: {
-              isPro: status === "active",
-              subscriptionStatus: status,
-              subscriptionEnd: sub.current_billing_period?.ends_at
-                ? new Date(sub.current_billing_period.ends_at)
-                : null,
-            },
-          });
-          console.log(`[PADDLE_WEBHOOK] User ${userId} subscription updated: ${status}`);
-        }
+        if (!userId) break;
+
+        await prisma.user.update({
+          where: { id: userId },
+          data: {
+            isPro: status === "active" || status === "trialing",
+            subscriptionStatus: status,
+            subscriptionEnd: (sub as any).currentBillingPeriod?.endsAt
+              ? new Date((sub as any).currentBillingPeriod.endsAt)
+              : undefined,
+          },
+        });
+        console.log(`[PADDLE_WEBHOOK] User ${userId} subscription updated: ${status}`);
         break;
       }
 
-      case "subscription.activated": {
+      case "subscription.canceled":
+      case "subscription.past_due": {
         const sub = event.data;
-        const customData = sub.custom_data || {};
+        const customData = (sub as any).customData || (sub as any).custom_data || {};
+        const userId = customData.userId;
+        const eventType = event.eventType;
+
+        if (!userId) break;
+
+        const isCanceled = eventType === "subscription.canceled";
+        await prisma.user.update({
+          where: { id: userId },
+          data: {
+            isPro: false,
+            subscriptionStatus: isCanceled ? "canceled" : "past_due",
+          },
+        });
+        console.log(`[PADDLE_WEBHOOK] User ${userId} subscription ${eventType}`);
+        break;
+      }
+
+      case "subscription.paused": {
+        const sub = event.data;
+        const customData = (sub as any).customData || (sub as any).custom_data || {};
         const userId = customData.userId;
 
-        if (userId) {
+        if (!userId) break;
+
+        await prisma.user.update({
+          where: { id: userId },
+          data: {
+            subscriptionStatus: "paused",
+          },
+        });
+        console.log(`[PADDLE_WEBHOOK] User ${userId} subscription paused`);
+        break;
+      }
+
+      case "subscription.resumed": {
+        const sub = event.data;
+        const customData = (sub as any).customData || (sub as any).custom_data || {};
+        const userId = customData.userId;
+
+        if (!userId) break;
+
+        await prisma.user.update({
+          where: { id: userId },
+          data: {
+            isPro: true,
+            subscriptionStatus: "active",
+          },
+        });
+        console.log(`[PADDLE_WEBHOOK] User ${userId} subscription resumed`);
+        break;
+      }
+
+      // transaction.completed can serve as a backup to subscription.activated
+      case "transaction.completed": {
+        const txn = event.data;
+        const customData = (txn as any).customData || (txn as any).custom_data || {};
+        const userId = customData.userId;
+        const subscriptionId = (txn as any).subscriptionId || (txn as any).subscription_id;
+
+        if (!userId) break;
+
+        // Only update if we don't already have an active subscription via subscription event
+        const user = await prisma.user.findUnique({
+          where: { id: userId },
+          select: { isPro: true },
+        });
+
+        if (!user?.isPro) {
           await prisma.user.update({
             where: { id: userId },
             data: {
               isPro: true,
               subscriptionStatus: "active",
-              paddleCustomerId: sub.customer_id,
-              paddleSubscriptionId: sub.id,
-              subscriptionEnd: sub.current_billing_period?.ends_at
-                ? new Date(sub.current_billing_period.ends_at)
-                : null,
+              paddleSubscriptionId: subscriptionId || undefined,
             },
           });
-          console.log(`[PADDLE_WEBHOOK] User ${userId} Pro activated (sub: ${sub.id})`);
-        }
-        break;
-      }
-
-      case "subscription.canceled": {
-        const sub = event.data;
-        const customData = sub.custom_data || {};
-        const userId = customData.userId;
-
-        if (userId) {
-          await prisma.user.update({
-            where: { id: userId },
-            data: {
-              isPro: false,
-              subscriptionStatus: "canceled",
-            },
-          });
-          console.log(`[PADDLE_WEBHOOK] User ${userId} subscription canceled`);
+          console.log(`[PADDLE_WEBHOOK] User ${userId} Pro activated via transaction.completed`);
         }
         break;
       }
 
       default:
-        console.log(`[PADDLE_WEBHOOK] Unhandled event type: ${eventType}`);
+        console.log(`[PADDLE_WEBHOOK] Unhandled event type: ${event.eventType}`);
     }
 
     return NextResponse.json({ received: true });

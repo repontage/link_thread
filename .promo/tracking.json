@@ -1,0 +1,20 @@
+{
+  "last_x_post": "2026-06-03",
+  "x_posts_today": 2,
+  "last_x_reply_search": "2026-06-03",
+  "last_hn_check": "2026-06-03",
+  "hn_status": "account_creation_disabled",
+  "last_site_check": "2026-06-03",
+  "last_weekly_report": null,
+  "account_created": "2026-06-02",
+  "x_handle": "@voidsay_",
+  "x_followers": 0,
+  "x_tweet_count_at_last_check": 12,
+  "comparison_pages": {
+    "live": ["disqus", "commento", "hyvor", "giscus", "fastcomments", "utterances", "cusdis"],
+    "missing": ["intensedebate", "justcomments", "replybox", "schnack", "commentix", "remark42", "cactus", "muut", "discourse", "livefyre", "facebook-comments", "useresponse"]
+  },
+  "last_comparison_page_added": "cusdis",
+  "directories_checked": ["saashub"],
+  "directories_submitted": []
+}
