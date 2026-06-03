@@ -99,18 +99,19 @@
 
 ## Phase 21: Pro 구독 및 비즈니스 상용화 (Pro Subscription & Commercialization) ✅ Complete
 - [x] **Mock Sandbox (완료)**: Stripe 결제 Mock 샌드박스 구현 → Paddle로 마이그레이션 완료.
-- [x] **Ad-free Experience (완료)**: Pro 구독 유저에게 Sponsor UI 및 광고 요소 전면 비노출 처리.
+- [x] **Ad-free Experience (완료)**: Pro 구독 유저에게 Sponsor UI 및 광고 요소 전면 비노출 처리 (ThreadUI.tsx 조건부 렌더링).
 - [x] **Developer Portal Access Restriction (완료)**: Developer 포털 관리 및 실시간 웹훅 권한을 Pro/Admin 등급으로 잠금. `/developer` 페이지 서버 사이드 권한 게이팅 + `UserNav` 조건부 네비게이션.
 - [x] **User Model Extension (완료)**: Prisma DB `User` 스키마에 `isPro`, `subscriptionStatus`, `paddleCustomerId`, `paddleSubscriptionId`, `subscriptionEnd` 필드 도입.
 - [x] **Stripe → Paddle 마이그레이션**: Stripe SDK 제거, @paddle/paddle-js + @paddle/paddle-node-sdk 도입. 기존 Stripe API 라우트 제거.
-- [x] **Paddle Checkout Flow**: Paddle Checkout overlay 연동 (`PADDLE_CLIENT_TOKEN`, `PADDLE_PRICE_ID`). $29/mo 구독. `/api/paddle/checkout` 엔드포인트.
-- [x] **Paddle Webhook 처리**: `/api/paddle/webhook` — `subscription.created`, `subscription.updated`, `subscription.canceled` 이벤트 처리 및 HMAC 서명 검증.
-- [x] **Pro User Lifecycle**: `paddleCustomerId`, `paddleSubscriptionId`, `subscriptionEnd` 필드 추가. 구독 활성/만료에 따른 Pro 권한 자동 관리 (웹훅 기반).
+- [x] **Paddle Checkout Flow**: 서버사이드 Paddle transaction 생성 (custom_data에 userId 포함) → Paddle.js overlay checkout. `/api/paddle/checkout` 엔드포인트.
+- [x] **Paddle Webhook 처리**: Paddle SDK `webhooks.unmarshal()` 서명 검증. `subscription.activated/created/updated/canceled/past_due/paused/resumed` + `transaction.completed` 이벤트 처리.
+- [x] **Pro User Lifecycle**: `paddleCustomerId`, `paddleSubscriptionId`, `subscriptionEnd` 필드. 구독 활성/만료에 따른 Pro 권한 자동 관리 (웹훅 기반).
 - [x] **Paddle Customer Portal**: `/pro/manage` → 구독 취소/업데이트 가능한 Paddle 셀프서비스 포털 연동 (`/api/paddle/manage`).
-- [x] **Developer Portal Pro-gating**: `/developer` 페이지 Pro/Admin 전용 접근 제한 추가. `UserNav`에 조건부 Developer 링크 표시.
+- [x] **Developer Portal Pro-gating**: `/developer` 페이지 Pro/Admin 전용 접근 제한. `UserNav` 조건부 Developer 링크.
 - [x] **Pro Badge on Profile**: 프로필 페이지에 Pro 배지 표시 (`app/profile/page.tsx`).
-- [x] **Production Switch**: Paddle sandbox → live mode 전환 준비 완료 (PADDLE_ENVIRONMENT, PADDLE_API_KEY, PADDLE_CLIENT_TOKEN, PADDLE_WEBHOOK_SECRET env vars 교체 필요).
-- [x] **Environment Variables**: `.env.example`에 Paddle 환경변수 명세 추가.
+- [x] **Environment Variables**: `.env.example` + Vercel에 Paddle 7개 환경변수 슬롯 추가. ⚠️ 실제 Paddle Sandbox API 키는 Paddle 계정 생성 후 입력 필요.
+- [ ] **Paddle Sandbox 활성화**: [https://sandbox-vendors.paddle.com](https://sandbox-vendors.paddle.com)에서 계정 생성 → $29/mo 구독 상품 생성 → API Key/Client Token/Webhook Secret 발급 → Vercel env vars 채우기.
+- [ ] **Turso DB Paddle 컬럼 동기화**: `/api/admin/fix-db` (Admin 인증 필요) 호출하여 `isPro`, `subscriptionStatus`, `paddleCustomerId`, `paddleSubscriptionId`, `subscriptionEnd` 컬럼 추가.
 
 ## Phase 22: 지능형 피드 및 개인화 (Intelligent Feed & Personalization)
 - [x] **Personalized Feed**: 사용자 관심사(댓글 단 URL 카테고리, upvote 패턴) 기반 개인화 피드 생성.
@@ -218,3 +219,11 @@
 - [ ] **구글 서치 콘솔 등록**: 신규 페이지 인덱싱 요청.
 
 - **2026-06-02**: (Scheduled Cron) Phase 23 SEO 비교 페이지 확장. 사이트 건강 점검 (voidsay.com 메인, /pro, /alternatives/disqus, /embed HTTP 200 확인, 콘솔 에러 0건). 신규 비교 페이지 3건 생성: `/alternatives/giscus` (GitHub 없이 댓글 가능 + 리치 미디어), `/alternatives/fastcomments` ($29/mo vs $49/mo 가격 비교), `/alternatives/utterances` (GitHub 계정 불필요 + 알림 시스템). 사이트맵에 7개 대안 URL 추가. `/alternatives` 인덱스 페이지에 신규 카드 3건 추가. `npm run lint` 0 warnings, `npm run build` 46/46 pages 0 errors — Vercel(`voidsay.com`) 배포 완료. HN/Reddit 홍보 기회 탐색했으나 최근 7일/30일 내 관련 스레드 0건 발견.
++- **2026-06-04**: (Scheduled Cron) **Phase 21 Paddle 결제 시스템 최종 개선 및 배포**.
+  - **Paddle 서버 라이브러리 강화** (`lib/paddle-server.ts`): `findOrCreateCustomer()` (이메일 기반 고객 조회/생성), `createCheckoutTransaction()` (custom_data에 userId 포함), `verifyWebhook()` (Paddle SDK `webhooks.unmarshal()` 사용) 구현.
+  - **Checkout API 개선** (`/api/paddle/checkout`): 서버사이드 Paddle transaction 생성. 고객 ID를 DB에 저장하고, Paddle.js overlay에 transactionId 전달 방식으로 변경.
+  - **Webhook 처리 고도화** (`/api/paddle/webhook`): Paddle SDK `webhooks.unmarshal()` 서명 검증으로 전환 (raw HMAC → SDK). `subscription.paused`, `subscription.resumed`, `subscription.past_due`, `transaction.completed` 이벤트 추가 처리.
+  - **Pro 페이지 최적화** (`/pro`): 불필요한 Paddle.js pre-initialization 제거. Checkout 버튼 클릭 시 서버 API → transactionId → Paddle.js overlay 흐름으로 단순화.
+  - **Ad-free 최종 구현** (`ThreadUI.tsx`): Pro 유저(`isPro === true`)에게 SponsorUI 완전 비노출.
+  - **Vercel 환경변수**: `PADDLE_API_KEY`, `PADDLE_CLIENT_TOKEN`, `PADDLE_WEBHOOK_SECRET`, `PADDLE_ENVIRONMENT`, `PADDLE_PRICE_ID` + `NEXT_PUBLIC_*` 총 7개 env var 슬롯 Vercel에 추가.
+  - **배포**: `npm run build` 0 errors, Vercel(`voidsay.com`) 프로덕션 배포 완료. `voidsay.com/pro` 페이지 정상 렌더링 확인.
