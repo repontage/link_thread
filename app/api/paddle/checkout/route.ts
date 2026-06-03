@@ -11,6 +11,10 @@ export async function POST() {
     }
 
     const userId = (session.user as any).id;
+    if (!userId) {
+      return NextResponse.json({ error: "User ID not found" }, { status: 400 });
+    }
+
     const userEmail = session.user.email;
     const userName = session.user.name;
 
