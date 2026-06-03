@@ -14,11 +14,14 @@
     "@auth/prisma-adapter": "^2.11.2",
     "@eslint/eslintrc": "^3.3.5",
     "@libsql/client": "^0.8.0",
+    "@paddle/paddle-js": "^1.4.0",
+    "@paddle/paddle-node-sdk": "^2.2.11",
     "@prisma/adapter-libsql": "^5.22.0",
     "@prisma/client": "^5.22.0",
     "@simplewebauthn/browser": "^9.0.1",
     "@simplewebauthn/server": "^9.0.3",
     "@vercel/analytics": "^2.0.1",
+    "@vercel/og": "^0.11.1",
     "@vercel/speed-insights": "^2.0.0",
     "cheerio": "^1.0.0-rc.12",
     "clsx": "^2.1.0",
@@ -36,9 +39,7 @@
     "react-markdown": "^10.1.0",
     "react-tweet": "^3.3.0",
     "remark-gfm": "^4.0.1",
-    "tailwind-merge": "^2.2.0",
-    "@paddle/paddle-js": "^1.4.0",
-    "@paddle/paddle-node-sdk": "^2.2.11"
+    "tailwind-merge": "^2.2.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.9.1",
