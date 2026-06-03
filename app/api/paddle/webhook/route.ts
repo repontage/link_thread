@@ -96,6 +96,29 @@ export async function POST(req: Request) {
         break;
       }
 
+      case "subscription.activated": {
+        const sub = event.data;
+        const customData = sub.custom_data || {};
+        const userId = customData.userId;
+
+        if (userId) {
+          await prisma.user.update({
+            where: { id: userId },
+            data: {
+              isPro: true,
+              subscriptionStatus: "active",
+              paddleCustomerId: sub.customer_id,
+              paddleSubscriptionId: sub.id,
+              subscriptionEnd: sub.current_billing_period?.ends_at
+                ? new Date(sub.current_billing_period.ends_at)
+                : null,
+            },
+          });
+          console.log(`[PADDLE_WEBHOOK] User ${userId} Pro activated (sub: ${sub.id})`);
+        }
+        break;
+      }
+
       case "subscription.canceled": {
         const sub = event.data;
         const customData = sub.custom_data || {};

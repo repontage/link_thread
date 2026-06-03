@@ -33,17 +33,17 @@ export default async function DeveloperPage() {
             </svg>
           </div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
-            Pro 구독이 필요합니다
+            Pro Subscription Required
           </h1>
           <p className="text-sm text-slate-500 dark:text-slate-400 mb-8">
-            Developer Portal은 Pro 구독자 및 관리자만 이용할 수 있습니다.
-            지금 업그레이드하여 웹훅 통합, API 접근 등 개발자 도구를 사용해보세요.
+            The Developer Portal is available to Pro subscribers and admins only.
+            Upgrade now to access webhooks, API access, and developer tools.
           </p>
           <a
             href="/pro"
             className="inline-block py-3 px-6 rounded-xl font-semibold text-sm bg-[#0066cc] hover:bg-[#0055b3] text-white transition-colors"
           >
-            Pro 구독하기 — $29/mo
+            Upgrade to Pro — $29/mo
           </a>
         </div>
       </div>

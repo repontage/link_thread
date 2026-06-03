@@ -136,7 +136,7 @@ export default function ProPage() {
               disabled
               className="w-full py-3 px-4 rounded-xl text-center font-semibold text-sm bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 cursor-not-allowed"
             >
-              {isPro ? "Already on Free plan" : "Current Plan"}
+              Current Plan
             </button>
           </div>
         </div>
