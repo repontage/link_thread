@@ -1,5 +1,4 @@
 import { ImageResponse } from "@vercel/og";
-import { NextRequest } from "next/server";
 
 export const runtime = "edge";
 
@@ -9,7 +8,7 @@ const stars = Array.from({ length: 25 }, (_, i) => ({
   top: `${Math.cos(i * 2.3) * 40 + 50}%`,
 }));
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     return new ImageResponse(
       (
