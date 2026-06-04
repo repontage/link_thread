@@ -29,11 +29,17 @@ export default function ProPage() {
 
       const { transactionId, environment } = await response.json();
 
+      // Validate client token is configured
+      const clientToken = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN;
+      if (!clientToken) {
+        throw new Error("Paddle client token is not configured. Please check environment variables.");
+      }
+
       // Initialize Paddle.js if not already initialized
       const { initializePaddle } = await import("@paddle/paddle-js");
       const paddleInstance = await initializePaddle({
         environment: environment === "production" ? "production" : "sandbox",
-        token: process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN!,
+        token: clientToken,
       });
 
       if (!paddleInstance) {
