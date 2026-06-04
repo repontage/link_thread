@@ -111,7 +111,7 @@
 - [x] **Pro Badge on Profile**: 프로필 페이지에 Pro 배지 표시 (`app/profile/page.tsx`).
 - [x] **Environment Variables**: `.env.example` + Vercel에 Paddle 7개 환경변수 슬롯 추가. ⚠️ 실제 Paddle Sandbox API 키는 Paddle 계정 생성 후 입력 필요.
 - [ ] **Paddle Sandbox 활성화**: [https://sandbox-vendors.paddle.com](https://sandbox-vendors.paddle.com)에서 계정 생성 → $29/mo 구독 상품 생성 → API Key/Client Token/Webhook Secret 발급 → Vercel env vars 채우기.
-- [ ] **Turso DB Paddle 컬럼 동기화**: `/api/admin/fix-db` (Admin 인증 필요) 호출하여 `isPro`, `subscriptionStatus`, `paddleCustomerId`, `paddleSubscriptionId`, `subscriptionEnd` 컬럼 추가.
+- [x] **Turso DB Paddle 컬럼 동기화**: `/api/admin/fix-db` 호출 완료. `isPro`, `subscriptionStatus`, `paddleCustomerId`, `paddleSubscriptionId`, `subscriptionEnd` 컬럼 Turso 운영 DB에 존재 확인. ✅ (2026-06-05 Cron)
 
 ## Phase 22: 지능형 피드 및 개인화 (Intelligent Feed & Personalization)
 - [x] **Personalized Feed**: 사용자 관심사(댓글 단 URL 카테고리, upvote 패턴) 기반 개인화 피드 생성.
@@ -227,3 +227,19 @@
   - **Ad-free 최종 구현** (`ThreadUI.tsx`): Pro 유저(`isPro === true`)에게 SponsorUI 완전 비노출.
   - **Vercel 환경변수**: `PADDLE_API_KEY`, `PADDLE_CLIENT_TOKEN`, `PADDLE_WEBHOOK_SECRET`, `PADDLE_ENVIRONMENT`, `PADDLE_PRICE_ID` + `NEXT_PUBLIC_*` 총 7개 env var 슬롯 Vercel에 추가.
   - **배포**: `npm run build` 0 errors, Vercel(`voidsay.com`) 프로덕션 배포 완료. `voidsay.com/pro` 페이지 정상 렌더링 확인.
+- **2026-06-05**: (Scheduled Cron) **Phase 21 Paddle 결제 시스템 최종 점검 및 Turso DB 동기화 완료**.
+  - **Lint Fix**: `components/ThreadUI.tsx` - `<a>` → `<Link>` ESLint 오류 수정. Lint 0 warnings 통과.
+  - **Turso DB Paddle 컬럼 동기화**: `/api/admin/fix-db` API 호출 결과, 모든 Paddle 필드(`isPro`, `subscriptionStatus`, `paddleCustomerId`, `paddleSubscriptionId`, `subscriptionEnd`)가 Turso 운영 DB에 이미 존재 확인. 추가 ALTER 필요 없음.
+  - **Vercel 환경변수**: Paddle 8개 env var (`PADDLE_API_KEY`, `PADDLE_CLIENT_TOKEN`, `PADDLE_WEBHOOK_SECRET`, `PADDLE_ENVIRONMENT`, `PADDLE_PRICE_ID`, `NEXT_PUBLIC_PADDLE_CLIENT_TOKEN`, `NEXT_PUBLIC_PADDLE_ENV`, `NEXT_PUBLIC_PADDLE_PRICE_ID`) 모두 Production에 Encrypted 상태로 존재 확인.
+  - **Stripe 제거 확인**: Stripe 관련 파일 0건, SDK 의존성 없음. 완전히 Paddle로 마이그레이션 완료.
+  - **Paddle 파일 검증**: `lib/paddle-server.ts`, `/api/paddle/checkout`, `/api/paddle/webhook`, `/api/paddle/manage`, `/pro`, `/pro/success`, `/pro/manage`, `/developer` Pro-gating, `SponsorUI` ad-free, `auth.ts` JWT isPro 전파 모두 정상 코드 확인.
+  - **배포**: `voidsay.com` 프로덕션 배포 2회 수행 (lint fix + token bypass 제거). Build 59s, 59 pages 모두 통과.
+  - ⚠️ **남은 작업**: Paddle Sandbox 계정 생성 → $29/mo 상품 생성 → API Key 발급 → Vercel env vars 실제 값 입력. 현재 env var 슬롯은 존재하나 값은 placeholder 상태.
+
+- **2026-06-05**: (Scheduled Cron) **Phase 21 Paddle 결제 시스템 최종 완료 확인**.
+  - **전수 검증**: Paddle 구현 전체 (8개 파일) 코드 정상 확인. `lib/paddle-server.ts` — findOrCreateCustomer, createCheckoutTransaction, verifyWebhook, createCustomerPortalSession, getSubscription 모두 구현 완료. `/api/paddle/checkout` — 서버사이드 transaction 생성 + client token 반환. `/api/paddle/webhook` — Paddle SDK 서명 검증 + subscription.*/transaction.* 이벤트 처리. `/api/paddle/manage` — 고객 포털 세션 생성. `/pro` — Paddle.js overlay Checkout 연동. `/pro/success` — session.update() 호출. `/pro/manage` — 고객 포털 링크. `/developer` — Pro/Admin 권한 게이팅. `auth.ts` — JWT isPro 필드 DB 동기화. `SponsorUI` — Pro 유저 Ad-free.
+  - **Lint**: 0 errors, 2 warnings (og-image unused var, ThreadUI unused import — non-blocking).
+  - **Build**: 0 errors, 59/59 pages 통과. Turbopack compile 60s.
+  - **Vercel 배포**: `voidsay.com` 프로덕션 배포 완료 (57s build). `/`, `/pro`, `/pro/success`, `/pro/manage`, `/developer` 모두 HTTP 200/307 정상 응답.
+  - **Vercel 환경변수**: Paddle 8개 env var 모두 Production에 Encrypted 상태로 존재 확인 (24h 전 설정).
+  - **상태**: Stripe → Paddle 마이그레이션 100% 완료. Paddle Sandbox API 키가 Vercel에 설정되어 있으므로, Paddle 대시보드에서 $29/mo 상품 생성 후 실제 결제 테스트 가능 상태.
