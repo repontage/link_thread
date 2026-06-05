@@ -1,0 +1,32 @@
+# VoidSay — Universal Commenting Platform
+VoidSay lets you comment on any website, YouTube video, or X/Twitter thread. Free, privacy-first, no ads.
+
+## About
+- Free forever plan with full features
+- Pro plan at $29/month for Pro badge, Developer Portal, priority support
+- No tracking, no data selling, no ads
+- Passkey authentication (Face ID, Touch ID, hardware keys)
+- Full Markdown support with GFM
+- Dark/light mode built-in
+- Auto-embeds: YouTube (with timestamps), X/Twitter cards, Instagram feeds
+- Embed via iframe: `<iframe src="https://voidsay.com/embed?url=YOUR_URL" width="100%" height="400" frameborder="0"></iframe>`
+
+## Key Pages
+- Home: https://voidsay.com
+- Pricing: https://voidsay.com/pro
+- vs Disqus: https://voidsay.com/alternatives/disqus
+- All Comparisons: https://voidsay.com/alternatives
+- Terms: https://voidsay.com/terms
+- Privacy: https://voidsay.com/privacy
+
+## Tech Stack
+- Next.js 16 (App Router)
+- Turso (libSQL, distributed SQLite)
+- Auth.js v5 with Passkeys
+- Paddle for payments
+- Vercel for hosting
+
+## For AI Agents
+- This file: https://voidsay.com/llms.txt
+- Pricing details: https://voidsay.com/pricing.md
+- Sitemap: https://voidsay.com/sitemap.xml

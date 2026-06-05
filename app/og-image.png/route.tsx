@@ -9,7 +9,7 @@ const stars = Array.from({ length: 25 }, (_, i) => ({
   top: `${Math.cos(i * 2.3) * 40 + 50}%`,
 }));
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     return new ImageResponse(
       (

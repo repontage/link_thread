@@ -49,6 +49,84 @@ const alternatives = [
     tagline: 'Lightweight but self-hosted. VoidSay: managed, richer features, same privacy.',
     badge: '🪶',
   },
+  {
+    slug: 'intensedebate',
+    name: 'IntenseDebate',
+    tagline: 'Discontinued by Disqus. VoidSay is actively maintained and free.',
+    badge: '🚫',
+  },
+  {
+    slug: 'justcomments',
+    name: 'JustComments',
+    tagline: 'Paid-only. VoidSay is free forever with richer media embeds.',
+    badge: '💸',
+  },
+  {
+    slug: 'replybox',
+    name: 'ReplyBox',
+    tagline: 'Paid and basic. VoidSay is free with Markdown, embeds, and dark mode.',
+    badge: '📦',
+  },
+  {
+    slug: 'schnack',
+    name: 'Schnack',
+    tagline: 'Abandoned open-source. VoidSay is actively maintained and managed.',
+    badge: '🛑',
+  },
+  {
+    slug: 'commentix',
+    name: 'Commentix',
+    tagline: 'Self-hosted PHP. VoidSay is managed, zero-ops, with rich media.',
+    badge: '🐘',
+  },
+  {
+    slug: 'remark42',
+    name: 'Remark42',
+    tagline: 'Powerful but self-hosted (Docker). VoidSay: same power, zero ops.',
+    badge: '🐳',
+  },
+  {
+    slug: 'cactus',
+    name: 'Cactus Comments',
+    tagline: 'Matrix-based, complex setup. VoidSay: simple, free, no federation needed.',
+    badge: '🌵',
+  },
+  {
+    slug: 'muut',
+    name: 'Muut',
+    tagline: 'Shut down. VoidSay carries the minimalist design torch forward.',
+    badge: '🪦',
+  },
+  {
+    slug: 'discourse',
+    name: 'Discourse',
+    tagline: 'Great forum, overkill for blog comments. VoidSay is purpose-built.',
+    badge: '🏛️',
+  },
+  {
+    slug: 'livefyre',
+    name: 'Livefyre',
+    tagline: 'Discontinued by Adobe. VoidSay: enterprise features, zero enterprise cost.',
+    badge: '⚠️',
+  },
+  {
+    slug: 'facebook-comments',
+    name: 'Facebook Comments',
+    tagline: 'Tracks readers, requires FB. VoidSay: private, open to everyone.',
+    badge: '🔒',
+  },
+  {
+    slug: 'useresponse',
+    name: 'UseResponse',
+    tagline: 'Support suite, not comments. VoidSay: lightweight, purpose-built.',
+    badge: '🎫',
+  },
+  {
+    slug: 'livere',
+    name: 'Livere (라이브리)',
+    tagline: 'Korea\'s top comment platform. VoidSay: same simplicity, global reach.',
+    badge: '🇰🇷',
+  },
 ];
 
 export default function AlternativesIndex() {

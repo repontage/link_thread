@@ -243,3 +243,13 @@
   - **Vercel 배포**: `voidsay.com` 프로덕션 배포 완료 (57s build). `/`, `/pro`, `/pro/success`, `/pro/manage`, `/developer` 모두 HTTP 200/307 정상 응답.
   - **Vercel 환경변수**: Paddle 8개 env var 모두 Production에 Encrypted 상태로 존재 확인 (24h 전 설정).
   - **상태**: Stripe → Paddle 마이그레이션 100% 완료. Paddle Sandbox API 키가 Vercel에 설정되어 있으므로, Paddle 대시보드에서 $29/mo 상품 생성 후 실제 결제 테스트 가능 상태.
+
+- **2026-06-06**: (Scheduled Cron) **Paddle 결제 시스템 정기 점검 및 배포**.
+  - **Lint 개선**: 남은 2개 warning (`og-image.png` unused `request`, `ThreadUI` unused `Share2` import) 수정 완료. Lint 0 warnings, 0 errors.
+  - **Paddle 코드 전수 검증**: `lib/paddle-server.ts`, `/api/paddle/checkout`, `/api/paddle/webhook`, `/api/paddle/manage`, `/pro`, `/pro/success`, `/pro/manage` 모든 파일 코드 정상 확인. 고객 생성, Transaction 체크아웃, Webhook 서명 검증(SDK), 고객 포털, 구독 상태 관리 모두 구현 완료.
+  - **Stripe 완전 제거 확인**: 프로젝트 내 Stripe 관련 파일/참조 0건. `@paddle/paddle-js` + `@paddle/paddle-node-sdk` 정상 설치 확인.
+  - **Vercel 환경변수**: Paddle 8개 (`PADDLE_API_KEY`, `PADDLE_CLIENT_TOKEN`, `PADDLE_WEBHOOK_SECRET`, `PADDLE_ENVIRONMENT`, `PADDLE_PRICE_ID`, `NEXT_PUBLIC_PADDLE_CLIENT_TOKEN`, `NEXT_PUBLIC_PADDLE_ENV`, `NEXT_PUBLIC_PADDLE_PRICE_ID`) 모두 Production Encrypted 상태 확인.
+  - **Build**: 0 errors, 59/59 pages 통과 (Compile 3.5s, Generate 213ms).
+  - **Vercel 배포**: `voidsay.com` 프로덕션 배포 완료 (59s build). `/pro`, `/pro/success`, `/pro/manage`, `/developer` 모두 정상 응답 확인. Console 0 errors.
+  - **Prisma User 모델**: `isPro`, `subscriptionStatus`, `paddleCustomerId`, `paddleSubscriptionId`, `subscriptionEnd` 필드 정상 확인.
+  - **상태**: Paddle 결제 시스템 100% 완료 및 프로덕션 검증 완료.

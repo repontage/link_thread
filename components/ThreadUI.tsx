@@ -3,7 +3,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useSession, signIn } from 'next-auth/react';
 import dynamic from 'next/dynamic';
-import { Search, MessageSquare, Loader2, Send, Share2, Copy, Check } from 'lucide-react';
+import Link from 'next/link';
+import { Search, MessageSquare, Loader2, Send, Copy, Check } from 'lucide-react';
 import { useInView } from 'react-intersection-observer';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -444,13 +445,13 @@ export default function ThreadUI() {
                     ?
                   </p>
                 </div>
-                <a
+                <Link
                   href="/api/auth/signin"
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white text-xs font-semibold rounded-full hover:bg-blue-700 transition-colors shrink-0"
                 >
                   <span>Claim Your Site</span>
                   <span>→</span>
-                </a>
+                </Link>
               </div>
             </div>
 
