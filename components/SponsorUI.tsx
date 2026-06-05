@@ -17,17 +17,17 @@ export default function SponsorUI() {
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
         <div>
           <h3 className="text-lg font-bold text-amber-900 mb-1">
-            Sponsor this Thread
+            Go Ad-Free with Pro
           </h3>
           <p className="text-sm text-amber-700">
-            Enjoying the conversation? Support the creator with a small donation.
+            Remove ads and unlock developer tools. Upgrade to Pro.
           </p>
         </div>
         <button 
           onClick={(e) => { e.preventDefault(); router.push("/pro"); }}
           className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold rounded-lg shadow-sm transition-colors whitespace-nowrap"
         >
-          ☕ Support Creator
+          Upgrade to Pro →
         </button>
       </div>
     </div>
