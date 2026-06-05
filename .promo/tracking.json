@@ -23,8 +23,8 @@
   "directories_accessible": ["saashub", "betalist", "fazier", "futurepedia"],
   "directories_blocked": ["taaft", "alternativeto"],
   "ai_seo_gaps": {
-    "llms_txt": "missing",
-    "pricing_md": "missing",
+    "llms_txt": "live",
+    "pricing_md": "live",
     "faq_schema_on_alt_pages": "missing",
     "pricing_page": "missing"
   },
