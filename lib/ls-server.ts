@@ -74,6 +74,7 @@ export class LemonSqueezySDK {
 
     const hmac = crypto.createHmac("sha256", secret);
     const digest = hmac.update(rawBody).digest("hex");
+    if (digest.length !== signature.length) return false;
     return crypto.timingSafeEqual(
       Buffer.from(digest),
       Buffer.from(signature)

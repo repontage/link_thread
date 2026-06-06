@@ -112,6 +112,9 @@ export async function POST(req: Request) {
           data: {
             isPro: false,
             subscriptionStatus: eventName === "subscription_cancelled" ? "canceled" : "expired",
+            subscriptionEnd: event.data?.attributes?.ends_at
+              ? new Date(event.data.attributes.ends_at)
+              : null,
           },
         });
         console.log(`[LS_WEBHOOK] User ${subUserId} subscription ${eventName}`);
