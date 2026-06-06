@@ -26,7 +26,7 @@ export default function TermsPage() {
         <p className="text-gray-700 dark:text-gray-300">
           VoidSay is a universal commenting platform that allows users to create and participate
           in discussion threads on any URL across the internet. The Service includes both free
-          and paid (Pro) subscription tiers. Pro subscriptions are processed by Paddle, our
+          and paid (Pro) subscription tiers. Pro subscriptions are processed by Lemon Squeezy, our
           third-party payment provider (Merchant of Record).
         </p>
       </section>
@@ -48,8 +48,8 @@ export default function TermsPage() {
         <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">4. Pro Subscription & Billing</h2>
         <p className="text-gray-700 dark:text-gray-300">
           VoidSay offers a Pro subscription at $29/month. Subscriptions are billed monthly and
-          automatically renew until cancelled. Payments are processed by Paddle, and by subscribing
-          you agree to Paddle&apos;s terms of service. You may cancel your subscription at any time
+          automatically renew until cancelled. Payments are processed by Lemon Squeezy, and by subscribing
+          you agree to Lemon Squeezy&apos;s terms of service. You may cancel your subscription at any time
           through the account management portal. Upon cancellation, you will retain Pro access
           until the end of the current billing period. See our Refund Policy for details on
           cancellations and refunds.

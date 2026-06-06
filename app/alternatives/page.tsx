@@ -127,6 +127,36 @@ const alternatives = [
     tagline: 'Korea\'s top comment platform. VoidSay: same simplicity, global reach.',
     badge: '🇰🇷',
   },
+  {
+    slug: 'isso',
+    name: 'Isso',
+    tagline: 'Self-hosted privacy option. VoidSay: same privacy, zero ops.',
+    badge: '☁️',
+  },
+  {
+    slug: 'talkyard',
+    name: 'Talkyard',
+    tagline: 'Forum + comments (complex). VoidSay: lightweight, purpose-built for comments.',
+    badge: '🪶',
+  },
+  {
+    slug: 'graphcomment',
+    name: 'GraphComment',
+    tagline: 'Abandoned since 2019. VoidSay: actively maintained, modern design.',
+    badge: '🛑',
+  },
+  {
+    slug: 'vuukle',
+    name: 'Vuukle',
+    tagline: 'Ad-heavy commenting. VoidSay: ad-free, privacy-first, 10x faster.',
+    badge: '🚫',
+  },
+  {
+    slug: 'spot-im',
+    name: 'Spot.IM',
+    tagline: 'Enterprise lock-in. VoidSay: free forever, self-serve, no contracts.',
+    badge: '🔓',
+  },
 ];
 
 export default function AlternativesIndex() {

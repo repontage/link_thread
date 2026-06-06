@@ -85,13 +85,13 @@ export default function RefundPage() {
       <section className="mb-8">
         <h2 className={sectionH2}>6. Refund Processing</h2>
         <p className={bodyText}>
-          Approved refunds are processed through Paddle, our payment provider (Merchant of
+          Approved refunds are processed through Lemon Squeezy, our payment provider (Merchant of
           Record). Refunds typically appear in your account within 5-10 business days,
           depending on your payment method and financial institution.
         </p>
         <p className={`${bodyText} mt-2`}>
           Under Korean law, refunds must be processed within 3 business days of the refund
-          determination. Paddle&apos;s standard processing time may extend this; we will keep
+          determination. Lemon Squeezy&apos;s standard processing time may extend this; we will keep
           you informed of the status.
         </p>
       </section>

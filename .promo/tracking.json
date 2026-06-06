@@ -6,7 +6,7 @@
   "reddit_status": "network_blocked",
   "last_hn_check": "2026-06-05",
   "hn_status": "account_creation_disabled",
-  "last_site_check": "2026-06-05",
+  "last_site_check": "2026-06-06",
   "site_status": "all_200_ok",
   "last_weekly_report": null,
   "account_created": "2026-06-02",
@@ -14,19 +14,19 @@
   "x_followers": 0,
   "x_tweet_count_at_last_check": 12,
   "comparison_pages": {
-    "live": ["disqus", "commento", "hyvor", "giscus", "fastcomments", "utterances", "cusdis", "intensedebate", "justcomments", "replybox", "schnack", "commentix", "remark42", "cactus", "muut", "discourse", "livefyre", "facebook-comments", "useresponse", "livere"],
-    "missing": ["isso", "talkyard", "graphcomment", "vuukle", "spot-im"]
+    "live": ["disqus", "commento", "hyvor", "giscus", "fastcomments", "utterances", "cusdis", "intensedebate", "justcomments", "replybox", "schnack", "commentix", "remark42", "cactus", "muut", "discourse", "livefyre", "facebook-comments", "useresponse", "livere", "isso", "talkyard", "graphcomment", "vuukle", "spot-im"],
+    "missing": []
   },
-  "last_comparison_page_added": "livere",
+  "last_comparison_page_added": "spot-im",
   "directories_checked": ["saashub", "betalist", "fazier", "futurepedia", "taaft", "alternativeto"],
   "directories_submitted": [],
   "directories_accessible": ["saashub", "betalist", "fazier", "futurepedia"],
   "directories_blocked": ["taaft", "alternativeto"],
   "ai_seo_gaps": {
-    "llms_txt": "missing",
-    "pricing_md": "missing",
+    "llms_txt": "live",
+    "pricing_md": "live",
     "faq_schema_on_alt_pages": "missing",
-    "pricing_page": "missing"
+    "pricing_page": "live"
   },
-  "last_cron_tick": "2026-06-05T14:31:49+09:00"
+  "last_cron_tick": "2026-06-06T09:30:00+09:00"
 }

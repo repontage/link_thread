@@ -24,7 +24,7 @@ export default function PrivacyPage() {
           <li><strong className="text-gray-900 dark:text-white">Account Information:</strong> Email address, display name, and authentication credentials (Passkeys/WebAuthn).</li>
           <li><strong className="text-gray-900 dark:text-white">Content:</strong> Comments, reactions, upvotes, and other content you post.</li>
           <li><strong className="text-gray-900 dark:text-white">Usage Data:</strong> Pages visited, features used, and interaction patterns for service improvement.</li>
-          <li><strong className="text-gray-900 dark:text-white">Payment Information:</strong> Processed by Paddle (Merchant of Record) — we do not store your full credit card details. We receive subscription status and transaction IDs from Paddle.</li>
+          <li><strong className="text-gray-900 dark:text-white">Payment Information:</strong> Processed by Lemon Squeezy (Merchant of Record) — we do not store your full credit card details. We receive subscription status and transaction IDs from Lemon Squeezy.</li>
         </ul>
       </section>
 
@@ -89,7 +89,7 @@ export default function PrivacyPage() {
             </thead>
             <tbody>
               <tr>
-                <td className="py-2 px-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300">Paddle</td>
+                <td className="py-2 px-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300">Lemon Squeezy</td>
                 <td className="py-2 px-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300">Payment processing (Merchant of Record)</td>
                 <td className="py-2 px-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300">UK / Global</td>
               </tr>
@@ -117,7 +117,7 @@ export default function PrivacyPage() {
         <p className={bodyText}>
           Your data may be transferred to and processed in countries outside your country of
           residence, including the United States (where Vercel and Turso operate) and the
-          United Kingdom (where Paddle operates). We ensure appropriate safeguards are in
+          United Kingdom (where Lemon Squeezy operates). We ensure appropriate safeguards are in
           place, including standard contractual clauses and reliance on adequacy decisions
           where applicable.
         </p>

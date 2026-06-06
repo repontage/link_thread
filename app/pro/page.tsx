@@ -16,8 +16,7 @@ export default function ProPage() {
     setError(null);
 
     try {
-      // Fetch transaction from server-side Paddle API
-      const response = await fetch("/api/paddle/checkout", {
+      const response = await fetch("/api/ls/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
       });
@@ -27,39 +26,17 @@ export default function ProPage() {
         throw new Error(errData.error || "Failed to create checkout session.");
       }
 
-      const { transactionId, environment } = await response.json();
+      const { url } = await response.json();
 
-      // Validate client token is configured
-      const clientToken = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN;
-      if (!clientToken) {
-        throw new Error("Paddle client token is not configured. Please check environment variables.");
+      if (!url) {
+        throw new Error("No checkout URL returned.");
       }
 
-      // Initialize Paddle.js if not already initialized
-      const { initializePaddle } = await import("@paddle/paddle-js");
-      const paddleInstance = await initializePaddle({
-        environment: environment === "production" ? "production" : "sandbox",
-        token: clientToken,
-      });
-
-      if (!paddleInstance) {
-        throw new Error("Failed to initialize Paddle checkout.");
-      }
-
-      // Open Paddle Checkout overlay with transaction ID
-      paddleInstance.Checkout.open({
-        transactionId,
-        settings: {
-          displayMode: "overlay",
-          showAddDiscounts: true,
-          showAddTaxId: true,
-          successUrl: `${window.location.origin}/pro/success`,
-        },
-      });
+      // Redirect to Lemon Squeezy hosted checkout
+      window.location.href = url;
     } catch (err: any) {
       console.error("[PRO_UPGRADE_ERROR]", err);
       setError(err.message || "An error occurred");
-    } finally {
       setLoading(false);
     }
   }, []);
@@ -125,7 +102,7 @@ export default function ProPage() {
           </div>
           <div>
             <h3 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              Pro <span className="text-xs bg-[#0066cc]/10 text-[#0066cc] px-2 py-0.5 rounded">Powered by Paddle</span>
+              Pro <span className="text-xs bg-[#0066cc]/10 text-[#0066cc] px-2 py-0.5 rounded">Powered by Lemon Squeezy</span>
             </h3>
             <p className="mt-2 text-slate-500 dark:text-slate-400 text-sm">Premium tools for pros and power users</p>
             <div className="mt-4 flex items-baseline text-slate-900 dark:text-white">

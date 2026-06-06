@@ -9,7 +9,7 @@
 - Ads: None
 
 ## Pro
-- Price: $29/month (billed monthly via Paddle)
+- Price: $29/month (billed monthly via Lemon Squeezy)
 - Everything in Free, plus:
 - Pro badge on profile
 - Developer Portal access

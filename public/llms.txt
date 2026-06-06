@@ -23,7 +23,7 @@ VoidSay lets you comment on any website, YouTube video, or X/Twitter thread. Fre
 - Next.js 16 (App Router)
 - Turso (libSQL, distributed SQLite)
 - Auth.js v5 with Passkeys
-- Paddle for payments
+- Lemon Squeezy for payments
 - Vercel for hosting
 
 ## For AI Agents
