@@ -107,8 +107,8 @@ export default function Home() {
               <p className="text-body text-body-muted">No distractions. Just a photography-first interface designed to let the product speak.</p>
             </div>
             <div>
-              <h3 className="text-tagline mb-sm text-white">Ad-ready</h3>
-              <p className="text-body text-body-muted">Designed with premium placement in mind. High-quality advertising integration coming soon.</p>
+              <h3 className="text-tagline mb-sm text-white">Ad-free</h3>
+              <p className="text-body text-body-muted">No ads, no tracking. A clean, distraction-free commenting experience for your readers.</p>
             </div>
           </div>
         </div>
