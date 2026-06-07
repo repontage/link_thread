@@ -102,8 +102,27 @@ export async function POST(req: Request) {
       return NextResponse.json({ received: true });
     }
 
-    // For subscription_cancelled or subscription_expired
-    if (eventName === "subscription_cancelled" || eventName === "subscription_expired") {
+    // For subscription_cancelled — keep Pro until billing period ends
+    if (eventName === "subscription_cancelled") {
+      const subUserId = event.data?.attributes?.custom_data?.userId || customData.userId;
+      const endsAt = event.data?.attributes?.ends_at;
+
+      if (subUserId) {
+        await prisma.user.update({
+          where: { id: subUserId },
+          data: {
+            isPro: true, // Pro 권한은 청구 주기 종료까지 유지
+            subscriptionStatus: "canceled",
+            subscriptionEnd: endsAt ? new Date(endsAt) : undefined,
+          },
+        });
+        console.log(`[LS_WEBHOOK] User ${subUserId} subscription cancelled (Pro until ${endsAt})`);
+      }
+      return NextResponse.json({ received: true });
+    }
+
+    // For subscription_expired — billing period ended, revoke Pro
+    if (eventName === "subscription_expired") {
       const subUserId = event.data?.attributes?.custom_data?.userId || customData.userId;
 
       if (subUserId) {
@@ -111,10 +130,11 @@ export async function POST(req: Request) {
           where: { id: subUserId },
           data: {
             isPro: false,
-            subscriptionStatus: eventName === "subscription_cancelled" ? "canceled" : "expired",
+            subscriptionStatus: "expired",
+            subscriptionEnd: null,
           },
         });
-        console.log(`[LS_WEBHOOK] User ${subUserId} subscription ${eventName}`);
+        console.log(`[LS_WEBHOOK] User ${subUserId} subscription expired — Pro revoked`);
       }
       return NextResponse.json({ received: true });
     }
