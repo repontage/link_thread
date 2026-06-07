@@ -2,7 +2,7 @@
 
 import React, { useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { CheckCircle, ArrowRight, Zap, Sparkles } from "lucide-react";
+import { CheckCircle, ArrowRight, Zap, Sparkles, Clock } from "lucide-react";
 
 export default function ProSuccessPage() {
   const { update } = useSession();
@@ -23,6 +23,14 @@ export default function ProSuccessPage() {
       <p className="mt-3 text-slate-500 dark:text-slate-400">
         Congratulations — you are now a VoidSay <strong>Pro</strong> member. All Pro benefits are now unlocked.
       </p>
+
+      {/* Activation delay notice */}
+      <div className="mt-4 flex items-start gap-2 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800 rounded-lg p-3 text-left">
+        <Clock className="h-4 w-4 text-amber-500 flex-shrink-0 mt-0.5" />
+        <p className="text-xs text-amber-700 dark:text-amber-300">
+          Pro status may take up to 1 minute to fully activate. If you don't see changes immediately, try refreshing the page.
+        </p>
+      </div>
 
       <div className="mt-8 bg-slate-50 dark:bg-slate-800/40 rounded-xl p-5 text-left space-y-4">
         <div className="flex gap-3">

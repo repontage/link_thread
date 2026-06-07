@@ -14,6 +14,17 @@ export async function POST() {
       return NextResponse.json({ error: "User ID not found" }, { status: 400 });
     }
 
+    // Prevent double subscription — if already Pro, reject with 409 Conflict
+    const isAlreadyPro =
+      (session.user as any).isPro === true ||
+      (session.user as any).subscriptionStatus === "active";
+    if (isAlreadyPro) {
+      return NextResponse.json(
+        { error: "Already subscribed. Manage your subscription at /pro/manage." },
+        { status: 409 }
+      );
+    }
+
     const userEmail = session.user.email;
     const userName = session.user.name;
 

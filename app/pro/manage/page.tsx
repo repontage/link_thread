@@ -36,8 +36,12 @@ export default function ProManagePage() {
     } else if (status === "authenticated" && !isPro) {
       setLoading(false);
       setError("Pro subscription required.");
+    } else if (status === "unauthenticated") {
+      // Redirect unauthenticated users to sign in
+      window.location.href = "/api/auth/signin";
     } else if (status !== "loading") {
       setLoading(false);
+      setError("Please sign in to manage your subscription.");
     }
   }, [status, isPro]);
 
