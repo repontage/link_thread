@@ -65,7 +65,7 @@ export class LemonSqueezySDK {
    * Verify a Lemon Squeezy webhook signature.
    * Uses HMAC SHA256 with the webhook secret.
    */
-  verifyWebhook(rawBody: string, signature: string): boolean {
+  static verifyWebhook(rawBody: string, signature: string): boolean {
     const secret = process.env.LEMONSQUEEZY_WEBHOOK_SECRET;
     if (!secret) {
       console.error("[LS_WEBHOOK] Missing LEMONSQUEEZY_WEBHOOK_SECRET");

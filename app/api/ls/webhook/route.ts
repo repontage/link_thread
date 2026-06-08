@@ -21,9 +21,8 @@ export async function POST(req: Request) {
     const rawBody = await req.text();
     const signature = req.headers.get("x-signature") || "";
 
-    // Verify webhook signature
-    const ls = new LemonSqueezySDK();
-    if (!ls.verifyWebhook(rawBody, signature)) {
+    // Verify webhook signature — static call, no STORE_ID/VARIANT_ID needed
+    if (!LemonSqueezySDK.verifyWebhook(rawBody, signature)) {
       console.error("[LS_WEBHOOK] Signature verification failed");
       return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
     }
@@ -113,7 +112,7 @@ export async function POST(req: Request) {
           data: {
             isPro: true, // Pro 권한은 청구 주기 종료까지 유지
             subscriptionStatus: "canceled",
-            subscriptionEnd: endsAt ? new Date(endsAt) : undefined,
+            subscriptionEnd: endsAt ? new Date(endsAt) : null,
           },
         });
         console.log(`[LS_WEBHOOK] User ${subUserId} subscription cancelled (Pro until ${endsAt})`);
