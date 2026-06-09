@@ -36,11 +36,16 @@ export class PaddleSDK {
   /**
    * Create a Paddle transaction and return the transaction ID.
    * The client will use Paddle.js to open the checkout overlay with this ID.
+   *
+   * paddleCustomerId: optional — only pass if the user already has a
+   * Paddle-issued customer ID (ctm_01...). For new users, omit it so
+   * Paddle creates the customer via the checkout overlay.
    */
   async createTransaction(params: {
     userId: string;
     email: string;
     name?: string;
+    paddleCustomerId?: string | null;
   }): Promise<{ transactionId: string }> {
     const p = getPaddle();
 
@@ -52,7 +57,9 @@ export class PaddleSDK {
         },
       ],
       customData: { userId: params.userId },
-      customerId: params.userId,
+      ...(params.paddleCustomerId
+        ? { customerId: params.paddleCustomerId }
+        : {}),
     });
 
     if (!transaction || !transaction.id) {

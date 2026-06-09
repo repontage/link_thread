@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { Loader2, ArrowLeft, AlertTriangle, CreditCard, Calendar } from "lucide-react";
+import { Loader2, ArrowLeft, AlertTriangle, Calendar, Mail } from "lucide-react";
 
 export default function ProManagePage() {
   const { data: session, status } = useSession();
@@ -139,14 +139,6 @@ export default function ProManagePage() {
 
         {/* Actions */}
         <div className="space-y-3">
-          <a
-            href="/pro"
-            className="w-full py-3 px-4 rounded-xl text-center font-semibold text-sm bg-[#0066cc] hover:bg-[#0055b3] text-white flex items-center justify-center gap-2 transition-colors"
-          >
-            <CreditCard className="h-4 w-4" />
-            Update Payment Method
-          </a>
-
           {subscriptionStatus === "active" && (
             <button
               onClick={handleCancel}
@@ -164,6 +156,14 @@ export default function ProManagePage() {
         </div>
 
         <p className="text-xs text-slate-400 dark:text-slate-500 text-center mt-6">
+          For payment method changes, please contact{" "}
+          <a href="mailto:support@voidsay.com" className="underline hover:text-slate-600 dark:hover:text-slate-300">
+            <Mail className="h-3 w-3 inline mr-0.5" />
+            support@voidsay.com
+          </a>
+        </p>
+
+        <p className="text-xs text-slate-400 dark:text-slate-500 text-center mt-1">
           Powered by Paddle · Secure payment processing
         </p>
       </div>
