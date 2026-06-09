@@ -73,8 +73,27 @@ export async function GET() {
         { name: 'isBanned', type: 'BOOLEAN DEFAULT 0' },
         { name: 'isShadowBanned', type: 'BOOLEAN DEFAULT 0' },
         { name: 'isPro', type: 'BOOLEAN DEFAULT 0' },
-        { name: 'subscriptionStatus', type: 'TEXT' }
+        { name: 'subscriptionStatus', type: 'TEXT' },
+        { name: 'lsCustomerId', type: 'TEXT' },
+        { name: 'lsSubscriptionId', type: 'TEXT' },
+        { name: 'subscriptionEnd', type: 'DATETIME' },
+        { name: 'profileBackground', type: 'TEXT' },
+        { name: 'username', type: 'TEXT' },
+        { name: 'bio', type: 'TEXT' }
       ];
+
+      // Notification table column check
+      const notifColumnsResult = await libsql.execute("PRAGMA table_info(Notification)");
+      const notifColumns = notifColumnsResult.rows.map((row: any) => row.name);
+      const requiredNotifColumns = [
+        { name: 'priority', type: 'INTEGER DEFAULT 0' }
+      ];
+      for (const col of requiredNotifColumns) {
+        if (!notifColumns.includes(col.name)) {
+          await libsql.execute(`ALTER TABLE Notification ADD COLUMN ${col.name} ${col.type}`);
+          repairedColumnsCount++;
+        }
+      }
 
       let repairedColumnsCount = 0;
       for (const col of requiredUserColumns) {
