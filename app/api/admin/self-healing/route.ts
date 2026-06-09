@@ -59,15 +59,14 @@ export async function GET() {
     }
   }
 
-  // 3. Self-healing Activation
-  if (needsHealing) {
-    console.warn("[SELF-HEALING] System degradation detected. Triggering automated healing...");
+  // 3. Column Sync (always runs to prevent schema drift)
+  let repairedColumnsCount = 0;
+  let columnSyncResult = "";
+  if (diagnostics.dbPing === "success") {
     try {
-      // 데이터베이스 스키마 및 마이그레이션 불일치를 해결하기 위해 fix-db 트리거
       const userColumnsResult = await libsql.execute("PRAGMA table_info(User)");
       const userColumns = userColumnsResult.rows.map((row: any) => row.name);
 
-      // 필요한 유저 테이블 컬럼들을 스캔하고 필요 시 강제 마이그레이션 수행
       const requiredUserColumns = [
         { name: 'role', type: "TEXT DEFAULT 'USER'" },
         { name: 'isBanned', type: 'BOOLEAN DEFAULT 0' },
@@ -82,7 +81,12 @@ export async function GET() {
         { name: 'bio', type: 'TEXT' }
       ];
 
-      let repairedColumnsCount = 0;
+      for (const col of requiredUserColumns) {
+        if (!userColumns.includes(col.name)) {
+          await libsql.execute(`ALTER TABLE User ADD COLUMN ${col.name} ${col.type}`);
+          repairedColumnsCount++;
+        }
+      }
 
       // Notification table column check
       const notifColumnsResult = await libsql.execute("PRAGMA table_info(Notification)");
@@ -96,13 +100,25 @@ export async function GET() {
           repairedColumnsCount++;
         }
       }
-      for (const col of requiredUserColumns) {
-        if (!userColumns.includes(col.name)) {
-          await libsql.execute(`ALTER TABLE User ADD COLUMN ${col.name} ${col.type}`);
-          repairedColumnsCount++;
-        }
-      }
 
+      // Create missing indexes
+      try {
+        await libsql.execute('CREATE INDEX IF NOT EXISTS "Notification_userId_priority_createdAt_idx" ON "Notification"("userId", "priority", "createdAt")');
+      } catch (_) { /* index may already exist */ }
+
+      columnSyncResult = repairedColumnsCount > 0 
+        ? `Synced ${repairedColumnsCount} missing column(s)` 
+        : "All columns in sync";
+    } catch (colError: any) {
+      columnSyncResult = `Column sync error: ${colError.message}`;
+      needsHealing = true;
+    }
+  }
+
+  // 4. Self-healing Activation (tables, full recovery)
+  if (needsHealing) {
+    console.warn("[SELF-HEALING] System degradation detected. Triggering automated healing...");
+    try {
       // 테이블 복구
       await libsql.execute(`
         CREATE TABLE IF NOT EXISTS WebhookSubscription (
@@ -132,7 +148,11 @@ export async function GET() {
         );
       `);
 
-      healingResult = `Automated healing completed. Added missing tables and repaired ${repairedColumnsCount} columns.`;
+      await libsql.execute(`
+        CREATE UNIQUE INDEX IF NOT EXISTS Report_commentId_reporterId_key ON Report (commentId, reporterId);
+      `);
+
+      healingResult = `Automated healing completed. ${columnSyncResult}.`;
       
       // 텔레그램으로 치유 완료 리포트 알림 발송
       await logToTelegram(`⚠️ *[Self-Healing Alert]*\n- Status: Degraded\n- Actions taken: ${healingResult}\n- System has been restored to HEALTHY.`);
