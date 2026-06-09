@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
-import { LemonSqueezySDK } from "@/lib/ls-server";
+import { PaddleSDK } from "@/lib/paddle-server";
 
 export async function POST() {
   try {
@@ -13,7 +13,12 @@ export async function POST() {
     const userId = (session.user as any).id;
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { lsSubscriptionId: true, isPro: true },
+      select: {
+        paddleSubscriptionId: true,
+        paddleCustomerId: true,
+        isPro: true,
+        subscriptionStatus: true,
+      },
     });
 
     if (!user || !user.isPro) {
@@ -23,31 +28,31 @@ export async function POST() {
       );
     }
 
-    if (!user.lsSubscriptionId) {
+    if (!user.paddleCustomerId) {
       return NextResponse.json(
         { error: "No active subscription found" },
         { status: 400 }
       );
     }
 
-    const ls = new LemonSqueezySDK();
-    const subscription = await ls.getSubscription(user.lsSubscriptionId);
+    const paddle = new PaddleSDK();
+    const portalUrl = await paddle.getCustomerPortalUrl(user.paddleCustomerId);
 
-    if (!subscription) {
-      return NextResponse.json(
-        { error: "Failed to retrieve subscription details" },
-        { status: 500 }
+    // Also get subscription details if available
+    let subscriptionInfo = null;
+    if (user.paddleSubscriptionId) {
+      subscriptionInfo = await paddle.getSubscription(
+        user.paddleSubscriptionId
       );
     }
 
-    // Return the customer portal URL for subscription management
     return NextResponse.json({
-      customerPortalUrl: subscription.customerPortalUrl,
-      updatePaymentMethodUrl: subscription.updatePaymentMethodUrl,
-      status: subscription.status,
+      customerPortalUrl: portalUrl,
+      subscriptionStatus: user.subscriptionStatus || subscriptionInfo?.status,
+      nextBilledAt: subscriptionInfo?.nextBilledAt || null,
     });
   } catch (error) {
-    console.error("[LS_MANAGE_ERROR]", error);
+    console.error("[PADDLE_MANAGE_ERROR]", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }

@@ -1,22 +1,61 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { Check, Shield, Zap, Sparkles, Loader2 } from "lucide-react";
+import { initializePaddle } from "@paddle/paddle-js";
+import type { Paddle, CheckoutOpenOptions } from "@paddle/paddle-js";
+
+let paddleInstance: Paddle | undefined;
 
 export default function ProPage() {
   const { data: session, status } = useSession();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [paddleReady, setPaddleReady] = useState(false);
 
   const isPro = (session?.user as any)?.isPro;
+
+  // Initialize Paddle.js
+  useEffect(() => {
+    if (paddleInstance) {
+      setPaddleReady(true);
+      return;
+    }
+
+    initializePaddle({
+      token: process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN || "",
+      environment: (process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT || "sandbox") as "sandbox" | "production",
+      checkout: {
+        settings: {
+          displayMode: "overlay",
+          theme: "light",
+          successUrl: `${window.location.origin}/pro/success`,
+        },
+      },
+      eventCallback: (event) => {
+        if (event.name === "checkout.completed") {
+          // Refresh session to get updated isPro status
+          window.location.href = "/pro/success";
+        }
+      },
+    }).then((paddle) => {
+      if (paddle) {
+        paddleInstance = paddle;
+        setPaddleReady(true);
+      }
+    }).catch((err) => {
+      console.error("[PADDLE_INIT_ERROR]", err);
+    });
+  }, []);
 
   const handleUpgrade = useCallback(async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const response = await fetch("/api/ls/checkout", {
+      // Create transaction on server and get transactionId
+      const response = await fetch("/api/paddle/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
       });
@@ -26,14 +65,20 @@ export default function ProPage() {
         throw new Error(errData.error || "Failed to create checkout session.");
       }
 
-      const { url } = await response.json();
+      const { transactionId } = await response.json();
 
-      if (!url) {
-        throw new Error("No checkout URL returned.");
+      if (!transactionId) {
+        throw new Error("No transaction ID returned.");
       }
 
-      // Redirect to Lemon Squeezy hosted checkout
-      window.location.href = url;
+      // Open Paddle checkout overlay
+      if (paddleInstance) {
+        paddleInstance.Checkout.open({
+          transactionId,
+        } as CheckoutOpenOptions);
+      } else {
+        throw new Error("Paddle is not initialized. Please refresh and try again.");
+      }
     } catch (err: any) {
       console.error("[PRO_UPGRADE_ERROR]", err);
       setError(err.message || "An error occurred");
@@ -102,7 +147,7 @@ export default function ProPage() {
           </div>
           <div>
             <h3 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              Pro <span className="text-xs bg-[#0066cc]/10 text-[#0066cc] px-2 py-0.5 rounded">Powered by Lemon Squeezy</span>
+              Pro <span className="text-xs bg-[#0066cc]/10 text-[#0066cc] px-2 py-0.5 rounded">Powered by Paddle</span>
             </h3>
             <p className="mt-2 text-slate-500 dark:text-slate-400 text-sm">Premium tools for pros and power users</p>
             <div className="mt-4 flex items-baseline text-slate-900 dark:text-white">
@@ -151,7 +196,7 @@ export default function ProPage() {
             ) : (
               <button
                 onClick={handleUpgrade}
-                disabled={loading}
+                disabled={loading || !paddleReady}
                 className="w-full py-3 px-4 rounded-xl text-center font-semibold text-sm bg-[#0066cc] hover:bg-[#0055b3] text-white flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
               >
                 {loading ? (

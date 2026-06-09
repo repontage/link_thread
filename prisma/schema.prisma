@@ -178,8 +178,8 @@ model User {
   isShadowBanned    Boolean         @default(false)
   isPro                Boolean         @default(false)
   subscriptionStatus   String?
-  lsCustomerId         String?
-  lsSubscriptionId     String?
+  paddleCustomerId     String?
+  paddleSubscriptionId String?
   subscriptionEnd      DateTime?
   Account           Account[]
   Authenticator     Authenticator[]

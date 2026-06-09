@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { LemonSqueezySDK } from "@/lib/ls-server";
+import { PaddleSDK } from "@/lib/paddle-server";
 
 export async function POST() {
   try {
@@ -24,27 +24,23 @@ export async function POST() {
       );
     }
 
-    const ls = new LemonSqueezySDK();
+    const paddle = new PaddleSDK();
 
-    const baseUrl =
-      process.env.AUTH_URL ||
-      process.env.NEXT_PUBLIC_APP_URL ||
-      "https://voidsay.com";
-
-    const successUrl = `${baseUrl}/pro/success`;
-
-    const checkout = await ls.createCheckout({
+    const { transactionId } = await paddle.createTransaction({
       userId,
       email: userEmail,
       name: userName || undefined,
-      successUrl,
     });
 
+    // Return the Paddle client token (PADDLE_CLIENT_TOKEN) and transaction ID
+    // The frontend will use Paddle.js to open the checkout overlay
     return NextResponse.json({
-      url: checkout.url,
+      transactionId,
+      clientToken: process.env.PADDLE_CLIENT_TOKEN || "",
+      environment: process.env.PADDLE_ENVIRONMENT || "sandbox",
     });
   } catch (error) {
-    console.error("[LS_CHECKOUT_ERROR]", error);
+    console.error("[PADDLE_CHECKOUT_ERROR]", error);
     const message =
       error instanceof Error ? error.message : "Internal Server Error";
     return NextResponse.json({ error: message }, { status: 500 });

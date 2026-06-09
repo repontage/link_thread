@@ -1,32 +1,38 @@
 {
-  "last_x_post": "2026-06-04",
-  "x_posts_today": 0,
+  "last_x_post": "2026-06-09",
+  "x_posts_today": 1,
   "last_x_reply_search": "2026-06-05",
-  "xurl_status": "not_configured",
+  "xurl_status": "configured_search_401",
   "reddit_status": "network_blocked",
   "last_hn_check": "2026-06-05",
   "hn_status": "account_creation_disabled",
-  "last_site_check": "2026-06-06",
+  "last_site_check": "2026-06-09",
   "site_status": "all_200_ok",
   "last_weekly_report": null,
   "account_created": "2026-06-02",
   "x_handle": "@voidsay_",
   "x_followers": 0,
-  "x_tweet_count_at_last_check": 12,
+  "x_tweet_count_at_last_check": 49,
   "comparison_pages": {
     "live": ["disqus", "commento", "hyvor", "giscus", "fastcomments", "utterances", "cusdis", "intensedebate", "justcomments", "replybox", "schnack", "commentix", "remark42", "cactus", "muut", "discourse", "livefyre", "facebook-comments", "useresponse", "livere", "isso", "talkyard", "graphcomment", "vuukle", "spot-im"],
     "missing": []
   },
   "last_comparison_page_added": "spot-im",
-  "directories_checked": ["saashub", "betalist", "fazier", "futurepedia", "taaft", "alternativeto"],
+  "directories_checked": ["saashub", "betalist", "fazier", "futurepedia", "taaft", "alternativeto", "aitools.inc", "toolify.ai"],
   "directories_submitted": [],
-  "directories_accessible": ["saashub", "betalist", "fazier", "futurepedia"],
-  "directories_blocked": ["taaft", "alternativeto"],
+  "directories_accessible": ["saashub", "betalist", "fazier", "futurepedia", "aitools.inc"],
+  "directories_blocked": ["taaft", "alternativeto", "toolify.ai"],
+  "directories_pending_manual_submit": ["aitools.inc"],
   "ai_seo_gaps": {
     "llms_txt": "live",
     "pricing_md": "live",
     "faq_schema_on_alt_pages": "missing",
     "pricing_page": "live"
   },
-  "last_cron_tick": "2026-06-06T09:30:00+09:00"
+  "last_cron_tick": "2026-06-09T10:37:00+00:00",
+  "notes": {
+    "aitools_inc_submit_url": "https://loxr142exnq.typeform.com/to/RB6ZnEf2",
+    "x_thread_posted_today_at": "2026-06-09T08:05:21Z",
+    "xurl_search_401": "Twitter API search requires elevated access — can't search for reply targets programmatically"
+  }
 }

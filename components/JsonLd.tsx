@@ -1,16 +1,11 @@
-import Script from "next/script";
+// JSON-LD Structured Data for SEO / AI Search Optimization
+// Helps Google AI Overviews, ChatGPT, Perplexity, Claude understand site content
 
-interface JsonLdProps {
-  data: Record<string, any>;
-}
-
-export default function JsonLd({ data }: JsonLdProps) {
+export default function JsonLd({ data }: { data: Record<string, unknown> }) {
   return (
-    <Script
-      id={`jsonld-${data["@type"] || "default"}`}
+    <script
       type="application/ld+json"
       dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
-      strategy="beforeInteractive"
     />
   );
 }

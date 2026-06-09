@@ -4,6 +4,7 @@ import Link from 'next/link';
 import ThreadUI from '@/components/ThreadUI';
 import UserNav from '@/components/UserNav';
 import ProductHeroVisual from '@/components/ProductHeroVisual';
+import JsonLd from '@/components/JsonLd';
 import { useRef } from 'react';
 
 import CuratedPicks from '@/components/CuratedPicks';
@@ -114,6 +115,44 @@ export default function Home() {
         </div>
       </section>
 
+
+      {/* JSON-LD Structured Data for AI Search Optimization */}
+      <JsonLd data={{
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "VoidSay",
+        "applicationCategory": "CommunicationApplication",
+        "operatingSystem": "Web",
+        "description": "Universal commenting platform for any website. Free, privacy-first, with Markdown, dark mode, and rich media embeds. No ads, no tracking.",
+        "url": "https://voidsay.com",
+        "offers": [
+          {
+            "@type": "Offer",
+            "name": "Free",
+            "price": "0",
+            "priceCurrency": "USD",
+            "description": "Free forever — Universal commenting on any URL, Markdown, dark mode, media embeds"
+          },
+          {
+            "@type": "Offer",
+            "name": "Pro",
+            "price": "29.00",
+            "priceCurrency": "USD",
+            "description": "Pro plan — Developer Portal, priority support, Pro badge"
+          }
+        ],
+        "featureList": [
+          "Comment on any URL",
+          "YouTube/X/Instagram auto-embed",
+          "Full Markdown support",
+          "Dark mode",
+          "Google, GitHub, Passkeys auth",
+          "SSE real-time updates",
+          "No tracking, no ads",
+          "GDPR compliant",
+          "<50ms load time"
+        ]
+      }} />
 
       {/* Footer */}
       <footer className="w-full border-t border-white/10 py-8 mt-16">

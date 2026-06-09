@@ -1,60 +1,83 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { CheckCircle, ArrowRight, Zap, Sparkles } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { CheckCircle, Loader2 } from "lucide-react";
 
 export default function ProSuccessPage() {
-  const { update } = useSession();
+  const { data: session, update } = useSession();
+  const router = useRouter();
+  const [status, setStatus] = useState<"loading" | "done" | "timeout">("loading");
 
   useEffect(() => {
-    // Refresh NextAuth session when landing on success page.
-    // This ensures Pro access is immediately reflected in the header and dashboard.
-    update();
-  }, [update]);
+    // Refresh the session to pick up new isPro status
+    let attempts = 0;
+    const maxAttempts = 15; // 15 seconds max
+    const interval = setInterval(async () => {
+      attempts++;
+      try {
+        await update();
+        const updatedIsPro = (session?.user as any)?.isPro;
+        if (updatedIsPro) {
+          setStatus("done");
+          clearInterval(interval);
+          return;
+        }
+      } catch {
+        // continue polling
+      }
+
+      if (attempts >= maxAttempts) {
+        setStatus("timeout");
+        clearInterval(interval);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [update, session]);
+
+  if (status === "loading") {
+    return (
+      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4">
+        <Loader2 className="h-10 w-10 animate-spin text-[#0066cc]" />
+        <p className="text-slate-500 dark:text-slate-400">Confirming your Pro subscription...</p>
+        <p className="text-xs text-slate-400 dark:text-slate-500">This may take a few moments.</p>
+      </div>
+    );
+  }
+
+  if (status === "timeout") {
+    return (
+      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4">
+        <CheckCircle className="h-10 w-10 text-emerald-500" />
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Payment Successful!</h2>
+        <p className="text-slate-500 dark:text-slate-400 text-center max-w-md">
+          Your subscription is being activated. It may take a few minutes for your Pro status to appear.
+        </p>
+        <button
+          onClick={() => router.push("/pro")}
+          className="mt-4 py-3 px-6 rounded-xl text-sm font-semibold bg-[#0066cc] hover:bg-[#0055b3] text-white transition-colors"
+        >
+          Go to Pro Dashboard
+        </button>
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-md mx-auto my-16 px-6 py-12 border border-slate-200 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900 shadow-xl text-center">
-      <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-500 mb-6">
-        <CheckCircle className="h-10 w-10 animate-pulse" />
-      </div>
-
-      <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white">Welcome to Pro!</h2>
-      <p className="mt-3 text-slate-500 dark:text-slate-400">
-        Congratulations — you are now a VoidSay <strong>Pro</strong> member. All Pro benefits are now unlocked.
+    <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4">
+      <CheckCircle className="h-10 w-10 text-emerald-500" />
+      <h2 className="text-2xl font-bold text-slate-900 dark:text-white">You're now a Pro member!</h2>
+      <p className="text-slate-500 dark:text-slate-400 text-center max-w-md">
+        Welcome to VoidSay Pro. Enjoy ad-free browsing, developer webhooks, and more.
       </p>
-
-      <div className="mt-8 bg-slate-50 dark:bg-slate-800/40 rounded-xl p-5 text-left space-y-4">
-        <div className="flex gap-3">
-          <Zap className="h-5 w-5 text-[#0066cc] flex-shrink-0" />
-          <div>
-            <h4 className="text-sm font-bold text-slate-900 dark:text-white">Ads Removed</h4>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Sponsor UI and ad elements are hidden across the entire site.</p>
-          </div>
-        </div>
-        <div className="flex gap-3 border-t border-slate-100 dark:border-slate-800/80 pt-3">
-          <Sparkles className="h-5 w-5 text-[#0066cc] flex-shrink-0" />
-          <div>
-            <h4 className="text-sm font-bold text-slate-900 dark:text-white">Developer Webhooks Enabled</h4>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Create unlimited real-time webhook endpoints and send them anywhere.</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-8 space-y-3">
-        <button
-          onClick={() => (window.location.href = "/developer")}
-          className="w-full py-3 px-4 rounded-xl text-center font-semibold text-sm bg-[#0066cc] hover:bg-[#0055b3] text-white flex items-center justify-center gap-2 transition-colors shadow-md"
-        >
-          Go to Developer Portal <ArrowRight className="h-4 w-4" />
-        </button>
-        <button
-          onClick={() => (window.location.href = "/")}
-          className="w-full py-3 px-4 rounded-xl text-center font-semibold text-sm bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors"
-        >
-          Back to Home
-        </button>
-      </div>
+      <button
+        onClick={() => router.push("/pro")}
+        className="mt-4 py-3 px-6 rounded-xl text-sm font-semibold bg-[#0066cc] hover:bg-[#0055b3] text-white transition-colors"
+      >
+        Go to Pro Dashboard
+      </button>
     </div>
   );
 }

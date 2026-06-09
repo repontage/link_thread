@@ -98,20 +98,18 @@
 - [x] **Automated Content Curations**: (Completed) 5-dimension quality scoring (Engagement, Quality, Recency, Diversity, Velocity) + `/api/curated` API + CuratedPicks UI 컴포넌트를 메인 페이지에 배치.
 
 ## Phase 21: Pro 구독 및 비즈니스 상용화 (Pro Subscription & Commercialization) ✅ Complete
-- [x] **Mock Sandbox (완료)**: Stripe 결제 Mock 샌드박스 구현 → Paddle → Lemon Squeezy 마이그레이션 완료.
 - [x] **Ad-free Experience (완료)**: Pro 구독 유저에게 Sponsor UI 및 광고 요소 전면 비노출 처리 (ThreadUI.tsx 조건부 렌더링).
-- [x] **Developer Portal Access Restriction (완료)**: Developer 포털 관리 및 실시간 웹훅 권한을 Pro/Admin 등급으로 잠금. `/developer` 페이지 서버 사이드 권한 게이팅 + `UserNav` 조건부 네비게이션.
-- [x] **User Model Extension (완료)**: Prisma DB `User` 스키마에 `isPro`, `subscriptionStatus`, `lsCustomerId`, `lsSubscriptionId`, `subscriptionEnd` 필드 도입.
-- [x] **Stripe → Paddle → Lemon Squeezy 마이그레이션**: Stripe SDK 제거, Paddle SDK (paddle-js + paddle-node-sdk) → Lemon Squeezy (@lemonsqueezy/lemonsqueezy.js) 최종 전환 완료. 기존 Stripe API 라우트 완전 제거 (0 remnant files).
-- [x] **Lemon Squeezy Checkout Flow**: 서버사이드 Lemon Squeezy checkout 생성 (custom_data에 userId 포함). Hosted checkout page 리디렉션. `/api/ls/checkout` 엔드포인트.
-- [x] **Lemon Squeezy Webhook 처리**: LS HMAC SHA256 서명 검증. `order_created`, `subscription_created`, `subscription_updated`, `subscription_cancelled`, `subscription_expired`, `subscription_payment_success`, `subscription_payment_failed` 이벤트 처리. `/api/ls/webhook`.
-- [x] **Pro User Lifecycle**: `lsCustomerId`, `lsSubscriptionId`, `subscriptionEnd` 필드. 구독 활성/만료에 따른 Pro 권한 자동 관리 (웹훅 기반).
-- [x] **Lemon Squeezy Customer Portal**: `/pro/manage` → 구독 취소/업데이트 가능한 LS 셀프서비스 포털 연동 (`/api/ls/manage`).
-- [x] **Developer Portal Pro-gating**: `/developer` 페이지 Pro/Admin 전용 접근 제한. `UserNav` 조건부 Developer 링크.
-- [x] **Pro Badge on Profile**: 프로필 페이지에 Pro 배지 표시 (`app/profile/page.tsx`).
-- [x] **Environment Variables**: `.env.example` + Vercel에 Lemon Squeezy 4개 환경변수 (`LEMONSQUEEZY_API_KEY`, `LEMONSQUEEZY_STORE_ID`, `LEMONSQUEEZY_VARIANT_ID`, `LEMONSQUEEZY_WEBHOOK_SECRET`) 설정 완료.
-- [x] **Lemon Squeezy 활성화**: [https://app.lemonsqueezy.com](https://app.lemonsqueezy.com)에서 $29/mo 구독 상품 생성 → API Key 발급 → Vercel env vars 채우기 완료.
-- [x] **Turso DB LS 컬럼 동기화**: `/api/admin/fix-db` 호출 완료. `isPro`, `subscriptionStatus`, `lsCustomerId`, `lsSubscriptionId`, `subscriptionEnd` 컬럼 Turso 운영 DB에 존재 확인. ✅ (2026-06-06 Cron — Paddle → LS migration final)
+- [x] **Developer Portal Access Restriction (완료)**: Developer 포털 관리 및 실시간 웹훅 권한을 Pro/Admin 등급으로 잠금.
+- [x] **User Model Extension (완료)**: Prisma DB `User` 스키마에 `isPro`, `subscriptionStatus`, `paddleCustomerId`, `paddleSubscriptionId`, `subscriptionEnd` 필드 도입.
+- [x] **Lemon Squeezy → Paddle 마이그레이션 (2026-06-10)**: LS SDK 제거, Paddle SDK (`@paddle/paddle-js` + `@paddle/paddle-node-sdk`) 설치. `/api/ls/*` 라우트 제거, `/api/paddle/*` 신규 구현. Paddle.js overlay Checkout 연동.
+- [x] **Paddle Checkout Flow**: 서버사이드 Paddle transaction 생성 → transactionId 반환 → Paddle.js overlay Checkout 오픈. `/api/paddle/checkout` 엔드포인트.
+- [x] **Paddle Webhook 처리**: HMAC SHA256 서명 검증. `transaction.completed`, `subscription.created`, `subscription.updated`, `subscription.canceled`, `subscription.past_due` 이벤트 처리. `/api/paddle/webhook`.
+- [x] **Pro User Lifecycle**: `paddleCustomerId`, `paddleSubscriptionId`, `subscriptionEnd` 필드. 구독 활성/만료에 따른 Pro 권한 자동 관리 (웹훅 기반).
+- [x] **Paddle Customer Portal**: `/pro/manage` → 구독 취소/업데이트 가능한 Paddle 셀프서비스 포털 연동 (`/api/paddle/manage`).
+- [x] **Developer Portal Pro-gating**: `/developer` 페이지 Pro/Admin 전용 접근 제한.
+- [x] **Pro Badge on Profile**: 프로필 페이지에 Pro 배지 표시.
+- [x] **Environment Variables**: `.env.example` + Vercel에 Paddle 7개 환경변수 (`PADDLE_API_KEY`, `PADDLE_CLIENT_TOKEN`, `PADDLE_PRICE_ID`, `PADDLE_WEBHOOK_SECRET`, `PADDLE_ENVIRONMENT` + NEXT_PUBLIC_*) 설정 슬롯 준비 완료.
+- [x] **Turso DB Paddle 컬럼 동기화**: `fix-db` API에 `paddleCustomerId`, `paddleSubscriptionId` 컬럼 추가 완료. (2026-06-10 Cron — LS → Paddle migration final)
 
 ## Phase 22: 지능형 피드 및 개인화 (Intelligent Feed & Personalization)
 - [x] **Personalized Feed**: 사용자 관심사(댓글 단 URL 카테고리, upvote 패턴) 기반 개인화 피드 생성.
@@ -263,3 +261,14 @@
   - **Build**: 0 errors, 59 pages 통과.
   - **Vercel 배포**: `voidsay.com` 프로덕션 배포 완료 (55s build).
   - **상태**: 결제 시스템(Stripe → Paddle → Lemon Squeezy) 100% 완료. 모든 env var (`LEMONSQUEEZY_API_KEY`, `LEMONSQUEEZY_STORE_ID`, `LEMONSQUEEZY_VARIANT_ID`, `LEMONSQUEEZY_WEBHOOK_SECRET`) Vercel Production에 Encrypted 상태.
+
+- **2026-06-10**: (Scheduled Cron) **Lemon Squeezy → Paddle 마이그레이션 (최종 전환)**.
+  - **LS SDK 완전 제거**: `@lemonsqueezy/lemonsqueezy.js` uninstall. `/lib/ls-server.ts`, `/api/ls/*` 라우트 3건 삭제.
+  - **Paddle SDK 설치**: `@paddle/paddle-js` + `@paddle/paddle-node-sdk` 설치.
+  - **Prisma 스키마**: `lsCustomerId` → `paddleCustomerId`, `lsSubscriptionId` → `paddleSubscriptionId` 필드명 변경.
+  - **`lib/paddle-server.ts`**: `createTransaction()`, `verifyWebhook()` (HMAC SHA256), `getCustomerPortalUrl()`, `getSubscription()`.
+  - **API 라우트**: `/api/paddle/checkout` (transaction 생성), `/api/paddle/webhook` (5개 이벤트), `/api/paddle/manage` (고객 포털).
+  - **프론트엔드**: `/pro` — `initializePaddle()` + `Checkout.open({ transactionId })` overlay. `/pro/success` — session.update() polling. `/pro/manage` — 고객 포털.
+  - **fix-db**: `paddleCustomerId`, `paddleSubscriptionId` 컬럼명 업데이트. `.env.example`: Paddle 7개 env var.
+  - **Lint**: 0 warnings, 0 errors. **Build**: 0 errors, 64 pages 통과. **Vercel 배포**: `voidsay.com` 프로덕션 완료.
+  - **상태**: LS → Paddle 마이그레이션 100% 완료. ⚠️ Paddle Sandbox API 키 및 상품 ID는 Vercel 환경변수에 실제 값 입력 필요.
