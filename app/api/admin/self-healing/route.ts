@@ -82,6 +82,8 @@ export async function GET() {
         { name: 'bio', type: 'TEXT' }
       ];
 
+      let repairedColumnsCount = 0;
+
       // Notification table column check
       const notifColumnsResult = await libsql.execute("PRAGMA table_info(Notification)");
       const notifColumns = notifColumnsResult.rows.map((row: any) => row.name);
@@ -94,8 +96,6 @@ export async function GET() {
           repairedColumnsCount++;
         }
       }
-
-      let repairedColumnsCount = 0;
       for (const col of requiredUserColumns) {
         if (!userColumns.includes(col.name)) {
           await libsql.execute(`ALTER TABLE User ADD COLUMN ${col.name} ${col.type}`);
