@@ -51,7 +51,7 @@ export async function GET(req: Request) {
     try {
       await libsql.execute('CREATE INDEX IF NOT EXISTS "Notification_userId_priority_createdAt_idx" ON "Notification"("userId", "priority", "createdAt")');
       results.push('Created Notification index');
-    } catch (_) {}
+    } catch (_) { /* index may already exist */ }
 
     return NextResponse.json({
       success: true,

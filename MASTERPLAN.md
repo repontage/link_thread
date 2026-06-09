@@ -272,3 +272,13 @@
   - **fix-db**: `paddleCustomerId`, `paddleSubscriptionId` 컬럼명 업데이트. `.env.example`: Paddle 7개 env var.
   - **Lint**: 0 warnings, 0 errors. **Build**: 0 errors, 64 pages 통과. **Vercel 배포**: `voidsay.com` 프로덕션 완료.
   - **상태**: LS → Paddle 마이그레이션 100% 완료. ⚠️ Paddle Sandbox API 키 및 상품 ID는 Vercel 환경변수에 실제 값 입력 필요.
+
+- **2026-06-10**: (Scheduled Cron) **Paddle 결제 시스템 정기 점검 및 배포**.
+  - **Lint Fix**: `run-migration/route.ts` empty catch block ESLint 오류 수정. Lint 0 warnings, 0 errors.
+  - **Paddle 전수 검증**: Stripe remnants 0건 확인. Paddle 6개 파일 (`lib/paddle-server.ts`, `/api/paddle/checkout`, `/api/paddle/webhook`, `/api/paddle/manage`, `/pro/page.tsx`, `/pro/success/page.tsx`, `/pro/manage/page.tsx`) 코드 정상 확인.
+  - **auth.ts**: `isPro` JWT/Session 전파 정상 확인.
+  - **Prisma User 모델**: `paddleCustomerId`, `paddleSubscriptionId`, `subscriptionEnd`, `isPro`, `subscriptionStatus` 필드 정상.
+  - **fix-db API**: Paddle 컬럼 동기화 로직 정상 확인.
+  - **Build**: 0 errors, 64/64 pages 통과 (Compile 3.4s).
+  - **Vercel 배포**: `voidsay.com` 프로덕션 배포 완료 (55s build). `/`, `/pro` 페이지 정상 렌더링 확인. Console JS errors 0건.
+  - ⚠️ **남은 작업**: Paddle Sandbox 계정 생성 → $29/mo 상품 생성 → API Key 발급 → Vercel env vars 실제 값 입력. PADDLE_CLIENT_TOKEN 미설정으로 인한 Paddle.js init 경고는 예상된 동작.
