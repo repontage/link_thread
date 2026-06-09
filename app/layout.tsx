@@ -4,6 +4,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { LanguageProvider } from "@/components/i18n/LanguageProvider";
 import { ABTestProvider } from "@/lib/ab-testing";
 import Navbar from "@/components/Navbar";
+import JsonLd from "@/components/JsonLd";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
@@ -57,6 +58,37 @@ export default function RootLayout({
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8285887641787672" 
           crossOrigin="anonymous"
         ></script>
+        <meta name="saashub-verification" content="zx1cj87msb4n" />
+        <JsonLd data={{
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          "name": "VoidSay",
+          "url": "https://voidsay.com",
+          "logo": "https://voidsay.com/favicon.ico",
+          "sameAs": [
+            "https://x.com/voidsay_",
+            "https://github.com/voidsay",
+            "https://dev.to/voidsay"
+          ],
+          "description": "Universal commenting platform for any website. Free, privacy-first, no tracking.",
+          "foundingDate": "2026",
+          "founders": [{
+            "@type": "Person",
+            "name": "VoidSay Team"
+          }]
+        }} />
+        <JsonLd data={{
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "name": "VoidSay",
+          "url": "https://voidsay.com",
+          "description": "Comment on any website, YouTube video, or X thread. Free, privacy-first universal commenting with Markdown, dark mode, and rich media embeds.",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://voidsay.com/?url={url}",
+            "query-input": "required name=url"
+          }
+        }} />
       </head>
       <body suppressHydrationWarning>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
