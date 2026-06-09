@@ -61,7 +61,7 @@ export async function POST(req: Request) {
     const customData = eventData?.custom_data || {};
 
     // Resolve userId — custom_data from transaction, or fallback lookup
-    async function resolveUserId(): Promise<string | null> {
+    const resolveUserId = async(): Promise<string | null> {
       if (customData.userId) return customData.userId;
       const user = await findUserByPaddleData(eventData);
       return user?.id || null;
