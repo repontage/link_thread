@@ -28,17 +28,9 @@ export async function POST() {
       );
     }
 
-    if (!user.paddleCustomerId) {
-      return NextResponse.json(
-        { error: "No active subscription found" },
-        { status: 400 }
-      );
-    }
-
     const paddle = new PaddleSDK();
-    const portalUrl = await paddle.getCustomerPortalUrl(user.paddleCustomerId);
 
-    // Also get subscription details if available
+    // Get subscription details if available
     let subscriptionInfo = null;
     if (user.paddleSubscriptionId) {
       subscriptionInfo = await paddle.getSubscription(
@@ -47,7 +39,8 @@ export async function POST() {
     }
 
     return NextResponse.json({
-      customerPortalUrl: portalUrl,
+      customerPortalUrl: null, // Paddle doesn't provide vendor-hosted portal
+      paddleSubscriptionId: user.paddleSubscriptionId,
       subscriptionStatus: user.subscriptionStatus || subscriptionInfo?.status,
       nextBilledAt: subscriptionInfo?.nextBilledAt || null,
     });
@@ -59,3 +52,53 @@ export async function POST() {
     );
   }
 }
+
+/** Cancel subscription at end of billing period */
+export async function DELETE() {
+  try {
+    const session = await auth();
+    if (!session || !session.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const userId = (session.user as any).id;
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        paddleSubscriptionId: true,
+        isPro: true,
+      },
+    });
+
+    if (!user || !user.isPro || !user.paddleSubscriptionId) {
+      return NextResponse.json(
+        { error: "No active subscription found" },
+        { status: 400 }
+      );
+    }
+
+    const paddle = new PaddleSDK();
+    const cancelled = await paddle.cancelSubscription(user.paddleSubscriptionId);
+
+    if (!cancelled) {
+      return NextResponse.json(
+        { error: "Failed to cancel subscription" },
+        { status: 500 }
+      );
+    }
+
+    await prisma.user.update({
+      where: { id: userId },
+      data: { subscriptionStatus: "canceled" },
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("[PADDLE_CANCEL_ERROR]", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
+}
+

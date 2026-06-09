@@ -32,13 +32,9 @@ export async function POST() {
       name: userName || undefined,
     });
 
-    // Return the Paddle client token (PADDLE_CLIENT_TOKEN) and transaction ID
-    // The frontend will use Paddle.js to open the checkout overlay
-    return NextResponse.json({
-      transactionId,
-      clientToken: process.env.PADDLE_CLIENT_TOKEN || "",
-      environment: process.env.PADDLE_ENVIRONMENT || "sandbox",
-    });
+    // The frontend uses NEXT_PUBLIC_PADDLE_* env vars directly for Paddle.js init.
+    // We only return the transactionId needed for Checkout.open().
+    return NextResponse.json({ transactionId });
   } catch (error) {
     console.error("[PADDLE_CHECKOUT_ERROR]", error);
     const message =
@@ -46,3 +42,4 @@ export async function POST() {
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
+

@@ -52,6 +52,10 @@ export class PaddleSDK {
         },
       ],
       customData: { userId: params.userId },
+      customer: {
+        email: params.email,
+        ...(params.name ? { name: params.name } : {}),
+      },
     });
 
     if (!transaction || !transaction.id) {
@@ -99,14 +103,14 @@ export class PaddleSDK {
   }
 
   /**
-   * Get the customer portal URL for subscription self-service.
-   * Paddle doesn't have a direct "customer portal URL" API for v1 billing.
-   * The vendor dashboard URL serves as the management portal.
+   * Paddle does not provide a vendor-hosted customer portal URL like
+   * Lemon Squeezy. Self-service is handled via Paddle.js overlay
+   * (update payment method, change plan) and API calls for cancellation.
+   *
+   * Returns null — the manage page should render its own self-service UI.
    */
-  getCustomerPortalUrl(_customerId: string): string {
-    return environment === "production"
-      ? "https://vendors.paddle.com/subscriptions/customers"
-      : "https://sandbox-vendors.paddle.com/subscriptions/customers";
+  getCustomerPortalUrl(_customerId: string): null {
+    return null;
   }
 
   /**
@@ -131,4 +135,24 @@ export class PaddleSDK {
       return null;
     }
   }
+
+  /**
+   * Cancel a subscription at the end of the current billing period.
+   */
+  async cancelSubscription(subscriptionId: string): Promise<boolean> {
+    try {
+      const p = getPaddle();
+      await p.subscriptions.update(subscriptionId, {
+        scheduledChange: {
+          effectiveAt: "next_billing_period",
+          action: "cancel",
+        },
+      });
+      return true;
+    } catch (error) {
+      console.error("[PADDLE] cancelSubscription error:", error);
+      return false;
+    }
+  }
 }
+

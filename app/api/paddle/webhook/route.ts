@@ -5,6 +5,33 @@ import { PaddleSDK } from "@/lib/paddle-server";
 export const dynamic = "force-dynamic";
 
 /**
+ * Look up a user by Paddle subscription or customer ID.
+ * Falls back when custom_data.userId is not available in subscription events.
+ */
+async function findUserByPaddleData(eventData: any): Promise<{ id: string } | null> {
+  const subscriptionId = eventData?.id || eventData?.subscription_id;
+  const customerId = eventData?.customer_id;
+
+  if (subscriptionId) {
+    const bySub = await prisma.user.findFirst({
+      where: { paddleSubscriptionId: subscriptionId },
+      select: { id: true },
+    });
+    if (bySub) return bySub;
+  }
+
+  if (customerId) {
+    const byCust = await prisma.user.findFirst({
+      where: { paddleCustomerId: customerId },
+      select: { id: true },
+    });
+    if (byCust) return byCust;
+  }
+
+  return null;
+}
+
+/**
  * Paddle webhook handler.
  *
  * Events handled:
@@ -33,6 +60,13 @@ export async function POST(req: Request) {
 
     const customData = eventData?.custom_data || {};
 
+    // Resolve userId — custom_data from transaction, or fallback lookup
+    async function resolveUserId(): Promise<string | null> {
+      if (customData.userId) return customData.userId;
+      const user = await findUserByPaddleData(eventData);
+      return user?.id || null;
+    }
+
     // Handle transaction.completed — first payment succeeded
     if (eventType === "transaction.completed") {
       const txUserId = customData.userId;
@@ -51,13 +85,15 @@ export async function POST(req: Request) {
         console.log(
           `[PADDLE_WEBHOOK] User ${txUserId} upgraded to Pro (sub: ${subscriptionId})`
         );
+      } else {
+        console.warn("[PADDLE_WEBHOOK] transaction.completed: no userId in custom_data, skipping");
       }
       return NextResponse.json({ received: true });
     }
 
     // Handle subscription.created
     if (eventType === "subscription.created") {
-      const subUserId = customData.userId;
+      const subUserId = await resolveUserId();
       const subId = eventData.id;
       const status = eventData.status || "active";
 
@@ -73,13 +109,17 @@ export async function POST(req: Request) {
         console.log(
           `[PADDLE_WEBHOOK] User ${subUserId} subscription created: ${status}`
         );
+      } else {
+        console.warn(
+          `[PADDLE_WEBHOOK] subscription.created: cannot resolve userId (sub: ${subId})`
+        );
       }
       return NextResponse.json({ received: true });
     }
 
     // Handle subscription.updated
     if (eventType === "subscription.updated") {
-      const subUserId = customData.userId;
+      const subUserId = await resolveUserId();
       const status = eventData.status;
 
       if (subUserId) {
@@ -97,13 +137,17 @@ export async function POST(req: Request) {
         console.log(
           `[PADDLE_WEBHOOK] User ${subUserId} subscription updated: ${status}`
         );
+      } else {
+        console.warn(
+          `[PADDLE_WEBHOOK] subscription.updated: cannot resolve userId`
+        );
       }
       return NextResponse.json({ received: true });
     }
 
     // Handle subscription.canceled — keep Pro until billing period ends
     if (eventType === "subscription.canceled") {
-      const subUserId = customData.userId;
+      const subUserId = await resolveUserId();
       const canceledAt = eventData.canceled_at
         ? new Date(eventData.canceled_at)
         : null;
@@ -122,13 +166,17 @@ export async function POST(req: Request) {
         console.log(
           `[PADDLE_WEBHOOK] User ${subUserId} subscription cancelled (Pro until billing period end)`
         );
+      } else {
+        console.warn(
+          `[PADDLE_WEBHOOK] subscription.canceled: cannot resolve userId`
+        );
       }
       return NextResponse.json({ received: true });
     }
 
     // Handle subscription.past_due — payment failed
     if (eventType === "subscription.past_due") {
-      const subUserId = customData.userId;
+      const subUserId = await resolveUserId();
 
       if (subUserId) {
         await prisma.user.update({
@@ -137,6 +185,10 @@ export async function POST(req: Request) {
         });
         console.log(
           `[PADDLE_WEBHOOK] User ${subUserId} payment past due`
+        );
+      } else {
+        console.warn(
+          `[PADDLE_WEBHOOK] subscription.past_due: cannot resolve userId`
         );
       }
       return NextResponse.json({ received: true });
@@ -152,3 +204,4 @@ export async function POST(req: Request) {
     );
   }
 }
+

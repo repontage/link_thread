@@ -6,20 +6,21 @@ import { useRouter } from "next/navigation";
 import { CheckCircle, Loader2 } from "lucide-react";
 
 export default function ProSuccessPage() {
-  const { data: session, update } = useSession();
+  const { update } = useSession();
   const router = useRouter();
   const [status, setStatus] = useState<"loading" | "done" | "timeout">("loading");
 
   useEffect(() => {
-    // Refresh the session to pick up new isPro status
+    // Refresh the session to pick up new isPro status.
+    // useSession().update() returns the fresh session — we use that
+    // instead of the stale closure-captured value from deps.
     let attempts = 0;
     const maxAttempts = 15; // 15 seconds max
     const interval = setInterval(async () => {
       attempts++;
       try {
-        await update();
-        const updatedIsPro = (session?.user as any)?.isPro;
-        if (updatedIsPro) {
+        const fresh = await update();
+        if ((fresh?.user as any)?.isPro) {
           setStatus("done");
           clearInterval(interval);
           return;
@@ -35,7 +36,7 @@ export default function ProSuccessPage() {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [update, session]);
+  }, [update]); // session removed from deps — prevents infinite intervals
 
   if (status === "loading") {
     return (
@@ -68,7 +69,7 @@ export default function ProSuccessPage() {
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4">
       <CheckCircle className="h-10 w-10 text-emerald-500" />
-      <h2 className="text-2xl font-bold text-slate-900 dark:text-white">You're now a Pro member!</h2>
+      <h2 className="text-2xl font-bold text-slate-900 dark:text-white">You&apos;re now a Pro member!</h2>
       <p className="text-slate-500 dark:text-slate-400 text-center max-w-md">
         Welcome to VoidSay Pro. Enjoy ad-free browsing, developer webhooks, and more.
       </p>
@@ -81,3 +82,4 @@ export default function ProSuccessPage() {
     </div>
   );
 }
+
