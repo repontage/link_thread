@@ -59,7 +59,12 @@ export class PaddleSDK {
       customData: { userId: params.userId },
       ...(params.paddleCustomerId
         ? { customerId: params.paddleCustomerId }
-        : {}),
+        : {
+            customer: {
+              email: params.email,
+              ...(params.name ? { name: params.name } : {}),
+            },
+          }),
     });
 
     if (!transaction || !transaction.id) {
