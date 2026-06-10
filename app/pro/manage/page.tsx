@@ -2,12 +2,13 @@
 
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { Loader2, ArrowLeft, AlertTriangle, Calendar, Mail } from "lucide-react";
+import { Loader2, ArrowLeft, AlertTriangle, Calendar, Mail, ExternalLink } from "lucide-react";
 
 export default function ProManagePage() {
   const { data: session, status } = useSession();
   const [subscriptionStatus, setSubscriptionStatus] = useState<string | null>(null);
-  const [nextBilledAt, setNextBilledAt] = useState<string | null>(null);
+  const [renewsAt, setRenewsAt] = useState<string | null>(null);
+  const [customerPortalUrl, setCustomerPortalUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [cancelling, setCancelling] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -18,7 +19,7 @@ export default function ProManagePage() {
   useEffect(() => {
     async function fetchSubscription() {
       try {
-        const response = await fetch("/api/paddle/manage", {
+        const response = await fetch("/api/ls/manage", {
           method: "POST",
         });
         if (!response.ok) {
@@ -27,7 +28,8 @@ export default function ProManagePage() {
         }
         const data = await response.json();
         setSubscriptionStatus(data.subscriptionStatus);
-        setNextBilledAt(data.nextBilledAt);
+        setRenewsAt(data.renewsAt);
+        setCustomerPortalUrl(data.customerPortalUrl);
       } catch (err: any) {
         setError(err.message || "An error occurred.");
       } finally {
@@ -51,13 +53,13 @@ export default function ProManagePage() {
     setCancelling(true);
     setError(null);
     try {
-      const response = await fetch("/api/paddle/manage", { method: "DELETE" });
+      const response = await fetch("/api/ls/manage", { method: "DELETE" });
       if (!response.ok) {
         const errData = await response.json().catch(() => ({}));
         throw new Error(errData.error || "Cancellation failed.");
       }
       setCancelSuccess(true);
-      setSubscriptionStatus("canceled");
+      setSubscriptionStatus("cancelled");
     } catch (err: any) {
       setError(err.message || "An error occurred.");
     } finally {
@@ -75,7 +77,7 @@ export default function ProManagePage() {
 
   const statusLabel =
     subscriptionStatus === "active" ? "Active" :
-    subscriptionStatus === "canceled" ? "Cancelled (ends at period end)" :
+    subscriptionStatus === "cancelled" ? "Cancelled (ends at period end)" :
     subscriptionStatus === "past_due" ? "Past Due" :
     subscriptionStatus || "Unknown";
 
@@ -120,14 +122,14 @@ export default function ProManagePage() {
             </span>
           </div>
 
-          {nextBilledAt && (
+          {renewsAt && (
             <div className="flex items-center justify-between py-2">
               <span className="text-sm text-slate-500 dark:text-slate-400">
                 <Calendar className="h-3.5 w-3.5 inline mr-1.5" />
                 Next billing
               </span>
               <span className="text-sm text-slate-700 dark:text-slate-300">
-                {new Date(nextBilledAt).toLocaleDateString("en-US", {
+                {new Date(renewsAt).toLocaleDateString("en-US", {
                   year: "numeric",
                   month: "long",
                   day: "numeric",
@@ -139,6 +141,17 @@ export default function ProManagePage() {
 
         {/* Actions */}
         <div className="space-y-3">
+          {customerPortalUrl && (
+            <a
+              href={customerPortalUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full py-3 px-4 rounded-xl text-center font-semibold text-sm bg-[#0066cc] hover:bg-[#0055b3] text-white flex items-center justify-center gap-2 transition-colors"
+            >
+              <ExternalLink className="h-4 w-4" />
+              Manage Billing on Lemon Squeezy
+            </a>
+          )}
           {subscriptionStatus === "active" && (
             <button
               onClick={handleCancel}
@@ -164,10 +177,9 @@ export default function ProManagePage() {
         </p>
 
         <p className="text-xs text-slate-400 dark:text-slate-500 text-center mt-1">
-          Powered by Paddle · Secure payment processing
+          Powered by Lemon Squeezy · Secure payment processing
         </p>
       </div>
     </div>
   );
 }
-

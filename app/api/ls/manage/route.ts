@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
-import { PaddleSDK } from "@/lib/paddle-server";
+import {
+  lsGetSubscription,
+  lsCancelSubscription,
+  lsGetCustomerPortalUrl,
+} from "@/lib/ls-server";
 
 export async function POST() {
   try {
@@ -14,8 +18,8 @@ export async function POST() {
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: {
-        paddleSubscriptionId: true,
-        paddleCustomerId: true,
+        lsSubscriptionId: true,
+        lsCustomerId: true,
         isPro: true,
         subscriptionStatus: true,
       },
@@ -28,24 +32,26 @@ export async function POST() {
       );
     }
 
-    const paddle = new PaddleSDK();
+    // Get customer portal URL
+    let customerPortalUrl: string | null = null;
+    if (user.lsCustomerId) {
+      customerPortalUrl = await lsGetCustomerPortalUrl(user.lsCustomerId);
+    }
 
-    // Get subscription details if available
+    // Get subscription details
     let subscriptionInfo = null;
-    if (user.paddleSubscriptionId) {
-      subscriptionInfo = await paddle.getSubscription(
-        user.paddleSubscriptionId
-      );
+    if (user.lsSubscriptionId) {
+      subscriptionInfo = await lsGetSubscription(user.lsSubscriptionId);
     }
 
     return NextResponse.json({
-      customerPortalUrl: null, // Paddle doesn't provide vendor-hosted portal
-      paddleSubscriptionId: user.paddleSubscriptionId,
+      customerPortalUrl,
+      lsSubscriptionId: user.lsSubscriptionId,
       subscriptionStatus: user.subscriptionStatus || subscriptionInfo?.status,
-      nextBilledAt: subscriptionInfo?.nextBilledAt || null,
+      renewsAt: subscriptionInfo?.renewsAt || null,
     });
   } catch (error) {
-    console.error("[PADDLE_MANAGE_ERROR]", error);
+    console.error("[LS_MANAGE_ERROR]", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }
@@ -65,20 +71,19 @@ export async function DELETE() {
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: {
-        paddleSubscriptionId: true,
+        lsSubscriptionId: true,
         isPro: true,
       },
     });
 
-    if (!user || !user.isPro || !user.paddleSubscriptionId) {
+    if (!user || !user.isPro || !user.lsSubscriptionId) {
       return NextResponse.json(
         { error: "No active subscription found" },
         { status: 400 }
       );
     }
 
-    const paddle = new PaddleSDK();
-    const cancelled = await paddle.cancelSubscription(user.paddleSubscriptionId);
+    const cancelled = await lsCancelSubscription(user.lsSubscriptionId);
 
     if (!cancelled) {
       return NextResponse.json(
@@ -89,16 +94,15 @@ export async function DELETE() {
 
     await prisma.user.update({
       where: { id: userId },
-      data: { subscriptionStatus: "canceled" },
+      data: { subscriptionStatus: "cancelled" },
     });
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("[PADDLE_CANCEL_ERROR]", error);
+    console.error("[LS_CANCEL_ERROR]", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }
     );
   }
 }
-
