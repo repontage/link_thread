@@ -37,7 +37,8 @@ async function findUserByLSData(eventData: any): Promise<{ id: string } | null> 
  * - order_created              → first payment completed
  * - subscription_created       → subscription started
  * - subscription_updated       → status change, renewal, etc.
- * - subscription_cancelled     → subscription cancelled
+ * - subscription_cancelled      → subscription cancelled
+ * - subscription_expired        → subscription fully expired
  * - subscription_payment_failed → payment failed
  */
 export async function POST(req: Request) {
@@ -150,6 +151,25 @@ export async function POST(req: Request) {
         });
         console.log(
           `[LS_WEBHOOK] User ${subUserId} subscription cancelled (Pro until period end)`
+        );
+      }
+      return NextResponse.json({ received: true });
+    }
+
+    // Handle subscription_expired
+    if (eventName === "subscription_expired") {
+      const subUserId = await resolveUserId();
+
+      if (subUserId) {
+        await prisma.user.update({
+          where: { id: subUserId },
+          data: {
+            isPro: false,
+            subscriptionStatus: "expired",
+          },
+        });
+        console.log(
+          `[LS_WEBHOOK] User ${subUserId} Pro subscription expired`
         );
       }
       return NextResponse.json({ received: true });

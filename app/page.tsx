@@ -109,7 +109,7 @@ export default function Home() {
             </div>
             <div>
               <h3 className="text-tagline mb-sm text-white">Ad-Free</h3>
-              <p className="text-body text-body-muted">No ads, no tracking, no data selling — ever. VoidSay is permanently ad-free by design.</p>
+              <p className="text-body text-body-muted">No ads, no tracking, no sponsored content. A clean, distraction-free experience — forever.</p>
             </div>
           </div>
         </div>
