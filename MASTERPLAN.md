@@ -296,3 +296,12 @@
   - **Lint**: 0 warnings, 0 errors. **Build**: 0 errors, 64/64 pages 통과. **Vercel 배포**: `voidsay.com` 프로덕션 완료.
   - **검증**: `/`, `/pro`, `/pro/manage` 페이지 정상 로딩. Console JS errors 0건.
   - ⚠️ **남은 작업**: Lemon Squeezy 실제 API 키 발급 → Vercel `LEMONSQUEEZY_*` env vars 입력. Webhook endpoint 등록 (`https://voidsay.com/api/ls/webhook`).
+
+- **2026-06-12**: (Scheduled Cron) **정기 유지보수 점검 및 배포**.
+  - **Paddle 잔여물 검증**: 프로젝트 내 Paddle 관련 파일 0건. `paddle` 키워드 참조 0건. Paddle SDK 0건.
+  - **Lemon Squeezy 전수 검증**: `@lemonsqueezy/lemonsqueezy.js` v4 정상 설치. `lib/ls-server.ts` + `/api/ls/{checkout,webhook,manage}` 3개 API 라우트 정상 빌드. Prisma `lsCustomerId`, `lsSubscriptionId`, `lsVariantId` 필드 존재 확인.
+  - **Vercel 환경변수**: Paddle 8개 제거 확인, LS 4개 Production Encrypted 존재 확인.
+  - **로컬 env 정리**: `.env.vercel.prod`에서 Paddle 제거, LS 추가.
+  - **Lint**: 0 warnings, 0 errors. **Build**: 0 errors, 64/64 pages (Turbopack). **Vercel 배포**: `voidsay.com` 프로덕션 완료 (57s).
+  - **라이브 검증**: `voidsay.com/` — console 0 errors, "Ad-Free" 정상. `/pro` — "Powered by Lemon Squeezy" 정상. `/api/ls/checkout` → 401 (auth 정상), `/api/ls/webhook` → 401 (서명 검증 정상).
+  - **상태**: Paddle → LS 마이그레이션 100% 완료. LS API 키 발급 후 즉시 결제 테스트 가능.
