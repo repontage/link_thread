@@ -305,3 +305,11 @@
   - **Lint**: 0 warnings, 0 errors. **Build**: 0 errors, 64/64 pages (Turbopack). **Vercel 배포**: `voidsay.com` 프로덕션 완료 (57s).
   - **라이브 검증**: `voidsay.com/` — console 0 errors, "Ad-Free" 정상. `/pro` — "Powered by Lemon Squeezy" 정상. `/api/ls/checkout` → 401 (auth 정상), `/api/ls/webhook` → 401 (서명 검증 정상).
   - **상태**: Paddle → LS 마이그레이션 100% 완료. LS API 키 발급 후 즉시 결제 테스트 가능.
+
+- **2026-06-12 (#2)**: (Scheduled Cron) **정기 유지보수 — 무결성 확인**.
+  - **Paddle 잔여물**: 0건 (소스코드, SDK, env, API 라우트 전무). ✅
+  - **Lemon Squeezy**: `lib/ls-server.ts` (4개 함수), `/api/ls/checkout`, `/api/ls/webhook` (6개 이벤트), `/api/ls/manage` — 코드 정상. `@lemonsqueezy/lemonsqueezy.js` v4 정상.
+  - **Prisma**: `lsCustomerId`, `lsSubscriptionId`, `lsVariantId`, `isPro`, `subscriptionStatus`, `subscriptionEnd` 필드 정상.
+  - **Lint**: 0 warnings, 0 errors. **Build**: 0 errors, 64/64 pages. **Vercel 배포**: `voidsay.com` 프로덕션 완료.
+  - **라이브**: `/` → 200, `/pro` → 200, `/api/ls/checkout` → 405 (POST only, 정상).
+  - **MASTERPLAN.md**: 모든 체크박스 완료 확인. ⚠️ 남은 작업 없음. LS API 키 발급 후 결제 테스트만 남음.
