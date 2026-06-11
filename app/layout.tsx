@@ -53,11 +53,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <script 
-          async 
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8285887641787672" 
-          crossOrigin="anonymous"
-        ></script>
         <meta name="saashub-verification" content="zx1cj87msb4n" />
         <JsonLd data={{
           "@context": "https://schema.org",

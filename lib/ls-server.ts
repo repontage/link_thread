@@ -13,6 +13,8 @@ const variantId = process.env.LEMONSQUEEZY_VARIANT_ID || "";
 
 function ensureSetup() {
   if (!apiKey) throw new Error("LEMONSQUEEZY_API_KEY is not set");
+  if (!storeId) throw new Error("LEMONSQUEEZY_STORE_ID is not set");
+  if (!variantId) throw new Error("LEMONSQUEEZY_VARIANT_ID is not set");
   lemonSqueezySetup({ apiKey });
 }
 
