@@ -312,4 +312,14 @@
   - **Prisma**: `lsCustomerId`, `lsSubscriptionId`, `lsVariantId`, `isPro`, `subscriptionStatus`, `subscriptionEnd` 필드 정상.
   - **Lint**: 0 warnings, 0 errors. **Build**: 0 errors, 64/64 pages. **Vercel 배포**: `voidsay.com` 프로덕션 완료.
   - **라이브**: `/` → 200, `/pro` → 200, `/api/ls/checkout` → 405 (POST only, 정상).
+
+- **2026-06-13**: (Scheduled Cron) **Paddle → Lemon Squeezy 이중 확인 및 정리**.
+  - **Paddle 잔여물**: 0건 (소스코드, SDK, API 라우트). `MASTERPLAN.md` 내 히스토리 로그만 존재.
+  - **Lemon Squeezy**: `lib/ls-server.ts` (5개 함수: lsCreateCheckout, verifyWebhook, lsGetSubscription, lsCancelSubscription, lsGetCustomerPortalUrl), `/api/ls/checkout`, `/api/ls/webhook`, `/api/ls/manage` — 코드 정상. `@lemonsqueezy/lemonsqueezy.js` v4.
+  - **Prisma**: `lsCustomerId`, `lsSubscriptionId`, `lsVariantId` 필드 정상 (paddleCustomerId/paddleSubscriptionId 0건).
+  - **.env.example**: Paddle env 제거, LS env (`LEMONSQUEEZY_API_KEY`, `LEMONSQUEEZY_WEBHOOK_SECRET`, `LEMONSQUEEZY_STORE_ID`, `LEMONSQUEEZY_VARIANT_ID`, `NEXT_PUBLIC_LEMONSQUEEZY_STORE_ID`) 정상.
+  - **ThreadUI.tsx**: `<a>` → `<button onClick={signIn}>` 로 변경 (lint 오류 0건).
+  - **Lint**: 0 warnings, 0 errors. **Build**: 0 errors, 68/68 pages (Turbopack). **Vercel 배포**: `voidsay.com` 프로덕션 완료.
+  - **라이브 검증**: `voidsay.com/` → 200, `/pro` → 200, `/pro/manage` → 200, `/api/ls/checkout` → 405 (POST only, 정상).
+  - **상태**: Paddle 코드 100% 제거 완료. LS 마이그레이션 안정화. LS API 키 발급 후 즉시 결제 테스트 가능.
   - **MASTERPLAN.md**: 모든 체크박스 완료 확인. ⚠️ 남은 작업 없음. LS API 키 발급 후 결제 테스트만 남음.
