@@ -5,11 +5,9 @@ import prisma from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(req: Request) {
+export async function GET() {
   const session = await auth();
-  const { searchParams } = new URL(req.url);
-  const isAdminByToken = searchParams.get('token') === 'fix-db-one-time-240612';
-  const isAdmin = (session?.user as any)?.role === 'ADMIN' || isAdminByToken;
+  const isAdmin = (session?.user as any)?.role === 'ADMIN';
 
   if (!isAdmin) {
     return NextResponse.json({ error: 'Unauthorized. Admin access required.' }, { status: 403 });
