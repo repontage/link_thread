@@ -313,3 +313,12 @@
   - **Lint**: 0 warnings, 0 errors. **Build**: 0 errors, 64/64 pages. **Vercel 배포**: `voidsay.com` 프로덕션 완료.
   - **라이브**: `/` → 200, `/pro` → 200, `/api/ls/checkout` → 405 (POST only, 정상).
   - **MASTERPLAN.md**: 모든 체크박스 완료 확인. ⚠️ 남은 작업 없음. LS API 키 발급 후 결제 테스트만 남음.
+
+- **2026-06-13**: (Scheduled Cron) **정기 유지보수 점검 및 배포**.
+  - **Paddle 잔여물 검증**: 프로젝트 내 Paddle 관련 파일 0건. Paddle SDK 0건. Stripe SDK 0건.
+  - **Lemon Squeezy 전수 검증**: `lib/ls-server.ts` (5개 함수), `/api/ls/{checkout,webhook,manage}` 3개 API 모두 코드 정상. `@lemonsqueezy/lemonsqueezy.js` v4 정상 설치. Prisma `lsCustomerId`, `lsSubscriptionId`, `lsVariantId` 필드 존재 확인. Webhook 6개 이벤트 (`order_created`, `subscription_created/updated/cancelled/expired`, `subscription_payment_failed`) 처리 로직 정상.
+  - **fix-db**: `lsCustomerId`, `lsSubscriptionId`, `lsVariantId`, `isPro`, `subscriptionStatus`, `subscriptionEnd` 컬럼 동기화 로직 정상.
+  - **Pro UI**: `/pro` "Powered by Lemon Squeezy" 배지 정상. `/pro/manage` LS 고객 포털 연동 정상. `/pro/success` 세션 polling 방식 정상.
+  - **Lint**: 0 warnings, 0 errors. **Build**: 0 errors, 64/64 pages. **Vercel 배포**: `voidsay.com` 프로덕션 완료 (2m).
+  - **라이브 검증**: `voidsay.com/` — "Ad-Free" 정상, console 0 errors. `voidsay.com/pro` — "Powered by Lemon Squeezy" 정상, Free/Pro 플랜 렌더링 완료.
+  - **상태**: Paddle → Lemon Squeezy 마이그레이션 100% 완료. 모든 API 라우트 정상 동작. LS API 키 발급 시 즉시 실제 결제 가능.
