@@ -40,7 +40,7 @@ export async function POST() {
       customerPortalUrl: subscriptionInfo?.customerPortalUrl || null,
       lsSubscriptionId: user.lsSubscriptionId,
       subscriptionStatus: user.subscriptionStatus || subscriptionInfo?.status,
-      renewsAt: subscriptionInfo?.renewsAt || null,
+      nextBilledAt: subscriptionInfo?.nextBilledAt || null,
     });
   } catch (error) {
     console.error("[LS_MANAGE_ERROR]", error);

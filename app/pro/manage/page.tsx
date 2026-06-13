@@ -122,14 +122,14 @@ export default function ProManagePage() {
             </span>
           </div>
 
-          {renewsAt && (
+          {nextBilledAt && (
             <div className="flex items-center justify-between py-2">
               <span className="text-sm text-slate-500 dark:text-slate-400">
                 <Calendar className="h-3.5 w-3.5 inline mr-1.5" />
                 Next billing
               </span>
               <span className="text-sm text-slate-700 dark:text-slate-300">
-                {new Date(renewsAt).toLocaleDateString("en-US", {
+                {new Date(nextBilledAt).toLocaleDateString("en-US", {
                   year: "numeric",
                   month: "long",
                   day: "numeric",
