@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
-import { PaddleSDK } from "@/lib/paddle-server";
+import { LemonSqueezySDK } from "@/lib/ls-server";
 
 export async function POST() {
   try {
@@ -14,8 +14,8 @@ export async function POST() {
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: {
-        paddleSubscriptionId: true,
-        paddleCustomerId: true,
+        lsSubscriptionId: true,
+        lsCustomerId: true,
         isPro: true,
         subscriptionStatus: true,
       },
@@ -28,24 +28,22 @@ export async function POST() {
       );
     }
 
-    const paddle = new PaddleSDK();
+    const ls = new LemonSqueezySDK();
 
     // Get subscription details if available
     let subscriptionInfo = null;
-    if (user.paddleSubscriptionId) {
-      subscriptionInfo = await paddle.getSubscription(
-        user.paddleSubscriptionId
-      );
+    if (user.lsSubscriptionId) {
+      subscriptionInfo = await ls.getSubscription(user.lsSubscriptionId);
     }
 
     return NextResponse.json({
-      customerPortalUrl: null, // Paddle doesn't provide vendor-hosted portal
-      paddleSubscriptionId: user.paddleSubscriptionId,
+      customerPortalUrl: subscriptionInfo?.customerPortalUrl || null,
+      lsSubscriptionId: user.lsSubscriptionId,
       subscriptionStatus: user.subscriptionStatus || subscriptionInfo?.status,
       nextBilledAt: subscriptionInfo?.nextBilledAt || null,
     });
   } catch (error) {
-    console.error("[PADDLE_MANAGE_ERROR]", error);
+    console.error("[LS_MANAGE_ERROR]", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }
@@ -65,20 +63,20 @@ export async function DELETE() {
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: {
-        paddleSubscriptionId: true,
+        lsSubscriptionId: true,
         isPro: true,
       },
     });
 
-    if (!user || !user.isPro || !user.paddleSubscriptionId) {
+    if (!user || !user.isPro || !user.lsSubscriptionId) {
       return NextResponse.json(
         { error: "No active subscription found" },
         { status: 400 }
       );
     }
 
-    const paddle = new PaddleSDK();
-    const cancelled = await paddle.cancelSubscription(user.paddleSubscriptionId);
+    const ls = new LemonSqueezySDK();
+    const cancelled = await ls.cancelSubscription(user.lsSubscriptionId);
 
     if (!cancelled) {
       return NextResponse.json(
@@ -94,11 +92,10 @@ export async function DELETE() {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("[PADDLE_CANCEL_ERROR]", error);
+    console.error("[LS_CANCEL_ERROR]", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }
     );
   }
 }
-

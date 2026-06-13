@@ -28,8 +28,9 @@ export async function GET(req: Request) {
     const requiredUserColumns = [
       { name: 'isPro', type: 'BOOLEAN DEFAULT 0' },
       { name: 'subscriptionStatus', type: 'TEXT' },
-      { name: 'paddleCustomerId', type: 'TEXT' },
-      { name: 'paddleSubscriptionId', type: 'TEXT' },
+      { name: 'lsCustomerId', type: 'TEXT' },
+      { name: 'lsSubscriptionId', type: 'TEXT' },
+      { name: 'lsVariantId', type: 'TEXT' },
       { name: 'subscriptionEnd', type: 'DATETIME' },
     ];
 

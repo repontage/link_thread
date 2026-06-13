@@ -2,12 +2,13 @@
 
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { Loader2, ArrowLeft, AlertTriangle, Calendar, Mail } from "lucide-react";
+import { Loader2, ArrowLeft, AlertTriangle, Calendar, ExternalLink, Mail } from "lucide-react";
 
 export default function ProManagePage() {
   const { data: session, status } = useSession();
   const [subscriptionStatus, setSubscriptionStatus] = useState<string | null>(null);
   const [nextBilledAt, setNextBilledAt] = useState<string | null>(null);
+  const [customerPortalUrl, setCustomerPortalUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [cancelling, setCancelling] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -18,7 +19,7 @@ export default function ProManagePage() {
   useEffect(() => {
     async function fetchSubscription() {
       try {
-        const response = await fetch("/api/paddle/manage", {
+        const response = await fetch("/api/ls/manage", {
           method: "POST",
         });
         if (!response.ok) {
@@ -28,6 +29,7 @@ export default function ProManagePage() {
         const data = await response.json();
         setSubscriptionStatus(data.subscriptionStatus);
         setNextBilledAt(data.nextBilledAt);
+        setCustomerPortalUrl(data.customerPortalUrl);
       } catch (err: any) {
         setError(err.message || "An error occurred.");
       } finally {
@@ -51,7 +53,7 @@ export default function ProManagePage() {
     setCancelling(true);
     setError(null);
     try {
-      const response = await fetch("/api/paddle/manage", { method: "DELETE" });
+      const response = await fetch("/api/ls/manage", { method: "DELETE" });
       if (!response.ok) {
         const errData = await response.json().catch(() => ({}));
         throw new Error(errData.error || "Cancellation failed.");
@@ -139,6 +141,18 @@ export default function ProManagePage() {
 
         {/* Actions */}
         <div className="space-y-3">
+          {customerPortalUrl && (
+            <a
+              href={customerPortalUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full py-3 px-4 rounded-xl text-center font-semibold text-sm bg-[#0066cc] hover:bg-[#0055b3] text-white flex items-center justify-center gap-2 transition-colors"
+            >
+              <ExternalLink className="h-4 w-4" />
+              Manage Billing on Lemon Squeezy
+            </a>
+          )}
+
           {subscriptionStatus === "active" && (
             <button
               onClick={handleCancel}
@@ -156,7 +170,7 @@ export default function ProManagePage() {
         </div>
 
         <p className="text-xs text-slate-400 dark:text-slate-500 text-center mt-6">
-          For payment method changes, please contact{" "}
+          For payment method changes, please use the Lemon Squeezy customer portal or contact{" "}
           <a href="mailto:support@voidsay.com" className="underline hover:text-slate-600 dark:hover:text-slate-300">
             <Mail className="h-3 w-3 inline mr-0.5" />
             support@voidsay.com
@@ -164,10 +178,9 @@ export default function ProManagePage() {
         </p>
 
         <p className="text-xs text-slate-400 dark:text-slate-500 text-center mt-1">
-          Powered by Paddle · Secure payment processing
+          Powered by Lemon Squeezy · Secure global payment processing
         </p>
       </div>
     </div>
   );
 }
-

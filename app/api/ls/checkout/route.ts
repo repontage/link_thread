@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
-import prisma from "@/lib/prisma";
-import { PaddleSDK } from "@/lib/paddle-server";
+import { LemonSqueezySDK } from "@/lib/ls-server";
 
 export async function POST() {
   try {
@@ -25,30 +24,19 @@ export async function POST() {
       );
     }
 
-    // Look up existing Paddle customer ID (ctm_01...) if user has one.
-    // Only pass it if it's a real Paddle-issued ID, not the app UUID.
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { paddleCustomerId: true },
-    });
+    const ls = new LemonSqueezySDK();
 
-    const paddle = new PaddleSDK();
-
-    const { transactionId } = await paddle.createTransaction({
+    const { checkoutUrl } = await ls.createCheckout({
       userId,
       email: userEmail,
       name: userName || undefined,
-      paddleCustomerId: user?.paddleCustomerId || null,
     });
 
-    // The frontend uses NEXT_PUBLIC_PADDLE_* env vars directly for Paddle.js init.
-    // We only return the transactionId needed for Checkout.open().
-    return NextResponse.json({ transactionId });
+    return NextResponse.json({ checkoutUrl });
   } catch (error) {
-    console.error("[PADDLE_CHECKOUT_ERROR]", error);
+    console.error("[LS_CHECKOUT_ERROR]", error);
     const message =
       error instanceof Error ? error.message : "Internal Server Error";
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
-
