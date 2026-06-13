@@ -216,6 +216,28 @@
 - [ ] **Remark42, Isso 비교 페이지**: 자체 호스팅 솔루션 대안으로 추가 검토.
 - [ ] **구글 서치 콘솔 등록**: 신규 페이지 인덱싱 요청.
 
+## Phase 24: 성장 해킹 & 바이럴 루프 (Growth Engine) 🚀 In Progress
+- [ ] **초대 시스템**: 초대 링크 생성 + 보상 (초대한 사람/받은 사람 모두 Pro 1주 체험권). `/api/invite` API + `/invite/[code]` 페이지.
+- [ ] **공유 카드 (OG Image Generator)**: URL 공유 시 댓글 수, 인기 링크 등이 포함된 동적 OG 이미지 자동 생성. `/api/og/[threadId]` 엔드포인트.
+- [ ] **위젯 바이럴**: 워드프레스 플러그인, 미디엄 임베드 확장. "Powered by VoidSay" 배지로 자연 유입.
+- [ ] **리텐션 루프**: 주간 다이제스트 이메일 (인기 댓글, 내 활동 요약). `/api/digest` + 이메일 발송.
+
+## Phase 25: 모바일 앱 & 오프라인 (Mobile-First 2.0)
+- [ ] **React Native 앱**: iOS + Android 네이티브 앱. 기존 PWA를 넘어 네이티브 푸시 알림, 딥링크 지원.
+- [ ] **오프라인 댓글 큐잉**: 오프라인에서 작성한 댓글을 온라인 복구 시 자동 업로드.
+- [ ] **홈 화면 위젯**: iOS/Android 위젯으로 트렌딩 링크 표시.
+
+## Phase 26: 커뮤니티 & UGC 생태계 (Community Platform)
+- [ ] **그룹/서브 커뮤니티**: 특정 주제별 커뮤니티 생성. `/c/[slug]` 페이지. 그룹 내 전용 스레드.
+- [ ] **팔로우 시스템**: 유저 간 팔로우, 팔로잉 타임라인 피드.
+- [ ] **DM (Direct Messages)**: 유저 간 1:1 실시간 메시지. `/messages` 페이지.
+
+## Phase 27: 수익화 고도화 (Monetization 2.0)
+- [ ] **Team Plan**: Organization 생성, 멤버 초대, 공유 관리자 대시보드. `/teams` 페이지. 팀 단위 과금.
+- [ ] **Analytics Pro**: Pro 구독자 전용 고급 분석 (트래픽 소스, 전환 추적, 커스텀 대시보드). Free 유저는 기본 통계만.
+- [ ] **API Rate Limit**: Pro 구독자는 Public API 상한 상향 (하루 10,000회). Free 유저는 100회/일. API 자체는 공개 유지, 별도 과금 없음.
+- [ ] **Sponsored Links**: 검증된 스폰서 링크 노출 — Ad-free 유지하는 대체 수익원. Pro 유저는 스폰서 링크 미노출.
+
 - **2026-06-02**: (Scheduled Cron) Phase 23 SEO 비교 페이지 확장. 사이트 건강 점검 (voidsay.com 메인, /pro, /alternatives/disqus, /embed HTTP 200 확인, 콘솔 에러 0건). 신규 비교 페이지 3건 생성: `/alternatives/giscus` (GitHub 없이 댓글 가능 + 리치 미디어), `/alternatives/fastcomments` ($29/mo vs $49/mo 가격 비교), `/alternatives/utterances` (GitHub 계정 불필요 + 알림 시스템). 사이트맵에 7개 대안 URL 추가. `/alternatives` 인덱스 페이지에 신규 카드 3건 추가. `npm run lint` 0 warnings, `npm run build` 46/46 pages 0 errors — Vercel(`voidsay.com`) 배포 완료. HN/Reddit 홍보 기회 탐색했으나 최근 7일/30일 내 관련 스레드 0건 발견.
 +- **2026-06-04**: (Scheduled Cron) **Phase 21 Paddle 결제 시스템 최종 개선 및 배포**.
   - **Paddle 서버 라이브러리 강화** (`lib/paddle-server.ts`): `findOrCreateCustomer()` (이메일 기반 고객 조회/생성), `createCheckoutTransaction()` (custom_data에 userId 포함), `verifyWebhook()` (Paddle SDK `webhooks.unmarshal()` 사용) 구현.

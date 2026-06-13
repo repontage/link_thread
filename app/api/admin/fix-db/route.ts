@@ -145,6 +145,41 @@ export async function GET() {
       }
     }
 
+    // 7. Ensure InviteCode table exists
+    await libsql.execute(`
+      CREATE TABLE IF NOT EXISTS InviteCode (
+        id TEXT PRIMARY KEY NOT NULL,
+        code TEXT UNIQUE NOT NULL,
+        creatorId TEXT NOT NULL,
+        maxUses INTEGER NOT NULL DEFAULT 10,
+        useCount INTEGER NOT NULL DEFAULT 0,
+        createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        expiresAt DATETIME NOT NULL,
+        FOREIGN KEY (creatorId) REFERENCES User (id) ON DELETE CASCADE
+      );
+    `);
+
+    await libsql.execute(`
+      CREATE UNIQUE INDEX IF NOT EXISTS InviteCode_code_key ON InviteCode (code);
+    `);
+
+    // 8. Ensure InviteUse table exists
+    await libsql.execute(`
+      CREATE TABLE IF NOT EXISTS InviteUse (
+        id TEXT PRIMARY KEY NOT NULL,
+        inviteId TEXT NOT NULL,
+        userId TEXT UNIQUE NOT NULL,
+        rewardGiven INTEGER NOT NULL DEFAULT 0,
+        createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (inviteId) REFERENCES InviteCode (id) ON DELETE CASCADE,
+        FOREIGN KEY (userId) REFERENCES User (id) ON DELETE CASCADE
+      );
+    `);
+
+    await libsql.execute(`
+      CREATE UNIQUE INDEX IF NOT EXISTS InviteUse_userId_key ON InviteUse (userId);
+    `);
+
     return NextResponse.json({ 
       success: true, 
       existingUserColumns: userColumns,
