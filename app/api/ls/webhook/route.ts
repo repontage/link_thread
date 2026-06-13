@@ -1,30 +1,36 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { verifyWebhook } from "@/lib/ls-server";
+import { LemonSqueezySDK } from "@/lib/ls-server";
 
 export const dynamic = "force-dynamic";
 
 /**
- * Look up a user by LS subscription or customer ID.
+ * Resolve user ID from LS webhook payload.
+ * Checks custom_data, then falls back to DB lookup by subscription/customer ID.
  */
-async function findUserByLSData(eventData: any): Promise<{ id: string } | null> {
-  const subscriptionId = eventData?.id;
-  const customerId = eventData?.attributes?.customer_id;
+async function resolveUserId(event: any): Promise<string | null> {
+  // 1. custom_data from order/subscription
+  const customData = event.data?.attributes?.custom_data || event.meta?.custom_data || {};
+  if (customData.userId) return customData.userId;
 
+  // 2. Fallback: look up by subscription ID
+  const subscriptionId = event.data?.id;
   if (subscriptionId) {
-    const bySub = await prisma.user.findFirst({
-      where: { lsSubscriptionId: String(subscriptionId) },
+    const user = await prisma.user.findFirst({
+      where: { lsSubscriptionId: subscriptionId },
       select: { id: true },
     });
-    if (bySub) return bySub;
+    if (user) return user.id;
   }
 
+  // 3. Fallback: look up by customer ID
+  const customerId = event.data?.attributes?.customer_id;
   if (customerId) {
-    const byCust = await prisma.user.findFirst({
+    const user = await prisma.user.findFirst({
       where: { lsCustomerId: String(customerId) },
       select: { id: true },
     });
-    if (byCust) return byCust;
+    if (user) return user.id;
   }
 
   return null;
@@ -34,19 +40,22 @@ async function findUserByLSData(eventData: any): Promise<{ id: string } | null> 
  * Lemon Squeezy webhook handler.
  *
  * Events handled:
- * - order_created              → first payment completed
+ * - order_created              → new order (first reliable subscription ID)
  * - subscription_created       → subscription started
- * - subscription_updated       → status change, renewal, etc.
- * - subscription_cancelled      → subscription cancelled
- * - subscription_expired        → subscription fully expired
- * - subscription_payment_failed → payment failed
+ * - subscription_updated       → status changed
+ * - subscription_cancelled     → cancelled
+ * - subscription_expired       → expired
+ * - subscription_payment_success → renewal payment succeeded
+ * - subscription_payment_failed  → payment failed
  */
 export async function POST(req: Request) {
   try {
     const rawBody = await req.text();
     const signature = req.headers.get("x-signature") || "";
 
-    if (!verifyWebhook(rawBody, signature)) {
+    // Verify webhook signature
+    const ls = new LemonSqueezySDK();
+    if (!ls.verifyWebhook(rawBody, signature)) {
       console.error("[LS_WEBHOOK] Signature verification failed");
       return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
     }
@@ -54,58 +63,57 @@ export async function POST(req: Request) {
     const event = JSON.parse(rawBody);
     const eventName = event.meta?.event_name;
     const eventData = event.data;
+
     console.log(`[LS_WEBHOOK] Received event: ${eventName}`);
 
-    const customData = event.meta?.custom_data || {};
-
-    const resolveUserId = async (): Promise<string | null> => {
-      if (customData.user_id) return customData.user_id;
-      const user = await findUserByLSData(eventData);
-      return user?.id || null;
-    };
-
-    // Handle order_created — first payment succeeded
+    // Handle order_created — first reliable subscription ID
     if (eventName === "order_created") {
-      const orderUserId = customData.user_id;
-      const subscriptionId = eventData?.attributes?.subscription_id || null;
+      const customData = eventData?.attributes?.custom_data || {};
+      const userId = customData.userId;
+      const firstSubItem = eventData?.attributes?.first_order_item;
+      const subscriptionId = firstSubItem?.subscription_id || null;
+      const customerId = eventData?.attributes?.customer_id;
 
-      if (orderUserId) {
+      if (userId) {
         await prisma.user.update({
-          where: { id: orderUserId },
+          where: { id: userId },
           data: {
             isPro: true,
             subscriptionStatus: "active",
-            lsCustomerId: String(eventData?.attributes?.customer_id || ""),
-            lsSubscriptionId: subscriptionId ? String(subscriptionId) : null,
-            lsVariantId: String(eventData?.attributes?.variant_id || ""),
+            lsCustomerId: customerId ? String(customerId) : undefined,
+            lsSubscriptionId: subscriptionId || undefined,
           },
         });
         console.log(
-          `[LS_WEBHOOK] User ${orderUserId} upgraded to Pro (sub: ${subscriptionId})`
+          `[LS_WEBHOOK] User ${userId} upgraded to Pro (sub: ${subscriptionId})`
         );
+      } else {
+        console.warn("[LS_WEBHOOK] order_created: no userId in custom_data, skipping");
       }
       return NextResponse.json({ received: true });
     }
 
     // Handle subscription_created
     if (eventName === "subscription_created") {
-      const subUserId = await resolveUserId();
-      const subId = String(eventData.id);
-      const status = eventData.attributes?.status || "active";
+      const userId = await resolveUserId(event);
+      const status = eventData?.attributes?.status || "active";
+      const subId = eventData?.id;
 
-      if (subUserId) {
+      if (userId) {
         await prisma.user.update({
-          where: { id: subUserId },
+          where: { id: userId },
           data: {
-            isPro: status === "active" || status === "on_trial",
+            isPro: status === "active",
             subscriptionStatus: status,
             lsSubscriptionId: subId,
-            lsCustomerId: String(eventData.attributes?.customer_id || ""),
-            lsVariantId: String(eventData.attributes?.variant_id || ""),
           },
         });
         console.log(
-          `[LS_WEBHOOK] User ${subUserId} subscription created: ${status}`
+          `[LS_WEBHOOK] User ${userId} subscription created: ${status}`
+        );
+      } else {
+        console.warn(
+          `[LS_WEBHOOK] subscription_created: cannot resolve userId (sub: ${subId})`
         );
       }
       return NextResponse.json({ received: true });
@@ -113,23 +121,26 @@ export async function POST(req: Request) {
 
     // Handle subscription_updated
     if (eventName === "subscription_updated") {
-      const subUserId = await resolveUserId();
-      const status = eventData.attributes?.status;
+      const userId = await resolveUserId(event);
+      const status = eventData?.attributes?.status;
+      const renewsAt = eventData?.attributes?.renews_at;
 
-      if (subUserId) {
-        const isActive = status === "active" || status === "on_trial";
+      if (userId) {
+        const isActive = status === "active";
         await prisma.user.update({
-          where: { id: subUserId },
+          where: { id: userId },
           data: {
             isPro: isActive,
             subscriptionStatus: status,
-            subscriptionEnd: eventData.attributes?.renews_at
-              ? new Date(eventData.attributes.renews_at)
-              : null,
+            subscriptionEnd: renewsAt ? new Date(renewsAt) : null,
           },
         });
         console.log(
-          `[LS_WEBHOOK] User ${subUserId} subscription updated: ${status}`
+          `[LS_WEBHOOK] User ${userId} subscription updated: ${status}`
+        );
+      } else {
+        console.warn(
+          `[LS_WEBHOOK] subscription_updated: cannot resolve userId`
         );
       }
       return NextResponse.json({ received: true });
@@ -137,20 +148,24 @@ export async function POST(req: Request) {
 
     // Handle subscription_cancelled
     if (eventName === "subscription_cancelled") {
-      const subUserId = await resolveUserId();
-      const endsAt = eventData.attributes?.ends_at;
+      const userId = await resolveUserId(event);
+      const endsAt = eventData?.attributes?.ends_at;
 
-      if (subUserId) {
+      if (userId) {
         await prisma.user.update({
-          where: { id: subUserId },
+          where: { id: userId },
           data: {
-            isPro: true, // Pro until billing period ends
-            subscriptionStatus: "cancelled",
+            isPro: true, // Pro stays until end of billing period
+            subscriptionStatus: "canceled",
             subscriptionEnd: endsAt ? new Date(endsAt) : null,
           },
         });
         console.log(
-          `[LS_WEBHOOK] User ${subUserId} subscription cancelled (Pro until period end)`
+          `[LS_WEBHOOK] User ${userId} subscription cancelled (Pro until period end)`
+        );
+      } else {
+        console.warn(
+          `[LS_WEBHOOK] subscription_cancelled: cannot resolve userId`
         );
       }
       return NextResponse.json({ received: true });
@@ -158,33 +173,48 @@ export async function POST(req: Request) {
 
     // Handle subscription_expired
     if (eventName === "subscription_expired") {
-      const subUserId = await resolveUserId();
+      const userId = await resolveUserId(event);
 
-      if (subUserId) {
+      if (userId) {
         await prisma.user.update({
-          where: { id: subUserId },
+          where: { id: userId },
           data: {
             isPro: false,
             subscriptionStatus: "expired",
           },
         });
-        console.log(
-          `[LS_WEBHOOK] User ${subUserId} Pro subscription expired`
-        );
+        console.log(`[LS_WEBHOOK] User ${userId} subscription expired`);
+      }
+      return NextResponse.json({ received: true });
+    }
+
+    // Handle subscription_payment_success (renewal)
+    if (eventName === "subscription_payment_success") {
+      const userId = await resolveUserId(event);
+
+      if (userId) {
+        await prisma.user.update({
+          where: { id: userId },
+          data: {
+            isPro: true,
+            subscriptionStatus: "active",
+          },
+        });
+        console.log(`[LS_WEBHOOK] User ${userId} renewal payment succeeded`);
       }
       return NextResponse.json({ received: true });
     }
 
     // Handle subscription_payment_failed
     if (eventName === "subscription_payment_failed") {
-      const subUserId = await resolveUserId();
+      const userId = await resolveUserId(event);
 
-      if (subUserId) {
+      if (userId) {
         await prisma.user.update({
-          where: { id: subUserId },
+          where: { id: userId },
           data: { subscriptionStatus: "past_due" },
         });
-        console.log(`[LS_WEBHOOK] User ${subUserId} payment failed`);
+        console.log(`[LS_WEBHOOK] User ${userId} payment failed`);
       }
       return NextResponse.json({ received: true });
     }

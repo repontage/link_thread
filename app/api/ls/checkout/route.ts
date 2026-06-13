@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { lsCreateCheckout } from "@/lib/ls-server";
+import { LemonSqueezySDK } from "@/lib/ls-server";
 
 export async function POST() {
   try {
@@ -24,7 +24,9 @@ export async function POST() {
       );
     }
 
-    const { checkoutUrl } = await lsCreateCheckout({
+    const ls = new LemonSqueezySDK();
+
+    const { checkoutUrl } = await ls.createCheckout({
       userId,
       email: userEmail,
       name: userName || undefined,

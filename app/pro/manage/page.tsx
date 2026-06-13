@@ -2,12 +2,12 @@
 
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { Loader2, ArrowLeft, AlertTriangle, Calendar, Mail, ExternalLink } from "lucide-react";
+import { Loader2, ArrowLeft, AlertTriangle, Calendar, ExternalLink, Mail } from "lucide-react";
 
 export default function ProManagePage() {
   const { data: session, status } = useSession();
   const [subscriptionStatus, setSubscriptionStatus] = useState<string | null>(null);
-  const [renewsAt, setRenewsAt] = useState<string | null>(null);
+  const [nextBilledAt, setNextBilledAt] = useState<string | null>(null);
   const [customerPortalUrl, setCustomerPortalUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [cancelling, setCancelling] = useState(false);
@@ -28,7 +28,7 @@ export default function ProManagePage() {
         }
         const data = await response.json();
         setSubscriptionStatus(data.subscriptionStatus);
-        setRenewsAt(data.renewsAt);
+        setNextBilledAt(data.nextBilledAt);
         setCustomerPortalUrl(data.customerPortalUrl);
       } catch (err: any) {
         setError(err.message || "An error occurred.");
@@ -152,6 +152,7 @@ export default function ProManagePage() {
               Manage Billing on Lemon Squeezy
             </a>
           )}
+
           {subscriptionStatus === "active" && (
             <button
               onClick={handleCancel}
@@ -169,7 +170,7 @@ export default function ProManagePage() {
         </div>
 
         <p className="text-xs text-slate-400 dark:text-slate-500 text-center mt-6">
-          For payment method changes, please contact{" "}
+          For payment method changes, please use the Lemon Squeezy customer portal or contact{" "}
           <a href="mailto:support@voidsay.com" className="underline hover:text-slate-600 dark:hover:text-slate-300">
             <Mail className="h-3 w-3 inline mr-0.5" />
             support@voidsay.com
@@ -177,7 +178,7 @@ export default function ProManagePage() {
         </p>
 
         <p className="text-xs text-slate-400 dark:text-slate-500 text-center mt-1">
-          Powered by Lemon Squeezy · Secure payment processing
+          Powered by Lemon Squeezy · Secure global payment processing
         </p>
       </div>
     </div>

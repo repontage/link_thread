@@ -99,17 +99,16 @@
 
 ## Phase 21: Pro 구독 및 비즈니스 상용화 (Pro Subscription & Commercialization) ✅ Complete
 - [x] **Ad-free Experience (완료)**: Pro 구독 유저에게 Sponsor UI 및 광고 요소 전면 비노출 처리 (ThreadUI.tsx 조건부 렌더링).
-- [x] **Developer Portal Access Restriction (완료)**: Developer 포털 관리 및 실시간 웹훅 권한을 Pro/Admin 등급으로 잠금.
 - [x] **User Model Extension (완료)**: Prisma DB `User` 스키마에 `isPro`, `subscriptionStatus`, `lsCustomerId`, `lsSubscriptionId`, `lsVariantId`, `subscriptionEnd` 필드 도입.
-- [x] **Paddle → Lemon Squeezy 마이그레이션 (2026-06-11)**: Paddle SDK 제거, LS SDK (`@lemonsqueezy/lemonsqueezy.js`) 설치. `/api/paddle/*` 라우트 제거, `/api/ls/checkout`, `/api/ls/webhook`, `/api/ls/manage` 신규 구현. Lemon Squeezy hosted Checkout 연동.
-- [x] **LS Checkout Flow**: 서버사이드 LS checkout 생성 → checkoutUrl 반환 → LS hosted Checkout 페이지로 리디렉트. `/api/ls/checkout` 엔드포인트.
-- [x] **LS Webhook 처리**: HMAC SHA256 서명 검증. `order_created`, `subscription_created`, `subscription_updated`, `subscription_cancelled`, `subscription_payment_failed` 이벤트 처리. `/api/ls/webhook`.
+- [x] **Paddle → Lemon Squeezy 마이그레이션 (2026-06-14)**: Paddle SDK (`@paddle/paddle-js` + `@paddle/paddle-node-sdk`) 제거, `@lemonsqueezy/lemonsqueezy.js` (v4) 설치. `/api/paddle/*` 라우트 제거, `/api/ls/*` 신규 구현. Paddle.js overlay → LS Hosted Checkout redirect 방식으로 전환.
+- [x] **Lemon Squeezy Checkout Flow**: 서버사이드 LS checkout 생성 → checkoutUrl 반환 → LS 호스팅 페이지로 리디렉트. `/api/ls/checkout` 엔드포인트.
+- [x] **Lemon Squeezy Webhook 처리**: HMAC SHA256 서명 검증. `order_created`, `subscription_created`, `subscription_updated`, `subscription_cancelled`, `subscription_expired`, `subscription_payment_success`, `subscription_payment_failed` 이벤트 처리. `/api/ls/webhook`.
 - [x] **Pro User Lifecycle**: `lsCustomerId`, `lsSubscriptionId`, `lsVariantId`, `subscriptionEnd` 필드. 구독 활성/만료에 따른 Pro 권한 자동 관리 (웹훅 기반).
-- [x] **LS Customer Portal**: `/pro/manage` → 구독 취소/업데이트 가능한 LS 고객 포털 연동 (`/api/ls/manage`).
+- [x] **Lemon Squeezy Customer Portal**: `/pro/manage` → LS 고객 포털 URL (pre-signed) 제공 + 구독 취소 (`/api/ls/manage`).
 - [x] **Developer Portal Pro-gating**: `/developer` 페이지 Pro/Admin 전용 접근 제한.
 - [x] **Pro Badge on Profile**: 프로필 페이지에 Pro 배지 표시.
-- [x] **Environment Variables**: `.env.example` + Vercel에 LS 4개 환경변수 (`LEMONSQUEEZY_API_KEY`, `LEMONSQUEEZY_STORE_ID`, `LEMONSQUEEZY_VARIANT_ID`, `LEMONSQUEEZY_WEBHOOK_SECRET`) 설정 슬롯 준비 완료.
-- [x] **Turso DB LS 컬럼 동기화**: `fix-db` API에 `lsCustomerId`, `lsSubscriptionId`, `lsVariantId` 컬럼 추가 완료. (2026-06-11 Cron — Paddle → LS migration final)
+- [x] **Environment Variables**: `.env.example` + Vercel에 LS 4개 환경변수 (`LEMONSQUEEZY_API_KEY`, `LEMONSQUEEZY_STORE_ID`, `LEMONSQUEEZY_VARIANT_ID`, `LEMONSQUEEZY_WEBHOOK_SECRET`) 설정.
+- [x] **Turso DB LS 컬럼 동기화**: `fix-db` API에 `lsCustomerId`, `lsSubscriptionId`, `lsVariantId` 컬럼 업데이트 완료. (2026-06-14 Cron — Paddle → LS migration final)
 
 ## Phase 22: 지능형 피드 및 개인화 (Intelligent Feed & Personalization)
 - [x] **Personalized Feed**: 사용자 관심사(댓글 단 URL 카테고리, upvote 패턴) 기반 개인화 피드 생성.

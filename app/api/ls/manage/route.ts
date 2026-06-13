@@ -1,11 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
-import {
-  lsGetSubscription,
-  lsCancelSubscription,
-  lsGetCustomerPortalUrl,
-} from "@/lib/ls-server";
+import { LemonSqueezySDK } from "@/lib/ls-server";
 
 export async function POST() {
   try {
@@ -32,20 +28,16 @@ export async function POST() {
       );
     }
 
-    // Get customer portal URL
-    let customerPortalUrl: string | null = null;
-    if (user.lsCustomerId) {
-      customerPortalUrl = await lsGetCustomerPortalUrl(user.lsCustomerId);
-    }
+    const ls = new LemonSqueezySDK();
 
     // Get subscription details
     let subscriptionInfo = null;
     if (user.lsSubscriptionId) {
-      subscriptionInfo = await lsGetSubscription(user.lsSubscriptionId);
+      subscriptionInfo = await ls.getSubscription(user.lsSubscriptionId);
     }
 
     return NextResponse.json({
-      customerPortalUrl,
+      customerPortalUrl: subscriptionInfo?.customerPortalUrl || null,
       lsSubscriptionId: user.lsSubscriptionId,
       subscriptionStatus: user.subscriptionStatus || subscriptionInfo?.status,
       renewsAt: subscriptionInfo?.renewsAt || null,
@@ -83,7 +75,8 @@ export async function DELETE() {
       );
     }
 
-    const cancelled = await lsCancelSubscription(user.lsSubscriptionId);
+    const ls = new LemonSqueezySDK();
+    const cancelled = await ls.cancelSubscription(user.lsSubscriptionId);
 
     if (!cancelled) {
       return NextResponse.json(

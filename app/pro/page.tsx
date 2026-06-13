@@ -16,6 +16,7 @@ export default function ProPage() {
     setError(null);
 
     try {
+      // Create checkout on server and get Lemon Squeezy checkout URL
       const response = await fetch("/api/ls/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -32,7 +33,7 @@ export default function ProPage() {
         throw new Error("No checkout URL returned.");
       }
 
-      // Redirect to Lemon Squeezy hosted checkout
+      // Redirect to Lemon Squeezy hosted checkout page
       window.location.href = checkoutUrl;
     } catch (err: any) {
       console.error("[PRO_UPGRADE_ERROR]", err);
