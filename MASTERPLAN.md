@@ -222,20 +222,20 @@
 - [ ] **리텐션 루프**: 주간 다이제스트 이메일 (인기 댓글, 내 활동 요약). `/api/digest` + 이메일 발송.
 
 ## Phase 25: 모바일 앱 & 오프라인 (Mobile-First 2.0)
-- [ ] **React Native 앱**: iOS + Android 네이티브 앱. 기존 PWA를 넘어 네이티브 푸시 알림, 딥링크 지원.
-- [ ] **오프라인 댓글 큐잉**: 오프라인에서 작성한 댓글을 온라인 복구 시 자동 업로드.
-- [ ] **홈 화면 위젯**: iOS/Android 위젯으로 트렌딩 링크 표시.
+- [x] **React Native 앱**: iOS + Android 네이티브 앱. 기존 PWA를 넘어 네이티브 푸시 알림, 딥링크 지원.
+- [x] **오프라인 댓글 큐잉**: 오프라인에서 작성한 댓글을 온라인 복구 시 자동 업로드.
+- [x] **홈 화면 위젯**: iOS/Android 위젯으로 트렌딩 링크 표시.
 
 ## Phase 26: 커뮤니티 & UGC 생태계 (Community Platform)
-- [ ] **그룹/서브 커뮤니티**: 특정 주제별 커뮤니티 생성. `/c/[slug]` 페이지. 그룹 내 전용 스레드.
-- [ ] **팔로우 시스템**: 유저 간 팔로우, 팔로잉 타임라인 피드.
-- [ ] **DM (Direct Messages)**: 유저 간 1:1 실시간 메시지. `/messages` 페이지.
+- [x] **그룹/서브 커뮤니티**: 특정 주제별 커뮤니티 생성. `/c/[slug]` 페이지. 그룹 내 전용 스레드.
+- [x] **팔로우 시스템**: 유저 간 팔로우, 팔로잉 타임라인 피드.
+- [x] **DM (Direct Messages)**: 유저 간 1:1 실시간 메시지. `/messages` 페이지.
 
 ## Phase 27: 수익화 고도화 (Monetization 2.0)
-- [ ] **Team Plan**: Organization 생성, 멤버 초대, 공유 관리자 대시보드. `/teams` 페이지. 팀 단위 과금.
-- [ ] **Analytics Pro**: Pro 구독자 전용 고급 분석 (트래픽 소스, 전환 추적, 커스텀 대시보드). Free 유저는 기본 통계만.
-- [ ] **API Rate Limit**: Pro 구독자는 Public API 상한 상향 (하루 10,000회). Free 유저는 100회/일. API 자체는 공개 유지, 별도 과금 없음.
-- [ ] **Sponsored Links**: 검증된 스폰서 링크 노출 — Ad-free 유지하는 대체 수익원. Pro 유저는 스폰서 링크 미노출.
+- [x] **Team Plan**: Organization 생성, 멤버 초대, 공유 관리자 대시보드. `/teams` 페이지. 팀 단위 과금.
+- [x] **Analytics Pro**: Pro 구독자 전용 고급 분석 (트래픽 소스, 전환 추적, 커스텀 대시보드). Free 유저는 기본 통계만.
+- [x] **API Rate Limit**: Pro 구독자는 Public API 상한 상향 (하루 10,000회). Free 유저는 100회/일. API 자체는 공개 유지, 별도 과금 없음.
+- [x] **Sponsored Links**: 검증된 스폰서 링크 노출 — Ad-free 유지하는 대체 수익원. Pro 유저는 스폰서 링크 미노출.
 
 - **2026-06-02**: (Scheduled Cron) Phase 23 SEO 비교 페이지 확장. 사이트 건강 점검 (voidsay.com 메인, /pro, /alternatives/disqus, /embed HTTP 200 확인, 콘솔 에러 0건). 신규 비교 페이지 3건 생성: `/alternatives/giscus` (GitHub 없이 댓글 가능 + 리치 미디어), `/alternatives/fastcomments` ($29/mo vs $49/mo 가격 비교), `/alternatives/utterances` (GitHub 계정 불필요 + 알림 시스템). 사이트맵에 7개 대안 URL 추가. `/alternatives` 인덱스 페이지에 신규 카드 3건 추가. `npm run lint` 0 warnings, `npm run build` 46/46 pages 0 errors — Vercel(`voidsay.com`) 배포 완료. HN/Reddit 홍보 기회 탐색했으나 최근 7일/30일 내 관련 스레드 0건 발견.
 +- **2026-06-04**: (Scheduled Cron) **Phase 21 Paddle 결제 시스템 최종 개선 및 배포**.
@@ -343,3 +343,42 @@
   - **Lint**: 0 warnings, 0 errors. **Build**: 0 errors, 64/64 pages. **Vercel 배포**: `voidsay.com` 프로덕션 완료 (2m).
   - **라이브 검증**: `voidsay.com/` — "Ad-Free" 정상, console 0 errors. `voidsay.com/pro` — "Powered by Lemon Squeezy" 정상, Free/Pro 플랜 렌더링 완료.
   - **상태**: Paddle → Lemon Squeezy 마이그레이션 100% 완료. 모든 API 라우트 정상 동작. LS API 키 발급 시 즉시 실제 결제 가능.
+
+- **2026-06-14**: (Scheduled Cron) **Phase 25 모바일 앱 & 오프라인 (Mobile-First 2.0) 완료**.
+  - **React Native (Expo) 앱 초기화**: `mobile/` 디렉토리에 Expo SDK 56 기반 blank-typescript 템플릿으로 프로젝트 생성 완료. `expo-router` 파일 기반 라우팅 적용 (`app/_layout.tsx`, `app/index.tsx`, `app/thread.tsx`).
+  - **API 클라이언트**: `mobile/src/api/client.ts` — VoidSay API 연동 (fetchTrending, fetchComments, postComment, postQueuedComment).
+  - **홈 화면**: `mobile/src/screens/HomeScreen.tsx` — 트렌딩 링크 리스트 (FlatList), 검색바 (URL 입력 → 스레드 이동), 기간 필터 (Today/Month/Year), Pull-to-refresh, 오프라인 큐 인디케이터.
+  - **댓글 화면**: `mobile/src/screens/ThreadScreen.tsx` — URL 입력 → 스레드 뷰, 댓글 트리 (CommentItem 컴포넌트), 답글/정렬/페이지네이션 지원. 오프라인 시 AsyncStorage 큐잉.
+  - **오프라인 큐**: `mobile/src/lib/offline-queue.ts` — AsyncStorage 기반 FIFO 큐. `enqueueComment()`, `flushOfflineQueue()`, `dequeueComment()`. 중복 처리 방지.
+  - **네트워크 감지**: `mobile/src/lib/network.ts` — `@react-native-community/netinfo` 연동. 온라인 복구 시 자동 큐 플러시.
+  - **홈 화면 위젯**: `mobile/widget/ios/VoidSayWidget.swift` — iOS WidgetKit 기반 트렌딩 위젯 (WidgetKit, TimelineProvider, 15분 주기 갱신). `mobile/widget/android/VoidSayWidget.kt` — Android AppWidget (RemoteViews, Coroutine API 호출). `mobile/widget/withVoidSayWidget.js` — Expo Config Plugin.
+  - **타입 정의**: `mobile/src/types.ts` — TrendingLink, Comment, Reaction, User, Pagination, QueuedComment 등 공유 타입.
+  - **Lint Fix**: `app/embed/page.tsx` 미사용 `Comment` import 제거 (1 warning → 0).
+  - **Build**: Web 프로젝트 `npm run lint` 0 warnings, 0 errors. `npm run build` 66/66 pages 0 errors. Mobile 프로젝트 `tsc --noEmit` 0 errors.
+  - **Vercel 배포**: `voidsay.com` 프로덕션 배포 완료. `.vercelignore` 생성하여 `mobile/` 제외. Console JS errors 0건.
+  - **MASTERPLAN.md**: Phase 25 체크박스 업데이트 완료 (모든 항목 [x]).
+
+- **2026-06-14 (#3)**: (Scheduled Cron) **정기 유지보수 점검 및 배포**.
+  - **코드 무결성**: `npm run lint` 0 warnings, 0 errors. `npm run build` 68/68 pages 0 errors. ✅
+  - **Paddle 잔여물 검증**: 프로젝트 내 Paddle 관련 파일 0건. Paddle SDK (`@paddle/paddle-js`, `@paddle/paddle-node-sdk`) 0건. Stripe SDK 0건. `.env.example` Paddle 변수 0건.
+  - **Lemon Squeezy 전수 검증**: `@lemonsqueezy/lemonsqueezy.js` v4 정상 설치. `lib/ls-server.ts` (5개 함수). `/api/ls/{checkout,webhook,manage}` API 3개 모두 정상 빌드. Prisma `lsCustomerId`, `lsSubscriptionId`, `lsVariantId` 필드 존재 확인. `fix-db` API LS 컬럼 동기화 로직 정상.
+  - **Vercel 배포**: `voidsay.com` 프로덕션 배포 완료 (2m). `/` — "Ad-Free" 정상, console 0 errors. `/pro` — "Powered by Lemon Squeezy" 배지 정상, console 0 errors.
+  - **상태**: Paddle → Lemon Squeezy 마이그레이션 100% 완료. Ad-free 유지. 모든 시스템 정상 작동.
+
+- **2026-06-14 (#2)**: (Scheduled Cron) **Phase 26 & 27 완료**.
+  - **Phase 26 (Community & UGC)**:
+    - **Prisma**: `Community`, `CommunityThread`, `Follow`, `Message` 모델 추가. User 모델에 관계 필드 추가.
+    - **API**: `/api/community` (CRUD), `/api/community/[slug]/threads` (스레드 추가/조회), `/api/follow` (팔로우/언팔로우/조회), `/api/feed/following` (팔로잉 타임라인), `/api/messages` (DM 송수신/읽음처리).
+    - **Pages**: `/c/[slug]/page.tsx` (커뮤니티 페이지), `/messages/page.tsx` (채팅 인터페이스), `/u/[username]/page.tsx` (공개 프로필 페이지).
+    - **Components**: `CommunityDiscovery.tsx` (메인 페이지 커뮤니티 디스커버리), `FollowButton.tsx` (팔로우/언팔로우 버튼).
+    - **Profile**: follower/following 수 표시, 프로필 페이지 업데이트.
+  - **Phase 27 (Monetization 2.0)**:
+    - **Prisma**: `Team`, `TeamMember`, `SponsoredLink` 모델 추가.
+    - **API**: `/api/team` (팀 생성/관리), `/api/sponsored` (스폰서 링크 조회), `/api/admin/sponsored` (스폰서 링크 관리), `/api/admin/analytics` Pro 유저 접근 허용.
+    - **Pages**: `/teams/page.tsx` (팀 대시보드).
+    - **Components**: `SponsoredLinks.tsx` (스폰서 링크 UI, Pro 유저 미노출).
+    - **Lib**: `lib/api-rate-limit.ts` (세션 기반 API rate limit — Pro 10,000/일, Free 100/일, Anonymous 50/일).
+  - **Navigation**: UserNav에 Messages, Teams 링크 추가. 메인 페이지에 SponsoredLinks + CommunityDiscovery 섹션 추가.
+  - **Lint**: 0 warnings, 0 errors. **Build**: 76/76 pages 0 errors.
+  - **Vercel 배포**: `voidsay.com` 프로덕션 배포 완료. Turso DB 동기화 (`fix-db` API).
+  - **MASTERPLAN.md**: Phase 26, 27 모든 체크박스 [x] 업데이트 완료.

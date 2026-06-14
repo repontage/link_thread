@@ -1,0 +1,5 @@
+# Vercel deployment ignore rules
+# These files/directories should NOT be uploaded to Vercel
+
+mobile/
+mobile/node_modules/

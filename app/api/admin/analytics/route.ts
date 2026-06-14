@@ -31,8 +31,15 @@ const getCachedCohorts = unstable_cache(
 export async function GET(request: Request) {
   try {
     const session = await auth();
-    if (!session?.user || (session.user as any)?.role !== "ADMIN") {
-      return NextResponse.json({ error: "Admin access required" }, { status: 403 });
+    if (!session?.user) {
+      return NextResponse.json({ error: "Authentication required" }, { status: 401 });
+    }
+    const user = session.user as any;
+    const isAdmin = user.role === "ADMIN";
+    const isPro = user.isPro === true;
+
+    if (!isAdmin && !isPro) {
+      return NextResponse.json({ error: "Admin or Pro access required" }, { status: 403 });
     }
 
     const { searchParams } = new URL(request.url);

@@ -9,6 +9,8 @@ import { useRef } from 'react';
 
 import CuratedPicks from '@/components/CuratedPicks';
 import PersonalizedFeed from '@/components/PersonalizedFeed';
+import CommunityDiscovery from '@/components/CommunityDiscovery';
+import SponsoredLinks from '@/components/SponsoredLinks';
 
 export default function Home() {
   const discussionRef = useRef<HTMLDivElement>(null);
@@ -80,12 +82,21 @@ export default function Home() {
              <h2 className="text-display-lg mb-xs">Join the Thread</h2>
              <p className="text-lead text-ink-muted48">Any URL, any video, any time.</p>
           </div>
+          {/* Sponsored Links */}
+          <SponsoredLinks />
           <ThreadUI />
         </div>
       </section>
 
       {/* Curated Picks */}
       <CuratedPicks />
+
+      {/* Community Discovery */}
+      <section className="product-tile-dark py-section w-full">
+        <div className="max-w-[980px] px-lg mx-auto">
+          <CommunityDiscovery />
+        </div>
+      </section>
 
       {/* Personalized Feed */}
       <PersonalizedFeed />
@@ -155,13 +166,13 @@ export default function Home() {
       }} />
 
       {/* Footer */}
-      <footer className="w-full border-t border-white/10 py-8 mt-16">
+      <footer className="w-full border-t border-white/10 py-8 mt-16 bg-surface-black">
         <div className="max-w-[980px] mx-auto px-lg flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-white/50">
           <span>&copy; {new Date().getFullYear()} VoidSay</span>
-          <Link href="/terms" className="hover:text-white/80 transition-colors">Terms of Service</Link>
-          <Link href="/privacy" className="hover:text-white/80 transition-colors">Privacy Policy</Link>
-          <Link href="/refund" className="hover:text-white/80 transition-colors">Refund Policy</Link>
-          <a href="https://x.com/voidsay_" target="_blank" rel="noopener noreferrer" className="hover:text-white/80 transition-colors">𝕏 @voidsay_</a>
+          <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
+          <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
+          <Link href="/refund" className="hover:text-white transition-colors">Refund Policy</Link>
+          <a href="https://x.com/voidsay_" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">𝕏 @voidsay_</a>
         </div>
       </footer>
 

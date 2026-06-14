@@ -25,6 +25,12 @@ export default function UserNav() {
           <Link href="/profile" className="text-white/80 hover:text-white transition-colors">
             Profile
           </Link>
+          <Link href="/messages" className="hidden sm:inline text-white/80 hover:text-white transition-colors">
+            Messages
+          </Link>
+          <Link href="/teams" className="hidden sm:inline text-white/80 hover:text-white transition-colors">
+            Teams
+          </Link>
           {(session?.user as any)?.isPro || (session?.user as any)?.role === "ADMIN" ? (
             <Link href="/developer" className="text-white/80 hover:text-white transition-colors">
               Developer

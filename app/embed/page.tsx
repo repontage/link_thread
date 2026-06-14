@@ -1,6 +1,5 @@
 import { Suspense } from "react"
 import prisma from "@/lib/prisma"
-import type { Comment } from "@prisma/client"
 
 export const dynamic = "force-dynamic"
 

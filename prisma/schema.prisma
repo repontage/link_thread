@@ -193,6 +193,14 @@ model User {
   WebhookSubscription WebhookSubscription[]
   InviteCode         InviteCode[]
   InviteUse          InviteUse?
+  Community         Community[]
+  Follow            Follow[]        @relation("Following")
+  FollowedBy        Follow[]        @relation("Follower")
+  MessageSent       Message[]       @relation("Sender")
+  MessageReceived   Message[]       @relation("Receiver")
+  TeamMember        TeamMember[]
+  Team              Team[]
+  CommunityThread   CommunityThread[]
 }
 
 model WebhookSubscription {
@@ -247,4 +255,97 @@ model InviteUse {
   createdAt   DateTime   @default(now())
   invite      InviteCode @relation(fields: [inviteId], references: [id], onDelete: Cascade)
   user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Phase 26: Community & UGC
+model Community {
+  id          String   @id @default(uuid())
+  slug        String   @unique
+  name        String
+  description String?
+  creatorId   String
+  createdAt   DateTime @default(now())
+  creator     User     @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  threads     CommunityThread[]
+
+  @@index([slug])
+}
+
+model CommunityThread {
+  id          String    @id @default(uuid())
+  communityId String
+  url         String
+  title       String?
+  addedById   String
+  addedAt     DateTime  @default(now())
+  community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  addedBy     User      @relation(fields: [addedById], references: [id], onDelete: Cascade)
+
+  @@unique([communityId, url])
+  @@index([communityId, addedAt])
+}
+
+model Follow {
+  id          String   @id @default(uuid())
+  followerId  String
+  followingId String
+  createdAt   DateTime @default(now())
+  follower    User     @relation("Follower", fields: [followerId], references: [id], onDelete: Cascade)
+  following   User     @relation("Following", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+  @@index([followerId])
+  @@index([followingId])
+}
+
+model Message {
+  id         String    @id @default(uuid())
+  senderId   String
+  receiverId String
+  content    String
+  createdAt  DateTime  @default(now())
+  readAt     DateTime?
+  sender     User      @relation("Sender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver   User      @relation("Receiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@index([senderId, receiverId, createdAt])
+  @@index([receiverId, readAt])
+}
+
+// Phase 27: Monetization 2.0
+model Team {
+  id          String       @id @default(uuid())
+  name        String
+  slug        String       @unique
+  description String?
+  ownerId     String
+  createdAt   DateTime     @default(now())
+  owner       User         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  members     TeamMember[]
+
+  @@index([slug])
+}
+
+model TeamMember {
+  id       String   @id @default(uuid())
+  teamId   String
+  userId   String
+  role     String   @default("MEMBER") // OWNER, ADMIN, MEMBER
+  joinedAt DateTime @default(now())
+  team     Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, userId])
+  @@index([userId])
+}
+
+model SponsoredLink {
+  id          String    @id @default(uuid())
+  url         String
+  title       String
+  description String?
+  sponsorName String
+  imageUrl    String?
+  active      Boolean   @default(true)
+  createdAt   DateTime  @default(now())
 }

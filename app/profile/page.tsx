@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { Clock, MessageSquare, Link as LinkIcon } from "lucide-react";
+import { Clock, MessageSquare, Link as LinkIcon, Users, UserPlus } from "lucide-react";
 import prisma from "../../lib/prisma";
 import ProfileEditForm from "@/components/ProfileEditForm";
 import LocalizedDate from "@/components/LocalizedDate";
@@ -31,6 +31,12 @@ export default async function ProfilePage() {
     where: { userId },
     orderBy: { createdAt: "desc" },
   });
+
+  // Get follower/following counts
+  const [followersCount, followingCount] = await Promise.all([
+    prisma.follow.count({ where: { followingId: userId } }),
+    prisma.follow.count({ where: { followerId: userId } }),
+  ]);
 
   const displayImage = dbUser.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${dbUser.id}`;
 
@@ -69,6 +75,18 @@ export default async function ProfilePage() {
                 Pro
               </span>
             )}
+
+            {/* Follower/Following Stats */}
+            <div className="flex items-center gap-4 mt-3 text-sm text-zinc-600">
+              <span className="flex items-center gap-1">
+                <Users className="h-4 w-4 text-zinc-400" />
+                <strong>{followersCount}</strong> followers
+              </span>
+              <span className="flex items-center gap-1">
+                <UserPlus className="h-4 w-4 text-zinc-400" />
+                <strong>{followingCount}</strong> following
+              </span>
+            </div>
             
             <ProfileEditForm user={dbUser as any} />
           </div>
