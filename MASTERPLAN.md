@@ -382,3 +382,13 @@
   - **Lint**: 0 warnings, 0 errors. **Build**: 76/76 pages 0 errors.
   - **Vercel 배포**: `voidsay.com` 프로덕션 배포 완료. Turso DB 동기화 (`fix-db` API).
   - **MASTERPLAN.md**: Phase 26, 27 모든 체크박스 [x] 업데이트 완료.
+
+- **2026-06-15**: (Scheduled Cron) **Phase 25 무결성 점검 및 Vercel 배포**.
+  - **Mobile 프로젝트 검증**: `mobile/` 디렉토리 Expo SDK 56 프로젝트 정상. API 클라이언트 (`src/api/client.ts`), 오프라인 큐 (`src/lib/offline-queue.ts`), 네트워크 감지 (`src/lib/network.ts`), 홈 화면 (`src/screens/HomeScreen.tsx`), 댓글 화면 (`src/screens/ThreadScreen.tsx`), 댓글 컴포넌트 (`src/components/CommentItem.tsx`), iOS WidgetKit 위젯 (`widget/ios/VoidSayWidget.swift`), Android AppWidget (`widget/android/VoidSayWidget.kt`), Expo Config Plugin (`widget/withVoidSayWidget.js`) — 모든 파일 존재 확인.
+  - **Mobile TSC**: `npx tsc --noEmit` 0 errors.
+  - **Web Lint**: `npm run lint` 0 warnings, 0 errors.
+  - **Web Build**: `npm run build` 68/68 pages 0 errors (Turbopack).
+  - **Vercel 배포**: `voidsay.com` 프로덕션 배포 완료 (1m build). `.vercelignore`로 `mobile/` 제외 확인.
+  - **라이브 검증**: `voidsay.com/` — 정상 로딩, "Ad-Free" 확인. `voidsay.com/pro` — "Powered by Lemon Squeezy" 정상.
+  - **MASTERPLAN.md**: Phase 25 모든 체크박스 [x] 상태 확인 완료. Phase 26, 27 완료 상태 확인.
+  - **상태**: Phase 25 모바일 앱 & 오프라인 100% 완료 유지. Phase 26, 27 완료. 모든 시스템 정상 작동.
