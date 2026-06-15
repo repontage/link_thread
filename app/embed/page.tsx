@@ -3,12 +3,12 @@ import prisma from "@/lib/prisma"
 
 export const dynamic = "force-dynamic"
 
-export default function EmbedPage({
+export default async function EmbedPage({
   searchParams,
 }: {
-  searchParams: { url?: string }
+  searchParams: Promise<{ url?: string }>
 }) {
-  const url = searchParams.url || ""
+  const { url = "" } = await searchParams
 
   if (!url) {
     return (
