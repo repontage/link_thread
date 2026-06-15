@@ -71,9 +71,13 @@ export class LemonSqueezySDK {
       return false;
     }
 
-    const hmac = crypto.createHmac("sha256", secret);
-    const digest = hmac.update(rawBody).digest("hex");
-    return crypto.timingSafeEqual(Buffer.from(digest), Buffer.from(signatureHeader));
+    try {
+      const hmac = crypto.createHmac("sha256", secret);
+      const digest = hmac.update(rawBody).digest("hex");
+      return crypto.timingSafeEqual(Buffer.from(digest), Buffer.from(signatureHeader));
+    } catch {
+      return false;
+    }
   }
 
   /**
