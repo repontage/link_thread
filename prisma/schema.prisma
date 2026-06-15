@@ -216,17 +216,6 @@ model WebhookSubscription {
   @@index([userId])
 }
 
-model UserBadge {
-  id        String   @id
-  userId    String
-  badgeType String
-  createdAt DateTime @default(now())
-  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, badgeType])
-  @@index([userId])
-}
-
 model VerificationToken {
   identifier String
   token      String   @unique
@@ -348,4 +337,14 @@ model SponsoredLink {
   imageUrl    String?
   active      Boolean   @default(true)
   createdAt   DateTime  @default(now())
+}
+
+model UserBadge {
+  id        String   @id @default(uuid())
+  userId    String
+  badgeType String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([userId, badgeType])
+  @@index([userId])
 }
