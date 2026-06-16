@@ -156,7 +156,7 @@ export async function POST(req: Request) {
           where: { id: userId },
           data: {
             isPro: true, // Pro stays until end of billing period
-            subscriptionStatus: "canceled",
+            subscriptionStatus: "cancelled",
             subscriptionEnd: endsAt ? new Date(endsAt) : null,
           },
         });
