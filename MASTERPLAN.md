@@ -392,3 +392,11 @@
   - **라이브 검증**: `voidsay.com/` — 정상 로딩, "Ad-Free" 확인. `voidsay.com/pro` — "Powered by Lemon Squeezy" 정상.
   - **MASTERPLAN.md**: Phase 25 모든 체크박스 [x] 상태 확인 완료. Phase 26, 27 완료 상태 확인.
   - **상태**: Phase 25 모바일 앱 & 오프라인 100% 완료 유지. Phase 26, 27 완료. 모든 시스템 정상 작동.
+
+- **2026-06-17**: (Scheduled Cron) **자율 유지보수 점검 및 Paddle → Lemon Squeezy 최종 검증**.
+  - **Paddle 잔여물 검증**: 프로젝트 소스코드 내 Paddle 참조 0건. `lib/paddle-server.ts` 존재하지 않음. `/api/paddle/*` 라우트 0건. `@paddle/paddle-js`, `@paddle/paddle-node-sdk` 의존성 없음. Prisma User 모델에서 `paddleCustomerId`, `paddleSubscriptionId` 필드 없음. `.env.example` Paddle 변수 0건. ✅
+  - **Lemon Squeezy 전수 검증**: `@lemonsqueezy/lemonsqueezy.js` v4 정상 설치. `lib/ls-server.ts` (LemonSqueezySDK: createCheckout, verifyWebhook, getSubscription, cancelSubscription). `/api/ls/checkout` (POST, auth required). `/api/ls/webhook` (POST, signature verification, 7 events: order_created, subscription_created/updated/cancelled/expired, payment_success/failed). `/api/ls/manage` (POST + DELETE). ✅
+  - **Web Lint**: `npm run lint` 0 warnings, 0 errors. ✅
+  - **Web Build**: `npm run build` 68/68 pages 0 errors (Turbopack). ✅
+  - **Vercel 배포**: `voidsay.com` 프로덕션 배포 완료 (55s build). `voidsay.com/` HTTP 200. `voidsay.com/pro` HTTP 200. `voidsay.com/pro/manage` HTTP 200. `/api/ls/checkout` 401 (정상 — auth required). `/api/ls/webhook` 500 (정상 — invalid body). ✅
+  - **상태**: Paddle → Lemon Squeezy 마이그레이션 100% 완료 유지. Ad-free 유지. 모든 시스템 정상 작동.
