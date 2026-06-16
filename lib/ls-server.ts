@@ -8,6 +8,28 @@ if (apiKey) {
 }
 
 /**
+ * Verify a Lemon Squeezy webhook signature using HMAC SHA256.
+ * Standalone function — does not require SDK instantiation.
+ * Wraps crypto.timingSafeEqual in try-catch: when buffer lengths differ
+ * (e.g. empty/malformed x-signature header), returns false instead of throwing.
+ */
+export function verifyLemonSqueezyWebhook(rawBody: string, signatureHeader: string): boolean {
+  const secret = process.env.LEMONSQUEEZY_WEBHOOK_SECRET;
+  if (!secret) {
+    console.error("[LS_WEBHOOK] Missing LEMONSQUEEZY_WEBHOOK_SECRET");
+    return false;
+  }
+
+  try {
+    const hmac = crypto.createHmac("sha256", secret);
+    const digest = hmac.update(rawBody).digest("hex");
+    return crypto.timingSafeEqual(Buffer.from(digest), Buffer.from(signatureHeader));
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Lemon Squeezy SDK wrapper for VoidSay Pro subscription management.
  * Handles checkouts, webhooks, and subscription lifecycle.
  *
@@ -63,21 +85,10 @@ export class LemonSqueezySDK {
 
   /**
    * Verify a Lemon Squeezy webhook signature using HMAC SHA256.
+   * Delegates to the standalone function.
    */
   verifyWebhook(rawBody: string, signatureHeader: string): boolean {
-    const secret = process.env.LEMONSQUEEZY_WEBHOOK_SECRET;
-    if (!secret) {
-      console.error("[LS_WEBHOOK] Missing LEMONSQUEEZY_WEBHOOK_SECRET");
-      return false;
-    }
-
-    try {
-      const hmac = crypto.createHmac("sha256", secret);
-      const digest = hmac.update(rawBody).digest("hex");
-      return crypto.timingSafeEqual(Buffer.from(digest), Buffer.from(signatureHeader));
-    } catch {
-      return false;
-    }
+    return verifyLemonSqueezyWebhook(rawBody, signatureHeader);
   }
 
   /**

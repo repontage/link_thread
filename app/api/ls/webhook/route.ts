@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { LemonSqueezySDK } from "@/lib/ls-server";
+import { verifyLemonSqueezyWebhook } from "@/lib/ls-server";
 
 export const dynamic = "force-dynamic";
 
@@ -53,14 +53,21 @@ export async function POST(req: Request) {
     const rawBody = await req.text();
     const signature = req.headers.get("x-signature") || "";
 
-    // Verify webhook signature
-    const ls = new LemonSqueezySDK();
-    if (!ls.verifyWebhook(rawBody, signature)) {
+    // Verify webhook signature — uses standalone function, no SDK import needed
+    if (!verifyLemonSqueezyWebhook(rawBody, signature)) {
       console.error("[LS_WEBHOOK] Signature verification failed");
       return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
     }
 
-    const event = JSON.parse(rawBody);
+    // Parse body only after signature is verified
+    let event: any;
+    try {
+      event = JSON.parse(rawBody);
+    } catch {
+      console.error("[LS_WEBHOOK] Invalid JSON body");
+      return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+    }
+
     const eventName = event.meta?.event_name;
     const eventData = event.data;
 
