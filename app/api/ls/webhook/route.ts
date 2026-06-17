@@ -131,15 +131,24 @@ export async function POST(req: Request) {
       const userId = await resolveUserId(event);
       const status = eventData?.attributes?.status;
       const renewsAt = eventData?.attributes?.renews_at;
+      const endsAt = eventData?.attributes?.ends_at;
 
       if (userId) {
-        const isActive = status === "active";
+        // "cancelled" means the user chose to cancel, but Pro remains until period end.
+        // Treating it as active avoids a race with subscription_cancelled:
+        // if this event arrives last, isPro must not be flipped to false prematurely.
+        const isActive = status === "active" || status === "cancelled";
         await prisma.user.update({
           where: { id: userId },
           data: {
             isPro: isActive,
             subscriptionStatus: status,
-            subscriptionEnd: renewsAt ? new Date(renewsAt) : null,
+            // cancelled subscriptions lack renews_at; fall back to ends_at
+            subscriptionEnd: renewsAt
+              ? new Date(renewsAt)
+              : endsAt
+                ? new Date(endsAt)
+                : null,
           },
         });
         console.log(
