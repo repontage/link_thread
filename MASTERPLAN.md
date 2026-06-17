@@ -400,3 +400,12 @@
   - **Web Build**: `npm run build` 68/68 pages 0 errors (Turbopack). ✅
   - **Vercel 배포**: `voidsay.com` 프로덕션 배포 완료 (55s build). `voidsay.com/` HTTP 200. `voidsay.com/pro` HTTP 200. `voidsay.com/pro/manage` HTTP 200. `/api/ls/checkout` 401 (정상 — auth required). `/api/ls/webhook` 500 (정상 — invalid body). ✅
   - **상태**: Paddle → Lemon Squeezy 마이그레이션 100% 완료 유지. Ad-free 유지. 모든 시스템 정상 작동.
+
+- **2026-06-18**: (Scheduled Cron) **자율 유지보수 점검 및 Vercel voidsay.com 재배포**.
+  - **Paddle 잔여물 검증**: 프로젝트 소스코드 내 Paddle 참조 0건. `lib/paddle-server.ts` 존재하지 않음. `/api/paddle/*` 라우트 0건. `@paddle/paddle-js`, `@paddle/paddle-node-sdk` 의존성 없음. Prisma User 모델에서 `paddleCustomerId`, `paddleSubscriptionId` 필드 없음. `.env.example` Paddle 변수 0건. ✅
+  - **Lemon Squeezy 전수 검증**: `@lemonsqueezy/lemonsqueezy.js` v4 정상 설치. `lib/ls-server.ts` (LemonSqueezySDK: createCheckout, verifyWebhook, getSubscription, cancelSubscription). `/api/ls/checkout` (POST, auth required). `/api/ls/webhook` (POST, 7 events: order_created, subscription_created/updated/cancelled/expired, subscription_payment_success/failed). `/api/ls/manage` (POST + DELETE). Prisma `lsCustomerId`, `lsSubscriptionId`, `lsVariantId` 필드 정상. `fix-db` API LS 컬럼 동기화 로직 정상. `/pro` 페이지 "Powered by Lemon Squeezy" 정상. ✅
+  - **Web Lint**: `npm run lint` 0 warnings, 0 errors. ✅
+  - **Web Build**: `npm run build` 68/68 pages 0 errors (Turbopack). ✅
+  - **Vercel 배포**: `link-thread-project` 프로젝트로 voidsay.com 배포 완료 (~60s build). `voidsay.com/` — "Ad-Free" 정상, HTTP 200. `voidsay.com/pro` — "Powered by Lemon Squeezy" 배지 정상, HTTP 200. LS API 라우트 모두 정상 경로 등록 확인. ✅
+  - **ca1260d1 workspace**: 구버전 Paddle 코드 확인 (패키지, 라우트, Prisma 필드). 추후 정리 필요. bd683191 workspace가 현재 배포 버전.
+  - **상태**: Paddle → Lemon Squeezy 마이그레이션 100% 완료 유지. Ad-free 유지. voidsay.com 정상 작동. 모든 시스템 정상.
