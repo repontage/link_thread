@@ -12,7 +12,6 @@
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.2",
-"@eslint/eslintrc": "^3.3.5",
     "@lemonsqueezy/lemonsqueezy.js": "^4.0.0",
     "@libsql/client": "^0.8.0",
     "@prisma/adapter-libsql": "^5.22.0",
@@ -41,6 +40,7 @@
     "tailwind-merge": "^2.2.0"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.5",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@types/node": "^20",

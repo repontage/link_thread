@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import * as cheerio from 'cheerio';
 import { rateLimit } from '@/lib/rate-limit';
+import { checkSSRF } from '@/lib/ssrf-check';
 
 export async function GET(request: Request) {
   const ip = request.headers.get('x-forwarded-for') || '127.0.0.1';
@@ -16,31 +17,13 @@ export async function GET(request: Request) {
   }
 
   try {
-    const validUrl = new URL(url); // URL 파싱 테스트
-    
-    // SSRF 방지: 내부 IP 및 private 도메인 접근 차단
-    const hostname = validUrl.hostname;
-    const isPrivateIp = (ip: string) => {
-      const parts = ip.split('.');
-      if (parts.length !== 4) return false;
-      const [p1, p2] = parts.map(Number);
-      return (
-        p1 === 10 ||
-        (p1 === 172 && p2 >= 16 && p2 <= 31) ||
-        (p1 === 192 && p2 === 168) ||
-        p1 === 127 ||
-        p1 === 0 ||
-        p1 === 169
-      );
-    };
-
-    if (
-      hostname === 'localhost' ||
-      hostname.endsWith('.local') ||
-      isPrivateIp(hostname)
-    ) {
+    // SSRF 방지: DNS 해석 기반 내부 IP 접근 차단
+    const safe = await checkSSRF(url);
+    if (!safe) {
       return NextResponse.json({ error: '허용되지 않는 URL입니다.' }, { status: 403 });
     }
+
+    const validUrl = new URL(url);
 
     const response = await fetch(validUrl.toString(), {
       headers: {
