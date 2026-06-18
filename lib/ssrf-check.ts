@@ -26,8 +26,8 @@ export async function checkSSRF(urlStr: string): Promise<boolean> {
       return false;
     }
 
-    // Resolve DNS
-    const { address } = await lookup(url.hostname);
+    // Resolve DNS (IPv4-only to prevent IPv6 SSRF bypass)
+    const { address } = await lookup(url.hostname, { family: 4 });
 
     if (isPrivateIP(address)) {
       return false;

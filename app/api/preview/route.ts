@@ -25,12 +25,17 @@ export async function GET(request: Request) {
 
     const validUrl = new URL(url);
 
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+
     const response = await fetch(validUrl.toString(), {
       headers: {
         'User-Agent': 'VoidSayBot/1.0',
       },
-      // Some sites might be slow, so add a reasonable timeout or just let fetch handle it.
+      signal: controller.signal,
     });
+
+    clearTimeout(timeout);
 
     if (!response.ok) {
       throw new Error(`Failed to fetch URL: ${response.statusText}`);
