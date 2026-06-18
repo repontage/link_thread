@@ -33,7 +33,7 @@ export function verifyLemonSqueezyWebhook(rawBody: string, signatureHeader: stri
  * Lemon Squeezy SDK wrapper for VoidSay Pro subscription management.
  * Handles checkouts, webhooks, and subscription lifecycle.
  *
- * Unlike Paddle's overlay-based approach, LS uses hosted checkout pages.
+ * Uses LS hosted checkout pages — clients redirect to the checkout URL.
  * The client redirects users to the LS checkout URL.
  */
 export class LemonSqueezySDK {
