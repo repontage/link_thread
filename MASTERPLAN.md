@@ -409,3 +409,13 @@
   - **Vercel 배포**: `link-thread-project` 프로젝트로 voidsay.com 배포 완료 (~60s build). `voidsay.com/` — "Ad-Free" 정상, HTTP 200. `voidsay.com/pro` — "Powered by Lemon Squeezy" 배지 정상, HTTP 200. LS API 라우트 모두 정상 경로 등록 확인. ✅
   - **ca1260d1 workspace**: 구버전 Paddle 코드 확인 (패키지, 라우트, Prisma 필드). 추후 정리 필요. bd683191 workspace가 현재 배포 버전.
   - **상태**: Paddle → Lemon Squeezy 마이그레이션 100% 완료 유지. Ad-free 유지. voidsay.com 정상 작동. 모든 시스템 정상.
+
+- **2026-06-19**: (Scheduled Cron) **자율 유지보수 점검 및 배포**.
+  - **Paddle 잔여물 검증**: 프로젝트 소스코드 내 Paddle 참조 0건. `lib/paddle-server.ts` 존재하지 않음. `/api/paddle/*` 라우트 0건. `@paddle/paddle-js`, `@paddle/paddle-node-sdk` 의존성 없음. Prisma User 모델에서 `paddleCustomerId`, `paddleSubscriptionId` 필드 없음. ✅
+  - **Lemon Squeezy 전수 검증**: `@lemonsqueezy/lemonsqueezy.js` v4 정상 설치. `lib/ls-server.ts` 정상. `/api/ls/{checkout,webhook,manage}` 3개 API 라우트 정상 등록. Prisma `lsCustomerId`, `lsSubscriptionId`, `lsVariantId` 필드 정상. Vercel 환경변수 `LEMONSQUEEZY_API_KEY`, `LEMONSQUEEZY_WEBHOOK_SECRET`, `LEMONSQUEEZY_STORE_ID`, `LEMONSQUEEZY_VARIANT_ID` 모두 Production Encrypted 상태. ✅
+  - **린트**: `eslint` 0 warnings, 0 errors (ssrf-check.ts unused catch error 패치 완료). ✅
+  - **빌드**: `npm run build` 68/68 pages 0 errors (Turbopack). ✅
+  - **Turso DB**: `prisma db push` → "already in sync". ✅
+  - **Vercel 배포**: `voidsay.com` 프로덕션 배포 완료 (2m build). `voidsay.com/` HTTP 200. `voidsay.com/pro` HTTP 200. `/api/ls/checkout` 405 (POST 전용 정상). `/api/ls/webhook` 405 (POST 전용 정상). ✅
+  - **Git**: `fix: lint warning - unused catch error in ssrf-check.ts` 커밋 → main push 완료. ✅
+  - **상태**: Paddle → Lemon Squeezy 마이그레이션 100% 완료 유지. Ad-free 유지. voidsay.com 정상 작동. 모든 시스템 정상.
