@@ -34,7 +34,7 @@ export async function checkSSRF(urlStr: string): Promise<boolean> {
     }
 
     return true;
-  } catch (error) {
+  } catch (_error) {
     return false;
   }
 }
