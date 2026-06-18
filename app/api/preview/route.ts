@@ -28,39 +28,41 @@ export async function GET(request: Request) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 8000);
 
-    const response = await fetch(validUrl.toString(), {
-      headers: {
-        'User-Agent': 'VoidSayBot/1.0',
-      },
-      signal: controller.signal,
-    });
+    try {
+      const response = await fetch(validUrl.toString(), {
+        headers: {
+          'User-Agent': 'VoidSayBot/1.0',
+        },
+        signal: controller.signal,
+      });
 
-    clearTimeout(timeout);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch URL: ${response.statusText}`);
+      }
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch URL: ${response.statusText}`);
+      const html = await response.text();
+      const $ = cheerio.load(html);
+
+      const getMetaTag = (name: string) => 
+        $(`meta[property="${name}"]`).attr('content') || 
+        $(`meta[name="${name}"]`).attr('content') || 
+        $(`meta[property="og:${name}"]`).attr('content') || 
+        $(`meta[name="og:${name}"]`).attr('content') || 
+        '';
+
+      const title = getMetaTag('og:title') || $('title').text() || url;
+      const description = getMetaTag('og:description') || getMetaTag('description');
+      const image = getMetaTag('og:image') || getMetaTag('image');
+
+      return NextResponse.json({
+        title,
+        description,
+        image,
+        url,
+      });
+    } finally {
+      clearTimeout(timeout);
     }
-
-    const html = await response.text();
-    const $ = cheerio.load(html);
-
-    const getMetaTag = (name: string) => 
-      $(`meta[property="${name}"]`).attr('content') || 
-      $(`meta[name="${name}"]`).attr('content') || 
-      $(`meta[property="og:${name}"]`).attr('content') || 
-      $(`meta[name="og:${name}"]`).attr('content') || 
-      '';
-
-    const title = getMetaTag('og:title') || $('title').text() || url;
-    const description = getMetaTag('og:description') || getMetaTag('description');
-    const image = getMetaTag('og:image') || getMetaTag('image');
-
-    return NextResponse.json({
-      title,
-      description,
-      image,
-      url,
-    });
   } catch (_error) {
     return NextResponse.json({ title: url, url, error: 'Failed to generate preview' }, { status: 400 });
   }
