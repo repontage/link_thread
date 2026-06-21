@@ -427,3 +427,11 @@
   - **빌드**: `npm run build` 68/68 pages 0 errors (Turbopack). ✅
   - **Vercel 배포**: `voidsay.com` 프로덕션 배포 완료 (1m build). `/` HTTP 200, `/pro` HTTP 200, `/api/ls/{checkout,webhook,manage}` 405 (POST 전용 정상). `/api/paddle/*` 3개 라우트 모두 404 확인. ✅
   - **상태**: Paddle 100% 제거 유지. Lemon Squeezy 100% 완료. Ad-free 유지. voidsay.com 정상 작동.
+
+- **2026-06-22**: (Scheduled Cron) **자율 유지보수 점검 및 Vercel voidsay.com 재배포**.
+  - **Paddle 잔여물 검증**: `grep -r paddle` 결과 — 소스코드 내 0건. `api/paddle/*` 라우트 live 404 확인. `@paddle/paddle-js`, `@paddle/paddle-node-sdk` 의존성 없음. Prisma User 모델 Paddle 필드 0건. ✅
+  - **Lemon Squeezy 전수 검증**: `@lemonsqueezy/lemonsqueezy.js` v4 정상 설치. `lib/ls-server.ts` (LemonSqueezySDK + standalone verifyLemonSqueezyWebhook). `/api/ls/checkout` (POST, auth required). `/api/ls/webhook` (POST, 7 events). `/api/ls/manage` (POST + DELETE). Prisma `lsCustomerId`, `lsSubscriptionId`, `lsVariantId` 정상. ✅
+  - **린트**: `eslint app components lib` 0 warnings, 0 errors. ✅
+  - **빌드**: `npm run build` 68/68 pages 0 errors (Turbopack). ✅
+  - **Vercel 배포**: `voidsay.com` 프로덕션 배포 완료 (1m build). `/` HTTP 200, `/pro` HTTP 200, `/api/ls/{checkout,webhook,manage}` 405 (POST 전용 정상). `/api/paddle/*` 라우트 모두 404 확인. ✅
+  - **상태**: Paddle 100% 제거 유지. Lemon Squeezy 연동 완전 무결. Ad-free 유지. voidsay.com 정상 작동.
