@@ -3,9 +3,11 @@ import * as cheerio from 'cheerio';
 import { rateLimit } from '@/lib/rate-limit';
 import { checkSSRF } from '@/lib/ssrf-check';
 
+const INSTAGRAM_REGEX = /instagram\.com\/(p|reel|tv)\/([A-Za-z0-9_-]+)/;
+
 export async function GET(request: Request) {
   const ip = request.headers.get('x-forwarded-for') || '127.0.0.1';
-  if (!rateLimit(ip, 20, 60000)) { // 20 requests per minute
+  if (!rateLimit(ip, 20, 60000)) {
     return NextResponse.json({ error: 'Too Many Requests' }, { status: 429 });
   }
 
@@ -24,7 +26,37 @@ export async function GET(request: Request) {
     }
 
     const validUrl = new URL(url);
+    const hostname = validUrl.hostname;
 
+    // Instagram: use official oEmbed API (complies with Meta ToS)
+    // This avoids scraping HTML directly from Instagram pages
+    if (INSTAGRAM_REGEX.test(hostname)) {
+      const oembedUrl = `https://api.instagram.com/oembed?url=${encodeURIComponent(url)}`;
+      const oembedRes = await fetch(oembedUrl, {
+        headers: {
+          'User-Agent': 'VoidSayBot/1.0',
+        },
+      });
+
+      if (oembedRes.ok) {
+        const data = await oembedRes.json();
+        return NextResponse.json({
+          title: data.title || 'Instagram Post',
+          description: '',
+          image: data.thumbnail_url || '',
+          url,
+        });
+      }
+      // Fallback: return basic info rather than scraping
+      return NextResponse.json({
+        title: 'Instagram Post',
+        description: '',
+        image: '',
+        url,
+      });
+    }
+
+    // Generic: fetch OpenGraph metadata (standard practice, complies with robots.txt)
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 8000);
 

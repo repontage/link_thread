@@ -180,6 +180,105 @@ export async function GET() {
       CREATE UNIQUE INDEX IF NOT EXISTS InviteUse_userId_key ON InviteUse (userId);
     `);
 
+    // 9. Ensure Phase 26 tables: Community, CommunityThread, Follow, Message
+    await libsql.execute(`
+      CREATE TABLE IF NOT EXISTS Community (
+        id TEXT PRIMARY KEY NOT NULL,
+        slug TEXT UNIQUE NOT NULL,
+        name TEXT NOT NULL,
+        description TEXT,
+        creatorId TEXT NOT NULL,
+        createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (creatorId) REFERENCES User (id) ON DELETE CASCADE
+      );
+    `);
+    await libsql.execute(`CREATE INDEX IF NOT EXISTS Community_slug_idx ON Community (slug);`);
+
+    await libsql.execute(`
+      CREATE TABLE IF NOT EXISTS CommunityThread (
+        id TEXT PRIMARY KEY NOT NULL,
+        communityId TEXT NOT NULL,
+        url TEXT NOT NULL,
+        title TEXT,
+        addedById TEXT NOT NULL,
+        addedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (communityId) REFERENCES Community (id) ON DELETE CASCADE,
+        FOREIGN KEY (addedById) REFERENCES User (id) ON DELETE CASCADE
+      );
+    `);
+    await libsql.execute(`CREATE UNIQUE INDEX IF NOT EXISTS CommunityThread_communityId_url_key ON CommunityThread (communityId, url);`);
+    await libsql.execute(`CREATE INDEX IF NOT EXISTS CommunityThread_communityId_addedAt_idx ON CommunityThread (communityId, addedAt);`);
+
+    await libsql.execute(`
+      CREATE TABLE IF NOT EXISTS Follow (
+        id TEXT PRIMARY KEY NOT NULL,
+        followerId TEXT NOT NULL,
+        followingId TEXT NOT NULL,
+        createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (followerId) REFERENCES User (id) ON DELETE CASCADE,
+        FOREIGN KEY (followingId) REFERENCES User (id) ON DELETE CASCADE
+      );
+    `);
+    await libsql.execute(`CREATE UNIQUE INDEX IF NOT EXISTS Follow_followerId_followingId_key ON Follow (followerId, followingId);`);
+    await libsql.execute(`CREATE INDEX IF NOT EXISTS Follow_followerId_idx ON Follow (followerId);`);
+    await libsql.execute(`CREATE INDEX IF NOT EXISTS Follow_followingId_idx ON Follow (followingId);`);
+
+    await libsql.execute(`
+      CREATE TABLE IF NOT EXISTS Message (
+        id TEXT PRIMARY KEY NOT NULL,
+        senderId TEXT NOT NULL,
+        receiverId TEXT NOT NULL,
+        content TEXT NOT NULL,
+        createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        readAt DATETIME,
+        FOREIGN KEY (senderId) REFERENCES User (id) ON DELETE CASCADE,
+        FOREIGN KEY (receiverId) REFERENCES User (id) ON DELETE CASCADE
+      );
+    `);
+    await libsql.execute(`CREATE INDEX IF NOT EXISTS Message_senderId_receiverId_createdAt_idx ON Message (senderId, receiverId, createdAt);`);
+    await libsql.execute(`CREATE INDEX IF NOT EXISTS Message_receiverId_readAt_idx ON Message (receiverId, readAt);`);
+
+    // 10. Ensure Phase 27 tables: Team, TeamMember, SponsoredLink
+    await libsql.execute(`
+      CREATE TABLE IF NOT EXISTS Team (
+        id TEXT PRIMARY KEY NOT NULL,
+        name TEXT NOT NULL,
+        slug TEXT UNIQUE NOT NULL,
+        description TEXT,
+        ownerId TEXT NOT NULL,
+        createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (ownerId) REFERENCES User (id) ON DELETE CASCADE
+      );
+    `);
+    await libsql.execute(`CREATE INDEX IF NOT EXISTS Team_slug_idx ON Team (slug);`);
+
+    await libsql.execute(`
+      CREATE TABLE IF NOT EXISTS TeamMember (
+        id TEXT PRIMARY KEY NOT NULL,
+        teamId TEXT NOT NULL,
+        userId TEXT NOT NULL,
+        role TEXT NOT NULL DEFAULT 'MEMBER',
+        joinedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (teamId) REFERENCES Team (id) ON DELETE CASCADE,
+        FOREIGN KEY (userId) REFERENCES User (id) ON DELETE CASCADE
+      );
+    `);
+    await libsql.execute(`CREATE UNIQUE INDEX IF NOT EXISTS TeamMember_teamId_userId_key ON TeamMember (teamId, userId);`);
+    await libsql.execute(`CREATE INDEX IF NOT EXISTS TeamMember_userId_idx ON TeamMember (userId);`);
+
+    await libsql.execute(`
+      CREATE TABLE IF NOT EXISTS SponsoredLink (
+        id TEXT PRIMARY KEY NOT NULL,
+        url TEXT NOT NULL,
+        title TEXT NOT NULL,
+        description TEXT,
+        sponsorName TEXT NOT NULL,
+        imageUrl TEXT,
+        active INTEGER NOT NULL DEFAULT 1,
+        createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
     return NextResponse.json({ 
       success: true, 
       existingUserColumns: userColumns,
@@ -188,7 +287,7 @@ export async function GET() {
       addedCommentColumns: commentAdded,
       existingNotificationColumns: notifColumns,
       addedNotificationColumns: notifAdded,
-      message: "Database tables and columns synchronized successfully."
+      message: "Database tables and columns synchronized successfully (including Phase 26/27 tables)."
     });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });

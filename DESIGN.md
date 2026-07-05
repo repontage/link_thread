@@ -7,7 +7,6 @@ LinkThread is a community-driven link-sharing platform with AI-enhanced summarie
 - **Framework**: Next.js 16 (App Router)
 - **Auth**: Auth.js v5 (WebAuthn Passkeys & Magic Links)
 - **DB**: Turso (LibSQL) with Prisma
-- **AI**: Gemini 1.5 Flash for summarization
 - **Style**: Tailwind CSS, Lucide Icons
 
 ## Key Flows

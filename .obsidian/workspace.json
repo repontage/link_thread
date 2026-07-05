@@ -13,16 +13,16 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "node_modules/next/dist/docs/01-app/03-api-reference/02-components/image.md",
+                "file": "마케팅-진행상황.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "image"
+              "title": "마케팅-진행상황"
             }
           },
           {
-            "id": "9effa781bba013b7",
+            "id": "02a3626a6bce4f62",
             "type": "leaf",
             "state": {
               "type": "graph",
@@ -85,8 +85,7 @@
               "title": "북마크"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "horizontal",
@@ -194,8 +193,18 @@
       "bases:새 베이스 생성하기": false
     }
   },
-  "active": "9effa781bba013b7",
+  "active": "02a3626a6bce4f62",
   "lastOpenFiles": [
+    "mobile/node_modules/unpipe/README.md",
+    "마케팅-진행상황.md",
+    "DESIGN.md",
+    "DEPLOYMENT.md",
+    "daily-summary-report.md",
+    "AI_FILTER_ARCH.md",
+    "무제.base",
+    "무제.canvas",
+    "2026-06-26.md",
+    "node_modules/@babel/preset-env/CONTRIBUTING.md",
     "node_modules/next/dist/docs/01-app/02-guides/production-checklist.md",
     "docs/app/api-reference/functions/cookies.md",
     "node_modules/next/dist/docs/01-app/03-api-reference/02-components/image.md",
@@ -220,7 +229,6 @@
     "node_modules/next/dist/docs/01-app/02-guides/migrating/app-router-migration.md",
     "docs/app/getting-started/server-and-client-components.md",
     "docs/app/getting-started",
-    "docs/app",
     "node_modules/next/dist/docs/01-app/02-guides/upgrading/version-16.md"
   ]
 }

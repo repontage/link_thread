@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '../../../lib/prisma';
+import { checkApiRateLimit } from '@/lib/api-rate-limit';
 
 export async function GET(req: NextRequest) {
+  // Check API rate limit
+  const rateCheck = await checkApiRateLimit(req);
+  if (!rateCheck.allowed) return rateCheck.error!;
   const { searchParams } = new URL(req.url);
   const query = searchParams.get('q');
 

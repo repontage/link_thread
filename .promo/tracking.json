@@ -1,38 +1,95 @@
 {
-  "last_x_post": "2026-06-09",
+  "last_x_post": "2026-06-25",
   "x_posts_today": 1,
   "last_x_reply_search": "2026-06-05",
-  "xurl_status": "configured_search_401",
+  "xurl_status": "configured_post_ok_search_401",
   "reddit_status": "network_blocked",
   "last_hn_check": "2026-06-05",
   "hn_status": "account_creation_disabled",
-  "last_site_check": "2026-06-09",
+  "last_site_check": "2026-06-20",
   "site_status": "all_200_ok",
   "last_weekly_report": null,
   "account_created": "2026-06-02",
   "x_handle": "@voidsay_",
   "x_followers": 0,
-  "x_tweet_count_at_last_check": 49,
+  "x_tweet_count_at_last_check": 50,
   "comparison_pages": {
-    "live": ["disqus", "commento", "hyvor", "giscus", "fastcomments", "utterances", "cusdis", "intensedebate", "justcomments", "replybox", "schnack", "commentix", "remark42", "cactus", "muut", "discourse", "livefyre", "facebook-comments", "useresponse", "livere", "isso", "talkyard", "graphcomment", "vuukle", "spot-im"],
+    "live": [
+      "disqus",
+      "commento",
+      "hyvor",
+      "giscus",
+      "fastcomments",
+      "utterances",
+      "cusdis",
+      "intensedebate",
+      "justcomments",
+      "replybox",
+      "schnack",
+      "commentix",
+      "remark42",
+      "cactus",
+      "muut",
+      "discourse",
+      "livefyre",
+      "facebook-comments",
+      "useresponse",
+      "livere",
+      "isso",
+      "talkyard",
+      "graphcomment",
+      "vuukle",
+      "spot-im"
+    ],
     "missing": []
   },
   "last_comparison_page_added": "spot-im",
-  "directories_checked": ["saashub", "betalist", "fazier", "futurepedia", "taaft", "alternativeto", "aitools.inc", "toolify.ai"],
+  "directories_checked": [
+    "saashub",
+    "betalist",
+    "fazier",
+    "futurepedia",
+    "taaft",
+    "alternativeto",
+    "aitools.inc",
+    "toolify.ai"
+  ],
   "directories_submitted": [],
-  "directories_accessible": ["saashub", "betalist", "fazier", "futurepedia", "aitools.inc"],
-  "directories_blocked": ["taaft", "alternativeto", "toolify.ai"],
-  "directories_pending_manual_submit": ["aitools.inc"],
+  "directories_accessible": [
+    "saashub",
+    "betalist",
+    "fazier",
+    "futurepedia",
+    "aitools.inc"
+  ],
+  "directories_blocked": [
+    "taaft",
+    "alternativeto",
+    "toolify.ai"
+  ],
+  "directories_pending_manual_submit": [
+    "aitools.inc"
+  ],
   "ai_seo_gaps": {
     "llms_txt": "live",
     "pricing_md": "live",
     "faq_schema_on_alt_pages": "missing",
     "pricing_page": "live"
   },
-  "last_cron_tick": "2026-06-09T10:37:00+00:00",
+  "last_cron_tick": "2026-06-25T10:30:00Z",
+  "vercel_deploy_status": "No ERROR deployments detected as of 2026-06-25",
   "notes": {
     "aitools_inc_submit_url": "https://loxr142exnq.typeform.com/to/RB6ZnEf2",
-    "x_thread_posted_today_at": "2026-06-09T08:05:21Z",
-    "xurl_search_401": "Twitter API search requires elevated access — can't search for reply targets programmatically"
+    "x_tweet_posted_2026_06_15": "2066468704871985622",
+    "x_tweet_posted_2026_06_16": "2066755632137740407",
+    "x_tweet_posted_2026_06_17": "2067042494844665859",
+    "x_tweet_posted_2026_06_18": "2067405038251810948",
+    "x_tweet_text_2026_06_18": "Bloggers: your comment section might be tracking your readers without you realizing it. Disqus injects ads and third-party scripts. Facebook Comments ties readers to Meta. VoidSay does neither. No ads. No tracking. Free forever.",
+    "xurl_search_401": "Twitter API search requires elevated access — can't search for reply targets programmatically",
+    "vercel_error_detail": "mobile/app/_layout.tsx:1 - Cannot find module 'expo-router'. All recent deployments failed with this TypeScript error. Checked 2026-06-18: still showing Error.",
+    "x_tweet_posted_2026_06_20": "2068280609244668318",
+    "x_tweet_text_2026_06_20": "Thread: 3 real comment options (Disqus/DIY/VoidSay) - 3 tweets",
+    "x_tweet_posted_2026_06_25": "2070092565794488741",
+    "x_tweet_text_2026_06_25": "Thread: VoidSay works on ANY URL - no install needed (2 tweets)"
   }
 }

@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { auth } from '@/auth';
+import { checkApiRateLimit } from '@/lib/api-rate-limit';
 
 export const dynamic = 'force-dynamic';
 
 // GET /api/sponsored — get active sponsored links
-export async function GET(_req: NextRequest) {
+export async function GET(req: NextRequest) {
+  // Check API rate limit
+  const rateCheck = await checkApiRateLimit(req);
+  if (!rateCheck.allowed) return rateCheck.error!;
   try {
     const session = await auth();
     const isPro = (session?.user as any)?.isPro || false;

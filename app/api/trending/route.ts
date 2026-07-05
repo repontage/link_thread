@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { unstable_cache } from "next/cache";
+import { checkApiRateLimit } from "@/lib/api-rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -69,6 +70,10 @@ const getCachedTrending = unstable_cache(
 );
 
 export async function GET(request: Request) {
+  // Check API rate limit
+  const rateCheck = await checkApiRateLimit(request);
+  if (!rateCheck.allowed) return rateCheck.error!;
+
   const { searchParams } = new URL(request.url);
   const period = searchParams.get("period") || "today";
   const region = searchParams.get("region") || "global";

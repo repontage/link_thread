@@ -13,17 +13,18 @@ export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      allowDangerousEmailAccountLinking: true,
     }),
     GitHub({
       clientId: process.env.GITHUB_ID,
       clientSecret: process.env.GITHUB_SECRET,
-      allowDangerousEmailAccountLinking: true,
     }),
     Passkey,
   ],
   session: {
     strategy: "jwt",
+  },
+  pages: {
+    signIn: "/auth/signin",
   },
   callbacks: {
     async jwt({ token, user, trigger, session }) {

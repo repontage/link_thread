@@ -5,6 +5,7 @@ import { LanguageProvider } from "@/components/i18n/LanguageProvider";
 import { ABTestProvider } from "@/lib/ab-testing";
 import Navbar from "@/components/Navbar";
 import JsonLd from "@/components/JsonLd";
+import CookieConsent from "@/components/CookieConsent";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
@@ -92,6 +93,7 @@ export default function RootLayout({
               <ABTestProvider>
                 <Navbar />
                 {children}
+                <CookieConsent />
               </ABTestProvider>
             </AuthProvider>
           </LanguageProvider>

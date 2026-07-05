@@ -2,11 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { auth } from '@/auth';
 import { rateLimit } from '@/lib/rate-limit';
+import { checkApiRateLimit } from '@/lib/api-rate-limit';
 
 export const dynamic = 'force-dynamic';
 
 // GET /api/community — list communities
 export async function GET(req: NextRequest) {
+  // Check API rate limit
+  const rateCheck = await checkApiRateLimit(req);
+  if (!rateCheck.allowed) return rateCheck.error!;
+
   const searchParams = req.nextUrl.searchParams;
   const slug = searchParams.get('slug');
 
