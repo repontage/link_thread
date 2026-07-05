@@ -25,8 +25,8 @@ export default function TermsPage() {
         <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">2. Service Provider Information</h2>
         <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 text-sm">
           <p className="text-gray-700 dark:text-gray-300"><strong className="text-gray-900 dark:text-white">Operator:</strong> Yeonwoo Jung (정연우)</p>
-          <p className="text-gray-700 dark:text-gray-300"><strong className="text-gray-900 dark:text-white">Address:</strong> Seoul, Gwangjin-gu, 05001, Republic of Korea</p>
           <p className="text-gray-700 dark:text-gray-300"><strong className="text-gray-900 dark:text-white">Email:</strong> repontage@gmail.com</p>
+          <p className="text-gray-700 dark:text-gray-300"><strong className="text-gray-900 dark:text-white">Jurisdiction:</strong> Republic of Korea</p>
           <p className="text-gray-700 dark:text-gray-300"><strong className="text-gray-900 dark:text-white">Business Registration:</strong> Pending (Individual Developer/Sole Proprietor)</p>
           <p className="text-gray-700 dark:text-gray-300"><strong className="text-gray-900 dark:text-white">EU Representative (GDPR Art. 27):</strong> DataRep —{" "}
             <a href="https://www.datarep.com/data-request" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline">
